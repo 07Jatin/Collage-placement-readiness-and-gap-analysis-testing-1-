@@ -1,0 +1,20 @@
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.env
+package-lock.json
+.DS_Store
+.vscode/
+*.egg-info/
+dist/
+build/
+.llm-chat-history/
+
+# Logs
+logs/
+
+# Temporary files
+tmp/
