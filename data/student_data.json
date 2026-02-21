@@ -1,0 +1,325 @@
+[
+  {
+    "id": "S001",
+    "name": "Student 1",
+    "current_skills": [
+      "python",
+      "linux"
+    ],
+    "projects": [
+      {
+        "name": "proj_1_0",
+        "tech": [
+          "linux",
+          "python"
+        ]
+      },
+      {
+        "name": "proj_1_1",
+        "tech": [
+          "python",
+          "linux"
+        ]
+      },
+      {
+        "name": "proj_1_2",
+        "tech": [
+          "linux",
+          "python"
+        ]
+      }
+    ],
+    "cgpa": 7.36
+  },
+  {
+    "id": "S002",
+    "name": "Student 2",
+    "current_skills": [
+      "docker",
+      "kubernetes",
+      "algorithms",
+      "react"
+    ],
+    "projects": [],
+    "cgpa": 5.3
+  },
+  {
+    "id": "S003",
+    "name": "Student 3",
+    "current_skills": [
+      "machine-learning",
+      "aws",
+      "algorithms",
+      "linux"
+    ],
+    "projects": [
+      {
+        "name": "proj_3_0",
+        "tech": [
+          "aws",
+          "machine-learning"
+        ]
+      },
+      {
+        "name": "proj_3_1",
+        "tech": [
+          "algorithms",
+          "aws"
+        ]
+      },
+      {
+        "name": "proj_3_2",
+        "tech": [
+          "aws",
+          "machine-learning"
+        ]
+      }
+    ],
+    "cgpa": 5.1
+  },
+  {
+    "id": "S004",
+    "name": "Student 4",
+    "current_skills": [
+      "statistics",
+      "sql",
+      "data-structures",
+      "kubernetes",
+      "git",
+      "docker",
+      "aws"
+    ],
+    "projects": [
+      {
+        "name": "proj_4_0",
+        "tech": [
+          "statistics",
+          "aws"
+        ]
+      },
+      {
+        "name": "proj_4_1",
+        "tech": [
+          "sql",
+          "git"
+        ]
+      },
+      {
+        "name": "proj_4_2",
+        "tech": [
+          "kubernetes",
+          "docker"
+        ]
+      },
+      {
+        "name": "proj_4_3",
+        "tech": [
+          "data-structures",
+          "kubernetes"
+        ]
+      }
+    ],
+    "cgpa": 7.53
+  },
+  {
+    "id": "S005",
+    "name": "Student 5",
+    "current_skills": [
+      "statistics",
+      "ci-cd",
+      "sql",
+      "react",
+      "data-structures",
+      "linux"
+    ],
+    "projects": [],
+    "cgpa": 6.61
+  },
+  {
+    "id": "S006",
+    "name": "Student 6",
+    "current_skills": [
+      "pandas",
+      "ci-cd",
+      "machine-learning"
+    ],
+    "projects": [],
+    "cgpa": 9.55
+  },
+  {
+    "id": "S007",
+    "name": "Student 7",
+    "current_skills": [
+      "algorithms",
+      "linux",
+      "rest-api",
+      "git",
+      "docker",
+      "statistics"
+    ],
+    "projects": [
+      {
+        "name": "proj_7_0",
+        "tech": [
+          "linux",
+          "git"
+        ]
+      },
+      {
+        "name": "proj_7_1",
+        "tech": [
+          "statistics",
+          "rest-api"
+        ]
+      }
+    ],
+    "cgpa": 9.31
+  },
+  {
+    "id": "S008",
+    "name": "Student 8",
+    "current_skills": [
+      "react",
+      "algorithms"
+    ],
+    "projects": [
+      {
+        "name": "proj_8_0",
+        "tech": [
+          "algorithms",
+          "react"
+        ]
+      },
+      {
+        "name": "proj_8_1",
+        "tech": [
+          "react",
+          "algorithms"
+        ]
+      },
+      {
+        "name": "proj_8_2",
+        "tech": [
+          "algorithms",
+          "react"
+        ]
+      },
+      {
+        "name": "proj_8_3",
+        "tech": [
+          "react",
+          "algorithms"
+        ]
+      }
+    ],
+    "cgpa": 7.22
+  },
+  {
+    "id": "S009",
+    "name": "Student 9",
+    "current_skills": [
+      "aws",
+      "ci-cd",
+      "kubernetes",
+      "git",
+      "algorithms",
+      "statistics"
+    ],
+    "projects": [],
+    "cgpa": 6.37
+  },
+  {
+    "id": "S010",
+    "name": "Student 10",
+    "current_skills": [
+      "algorithms",
+      "docker",
+      "linux",
+      "machine-learning",
+      "data-structures",
+      "rest-api",
+      "sql"
+    ],
+    "projects": [
+      {
+        "name": "proj_10_0",
+        "tech": [
+          "machine-learning",
+          "algorithms"
+        ]
+      },
+      {
+        "name": "proj_10_1",
+        "tech": [
+          "linux",
+          "docker"
+        ]
+      }
+    ],
+    "cgpa": 9.74
+  },
+  {
+    "id": "S011",
+    "name": "Student 11",
+    "current_skills": [
+      "python",
+      "machine-learning",
+      "aws",
+      "rest-api"
+    ],
+    "projects": [
+      {
+        "name": "proj_11_0",
+        "tech": [
+          "aws",
+          "rest-api"
+        ]
+      }
+    ],
+    "cgpa": 5.1
+  },
+  {
+    "id": "S012",
+    "name": "Student 12",
+    "current_skills": [
+      "statistics",
+      "machine-learning",
+      "linux",
+      "react",
+      "data-structures",
+      "git",
+      "kubernetes"
+    ],
+    "projects": [
+      {
+        "name": "proj_12_0",
+        "tech": [
+          "data-structures",
+          "kubernetes"
+        ]
+      },
+      {
+        "name": "proj_12_1",
+        "tech": [
+          "kubernetes",
+          "machine-learning"
+        ]
+      },
+      {
+        "name": "proj_12_2",
+        "tech": [
+          "kubernetes",
+          "statistics"
+        ]
+      },
+      {
+        "name": "proj_12_3",
+        "tech": [
+          "statistics",
+          "data-structures"
+        ]
+      }
+    ],
+    "cgpa": 7.04
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "role": "Software Engineer",
+    "required_skills": [
+      "python",
+      "git",
+      "algorithms",
+      "data-structures",
+      "rest-api"
+    ],
+    "trending_skills": [
+      "docker",
+      "kubernetes",
+      "aws",
+      "react"
+    ],
+    "entry_level_salary": 70000
+  },
+  {
+    "role": "Data Scientist",
+    "required_skills": [
+      "python",
+      "statistics",
+      "pandas",
+      "machine-learning",
+      "sql"
+    ],
+    "trending_skills": [
+      "pytorch",
+      "tensorflow",
+      "xgboost",
+      "spark"
+    ],
+    "entry_level_salary": 75000
+  },
+  {
+    "role": "DevOps Engineer",
+    "required_skills": [
+      "linux",
+      "bash",
+      "ci-cd",
+      "docker",
+      "monitoring"
+    ],
+    "trending_skills": [
+      "kubernetes",
+      "terraform",
+      "aws",
+      "prometheus"
+    ],
+    "entry_level_salary": 72000
+  }
+]
