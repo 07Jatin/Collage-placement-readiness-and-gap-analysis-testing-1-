@@ -1,0 +1,809 @@
+[
+  {
+    "id": "S001",
+    "name": "Jatin kumar",
+    "current_skills": [
+      "python",
+      "linux"
+    ],
+    "projects": [
+      {
+        "name": "proj_1_0",
+        "tech": [
+          "linux",
+          "python"
+        ]
+      },
+      {
+        "name": "proj_1_1",
+        "tech": [
+          "python",
+          "linux"
+        ]
+      },
+      {
+        "name": "proj_1_2",
+        "tech": [
+          "linux",
+          "python"
+        ]
+      }
+    ],
+    "cgpa": 7.36,
+    "email": "Jatin,001@stu.in",
+    "mobile": "8005171233",
+    "password": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+  },
+  {
+    "id": "S002",
+    "name": "Student 2",
+    "current_skills": [
+      "docker",
+      "kubernetes",
+      "algorithms",
+      "react"
+    ],
+    "projects": [],
+    "cgpa": 5.3,
+    "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "S003",
+    "name": "Student 3",
+    "current_skills": [
+      "machine-learning",
+      "aws",
+      "algorithms",
+      "linux"
+    ],
+    "projects": [
+      {
+        "name": "proj_3_0",
+        "tech": [
+          "aws",
+          "machine-learning"
+        ]
+      },
+      {
+        "name": "proj_3_1",
+        "tech": [
+          "algorithms",
+          "aws"
+        ]
+      },
+      {
+        "name": "proj_3_2",
+        "tech": [
+          "aws",
+          "machine-learning"
+        ]
+      }
+    ],
+    "cgpa": 5.1
+  },
+  {
+    "id": "S004",
+    "name": "Student 4",
+    "current_skills": [
+      "statistics",
+      "sql",
+      "data-structures",
+      "kubernetes",
+      "git",
+      "docker",
+      "aws"
+    ],
+    "projects": [
+      {
+        "name": "proj_4_0",
+        "tech": [
+          "statistics",
+          "aws"
+        ]
+      },
+      {
+        "name": "proj_4_1",
+        "tech": [
+          "sql",
+          "git"
+        ]
+      },
+      {
+        "name": "proj_4_2",
+        "tech": [
+          "kubernetes",
+          "docker"
+        ]
+      },
+      {
+        "name": "proj_4_3",
+        "tech": [
+          "data-structures",
+          "kubernetes"
+        ]
+      }
+    ],
+    "cgpa": 7.53
+  },
+  {
+    "id": "S005",
+    "name": "Student 5",
+    "current_skills": [
+      "statistics",
+      "ci-cd",
+      "sql",
+      "react",
+      "data-structures",
+      "linux"
+    ],
+    "projects": [],
+    "cgpa": 6.61
+  },
+  {
+    "id": "S006",
+    "name": "Student 6",
+    "current_skills": [
+      "pandas",
+      "ci-cd",
+      "machine-learning"
+    ],
+    "projects": [],
+    "cgpa": 9.55
+  },
+  {
+    "id": "S007",
+    "name": "Student 7",
+    "current_skills": [
+      "algorithms",
+      "linux",
+      "rest-api",
+      "git",
+      "docker",
+      "statistics"
+    ],
+    "projects": [
+      {
+        "name": "proj_7_0",
+        "tech": [
+          "linux",
+          "git"
+        ]
+      },
+      {
+        "name": "proj_7_1",
+        "tech": [
+          "statistics",
+          "rest-api"
+        ]
+      }
+    ],
+    "cgpa": 9.31
+  },
+  {
+    "id": "S008",
+    "name": "Student 8",
+    "current_skills": [
+      "react",
+      "algorithms"
+    ],
+    "projects": [
+      {
+        "name": "proj_8_0",
+        "tech": [
+          "algorithms",
+          "react"
+        ]
+      },
+      {
+        "name": "proj_8_1",
+        "tech": [
+          "react",
+          "algorithms"
+        ]
+      },
+      {
+        "name": "proj_8_2",
+        "tech": [
+          "algorithms",
+          "react"
+        ]
+      },
+      {
+        "name": "proj_8_3",
+        "tech": [
+          "react",
+          "algorithms"
+        ]
+      }
+    ],
+    "cgpa": 7.22
+  },
+  {
+    "id": "S009",
+    "name": "Student 9",
+    "current_skills": [
+      "aws",
+      "ci-cd",
+      "kubernetes",
+      "git",
+      "algorithms",
+      "statistics"
+    ],
+    "projects": [],
+    "cgpa": 6.37
+  },
+  {
+    "id": "S010",
+    "name": "Student 10",
+    "current_skills": [
+      "algorithms",
+      "docker",
+      "linux",
+      "machine-learning",
+      "data-structures",
+      "rest-api",
+      "sql"
+    ],
+    "projects": [
+      {
+        "name": "proj_10_0",
+        "tech": [
+          "machine-learning",
+          "algorithms"
+        ]
+      },
+      {
+        "name": "proj_10_1",
+        "tech": [
+          "linux",
+          "docker"
+        ]
+      }
+    ],
+    "cgpa": 9.74
+  },
+  {
+    "id": "S011",
+    "name": "Student 11",
+    "current_skills": [
+      "python",
+      "machine-learning",
+      "aws",
+      "rest-api"
+    ],
+    "projects": [
+      {
+        "name": "proj_11_0",
+        "tech": [
+          "aws",
+          "rest-api"
+        ]
+      }
+    ],
+    "cgpa": 5.1
+  },
+  {
+    "id": "S012",
+    "name": "Student 12",
+    "current_skills": [
+      "statistics",
+      "machine-learning",
+      "linux",
+      "react",
+      "data-structures",
+      "git",
+      "kubernetes"
+    ],
+    "projects": [
+      {
+        "name": "proj_12_0",
+        "tech": [
+          "data-structures",
+          "kubernetes"
+        ]
+      },
+      {
+        "name": "proj_12_1",
+        "tech": [
+          "kubernetes",
+          "machine-learning"
+        ]
+      },
+      {
+        "name": "proj_12_2",
+        "tech": [
+          "kubernetes",
+          "statistics"
+        ]
+      },
+      {
+        "name": "proj_12_3",
+        "tech": [
+          "statistics",
+          "data-structures"
+        ]
+      }
+    ],
+    "cgpa": 7.04
+  },
+  {
+    "id": "S999",
+    "name": "Test Student",
+    "mobile": "1234567890",
+    "email": "test@example.com",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5901486",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "Thunder",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "590144676",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "Aditya",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "59014568",
+    "password": "c83fc8abdfbd9b6f728281ddbdc7474cb6946febdcc583ed59577a69b832d2fc",
+    "name": "aditya",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "590145616",
+    "password": "b80b3df85a32d4bb6c18b7a7bafa2457761919c79c09a1fc4335554fe8d8f901",
+    "name": "Aditya",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5901456846",
+    "password": "94ddbd286dd90d00798f72f4e393196adbcf840c1b9f09075a4c1f70039061f4",
+    "name": "5901456846",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "59015984",
+    "password": "748ab406e1ae94b69f6abc487b635c9e3290d778859cdca92811cc31a743e26e",
+    "name": "Aditya",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "590114568",
+    "password": "822f2935cd87313ab4900483eb4a24003633efc487241c5ca7f1f5e9dbb76e10",
+    "name": "Aditya",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "590014568",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "590014568",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "S001JATIN",
+    "password": "e4a0a90e5ac07d5435c6f25c4cf7cc565becb797bb5b83c515bc427ef32a4770",
+    "name": "S001JATIN",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "12345",
+    "password": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+    "name": "12345",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "590014556",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "Jatin",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "59001565",
+    "password": "a7a30e66f2b0a77eed86e0f4671cd9b97b85de1020c8bfa3c596a4a325bb3ac6",
+    "name": "59001565",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5901466",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "5901466",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5901456",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "5901456",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "STU001",
+    "password": "5d1151774d2984733a9dfd002317c3a63a475113e1ce1f58f2ef5e5b9deda875",
+    "name": "STU001",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "STU100",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "name": "Student One",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "59014589",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "59014589",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5901468",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "5901468",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5900145681",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "5900145681",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "568826226",
+    "password": "7e8296d8797ee6cf722d2f8225e02f954070db1d2a38cd1a73246df2d063de38",
+    "name": "568826226",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "54916191",
+    "password": "5ae16a4ecf09fba1b76c9362301a633f444b6593e179545b98a60b6fb42435b0",
+    "name": "54916191",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "TEST_S001",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "name": "Test Student",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "08181818",
+    "password": "76674ae810f418dd48965e8989116b355d3b8325e03b1616a8985f7606234129",
+    "name": "08181818",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "99999999",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "name": "Test User",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "88888888",
+    "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "name": "Test User 2",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "4646616",
+    "password": "e18df09c6174a7e83d6dac52e3bb3d8dd74459f845eb26578b3b2332566258cb",
+    "name": "4646616",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "57879746446",
+    "password": "a8eafa268ea2ca7ab64528d3114871d16e68b37588790266ef55fa6fad16fd9e",
+    "name": "57879746446",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "549684984",
+    "password": "17ce782d8ec838dcf6054c88e6624309527f2175bf05f8a09c099dd0c6d5ee88",
+    "name": "549684984",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "594315613",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "594315613",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "616163134",
+    "password": "f809fb5bded02f8c1728f68a1cc49233cb38e951d6659ca1e6e7fa6fb964fb06",
+    "name": "616163134",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "564476",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "564476",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "565449416",
+    "password": "b57ff7c0482a6e68cf9b4969937dd041d06587062d95fe94f38d39e47c966e75",
+    "name": "565449416",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "5913654631",
+    "password": "db005c4fa2327d470ba149dd1fd1222b1d46e847ead5a37f2f6af16080872ac8",
+    "name": "5913654631",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "JATIN",
+    "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+    "name": "JATIN",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "594004465",
+    "password": "aaa73ac7721342eac5212f15feb2d5f7631e28222d8b79ffa835def1b81ff620",
+    "name": "594004465",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  },
+  {
+    "id": "59126540",
+    "password": "1dfce259e8759909a3aec9116fc6beb38ce43baea29bd11cf9a36836d6762c39",
+    "name": "59126540",
+    "mobile": "",
+    "email": "",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
+  }
+]

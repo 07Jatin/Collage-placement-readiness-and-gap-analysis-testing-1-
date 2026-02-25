@@ -1,0 +1,301 @@
+cgpa,num_projects,skill_match_percent,label
+6.46,3,79,Unprepared
+8.23,1,51,Needs Training
+8.55,1,43,Needs Training
+8.9,5,92,Ready
+9.51,0,68,Needs Training
+7.52,6,84,Needs Training
+8.54,6,60,Needs Training
+8.94,1,74,Needs Training
+8.03,6,35,Unprepared
+9.13,4,81,Ready
+8.91,5,10,Unprepared
+6.52,1,72,Needs Training
+7.03,5,60,Needs Training
+8.22,3,17,Unprepared
+6.93,3,58,Needs Training
+7.16,4,99,Needs Training
+7.33,2,2,Unprepared
+8.03,0,87,Needs Training
+6.78,0,1,Unprepared
+8.6,4,31,Unprepared
+5.03,4,13,Unprepared
+7.14,2,57,Needs Training
+7.0,0,98,Needs Training
+8.35,3,7,Unprepared
+5.72,4,6,Unprepared
+7.06,0,53,Needs Training
+9.12,3,80,Ready
+9.01,1,45,Needs Training
+8.88,5,79,Ready
+8.91,2,68,Needs Training
+8.51,5,19,Unprepared
+6.07,3,16,Unprepared
+5.5,0,44,Unprepared
+5.88,3,34,Unprepared
+5.84,4,18,Unprepared
+9.33,3,46,Needs Training
+5.21,4,10,Unprepared
+9.24,3,27,Unprepared
+6.9,0,68,Needs Training
+9.44,3,59,Needs Training
+5.4,0,42,Unprepared
+6.34,2,86,Unprepared
+9.47,0,44,Needs Training
+6.54,3,91,Needs Training
+9.88,2,30,Unprepared
+8.48,5,38,Unprepared
+8.39,1,79,Needs Training
+7.37,0,97,Needs Training
+5.16,0,87,Unprepared
+8.12,5,70,Ready
+9.56,0,29,Unprepared
+6.02,2,71,Unprepared
+9.61,0,49,Needs Training
+9.68,5,92,Ready
+9.46,2,43,Needs Training
+9.91,4,7,Unprepared
+7.19,4,12,Unprepared
+5.79,4,94,Unprepared
+5.75,1,32,Unprepared
+5.04,4,72,Unprepared
+8.96,5,69,Needs Training
+9.05,0,96,Needs Training
+6.04,5,63,Unprepared
+6.07,1,95,Unprepared
+6.53,3,87,Needs Training
+7.45,6,89,Needs Training
+7.97,3,8,Unprepared
+6.72,5,7,Unprepared
+9.92,1,43,Needs Training
+7.61,1,60,Needs Training
+7.82,3,86,Needs Training
+9.05,1,18,Unprepared
+8.79,2,2,Unprepared
+6.14,6,9,Unprepared
+5.69,1,21,Unprepared
+9.27,0,52,Needs Training
+8.36,4,2,Unprepared
+6.18,4,1,Unprepared
+5.35,3,97,Unprepared
+8.32,4,44,Needs Training
+8.77,2,0,Unprepared
+7.31,0,43,Needs Training
+6.58,6,79,Needs Training
+8.56,2,76,Ready
+8.2,6,16,Unprepared
+5.52,1,35,Unprepared
+8.22,1,99,Needs Training
+8.71,1,77,Needs Training
+8.97,4,30,Unprepared
+5.28,4,73,Unprepared
+5.68,2,85,Unprepared
+9.56,5,14,Unprepared
+7.2,5,81,Needs Training
+6.42,3,13,Unprepared
+9.2,4,20,Unprepared
+8.34,4,37,Unprepared
+5.29,0,74,Unprepared
+7.16,1,27,Unprepared
+8.0,3,81,Ready
+9.95,2,51,Needs Training
+5.2,4,53,Unprepared
+9.96,5,46,Needs Training
+5.56,5,77,Unprepared
+5.22,0,23,Unprepared
+9.02,5,81,Ready
+9.71,3,50,Needs Training
+7.6,4,94,Needs Training
+8.85,3,46,Needs Training
+9.3,0,95,Needs Training
+9.86,6,19,Unprepared
+8.26,3,46,Needs Training
+5.04,4,13,Unprepared
+8.34,5,80,Ready
+7.92,6,43,Needs Training
+5.6,3,88,Unprepared
+6.41,5,24,Unprepared
+9.94,5,19,Unprepared
+8.19,3,94,Ready
+6.71,6,96,Needs Training
+5.44,6,56,Unprepared
+9.73,6,36,Unprepared
+7.52,3,17,Unprepared
+8.04,2,32,Unprepared
+8.55,3,99,Ready
+8.89,0,67,Needs Training
+6.04,0,57,Unprepared
+5.15,6,34,Unprepared
+5.7,1,83,Unprepared
+6.49,3,89,Unprepared
+8.11,4,19,Unprepared
+8.62,6,30,Unprepared
+5.73,5,45,Unprepared
+7.03,3,4,Unprepared
+8.34,5,64,Needs Training
+8.25,0,61,Needs Training
+8.97,1,73,Needs Training
+7.36,6,52,Needs Training
+8.42,4,49,Needs Training
+7.4,5,51,Needs Training
+8.08,2,54,Needs Training
+7.72,3,22,Unprepared
+5.46,0,47,Unprepared
+9.2,1,24,Unprepared
+8.46,3,17,Unprepared
+8.65,1,56,Needs Training
+5.53,0,20,Unprepared
+7.89,3,82,Needs Training
+7.12,2,17,Unprepared
+9.68,5,7,Unprepared
+6.1,5,62,Unprepared
+8.17,4,86,Ready
+6.62,1,60,Needs Training
+9.2,3,12,Unprepared
+9.69,6,48,Needs Training
+8.63,2,31,Unprepared
+7.3,4,13,Unprepared
+9.99,4,32,Unprepared
+8.69,1,64,Needs Training
+7.52,4,8,Unprepared
+8.42,6,88,Ready
+9.77,1,96,Needs Training
+8.73,5,96,Ready
+7.28,6,95,Needs Training
+8.99,0,55,Needs Training
+6.96,1,70,Needs Training
+5.93,1,88,Unprepared
+5.69,1,43,Unprepared
+8.61,5,53,Needs Training
+5.8,1,38,Unprepared
+9.49,4,76,Ready
+8.37,4,65,Needs Training
+6.72,1,38,Unprepared
+9.19,4,26,Unprepared
+9.66,1,86,Needs Training
+9.17,1,58,Needs Training
+8.52,6,37,Unprepared
+7.68,0,23,Unprepared
+9.13,2,4,Unprepared
+5.23,6,19,Unprepared
+7.79,4,70,Needs Training
+5.39,6,65,Unprepared
+5.61,1,59,Unprepared
+7.71,3,53,Needs Training
+9.07,0,80,Needs Training
+6.2,3,2,Unprepared
+6.58,2,92,Needs Training
+7.36,3,51,Needs Training
+7.44,5,43,Needs Training
+6.52,4,49,Needs Training
+6.43,6,78,Unprepared
+7.07,4,34,Unprepared
+8.05,2,45,Needs Training
+8.71,5,29,Unprepared
+7.75,2,57,Needs Training
+5.21,5,100,Unprepared
+8.49,1,22,Unprepared
+8.77,0,50,Needs Training
+7.19,3,93,Needs Training
+6.54,6,13,Unprepared
+5.21,5,88,Unprepared
+7.35,1,68,Needs Training
+8.05,6,30,Unprepared
+6.0,4,88,Unprepared
+7.43,6,96,Needs Training
+9.07,2,53,Needs Training
+5.15,2,60,Unprepared
+9.5,2,84,Ready
+8.74,3,73,Ready
+5.86,1,19,Unprepared
+9.18,1,76,Needs Training
+9.18,2,55,Needs Training
+6.47,3,66,Unprepared
+7.5,5,67,Needs Training
+5.58,6,46,Unprepared
+6.02,1,1,Unprepared
+7.66,5,6,Unprepared
+6.7,6,73,Needs Training
+7.67,2,54,Needs Training
+9.72,4,30,Unprepared
+9.35,2,25,Unprepared
+9.68,4,55,Needs Training
+5.35,2,90,Unprepared
+9.42,1,11,Unprepared
+6.51,6,6,Unprepared
+9.42,4,6,Unprepared
+5.87,0,27,Unprepared
+9.8,4,0,Unprepared
+6.69,0,16,Unprepared
+5.63,6,98,Unprepared
+5.13,3,78,Unprepared
+9.44,5,26,Unprepared
+5.13,0,44,Unprepared
+5.49,6,6,Unprepared
+8.86,6,61,Needs Training
+8.25,5,63,Needs Training
+7.43,6,71,Needs Training
+7.32,0,54,Needs Training
+6.08,4,68,Unprepared
+6.63,2,52,Needs Training
+9.38,2,34,Unprepared
+7.05,3,16,Unprepared
+8.19,0,31,Unprepared
+8.33,4,76,Ready
+5.32,4,80,Unprepared
+5.31,3,88,Unprepared
+6.61,3,9,Unprepared
+8.96,3,38,Unprepared
+6.72,4,50,Needs Training
+7.45,5,2,Unprepared
+5.18,2,7,Unprepared
+9.1,0,36,Unprepared
+9.95,2,21,Unprepared
+6.87,0,53,Needs Training
+6.53,3,14,Unprepared
+6.7,1,28,Unprepared
+5.77,2,86,Unprepared
+8.64,1,24,Unprepared
+5.06,6,49,Unprepared
+7.15,0,93,Needs Training
+5.62,3,11,Unprepared
+6.43,5,87,Unprepared
+9.34,5,39,Unprepared
+8.1,2,75,Ready
+7.94,1,30,Unprepared
+9.65,1,14,Unprepared
+8.4,1,4,Unprepared
+5.55,1,87,Unprepared
+6.0,0,100,Unprepared
+6.07,0,49,Unprepared
+5.38,1,9,Unprepared
+9.5,1,41,Needs Training
+6.36,2,36,Unprepared
+7.77,2,6,Unprepared
+5.7,4,73,Unprepared
+9.98,3,14,Unprepared
+9.55,0,48,Needs Training
+7.81,6,57,Needs Training
+7.55,6,70,Needs Training
+5.2,4,43,Unprepared
+7.11,0,75,Needs Training
+5.47,4,59,Unprepared
+9.35,5,42,Needs Training
+5.19,0,19,Unprepared
+9.63,3,94,Ready
+6.89,4,74,Needs Training
+6.37,1,3,Unprepared
+7.44,6,40,Needs Training
+5.2,3,17,Unprepared
+8.9,3,9,Unprepared
+7.2,1,57,Needs Training
+5.98,5,8,Unprepared
+7.01,6,98,Needs Training
+7.19,3,80,Needs Training
+6.55,2,95,Needs Training
+6.51,5,24,Unprepared
+9.67,6,56,Needs Training
+6.79,0,10,Unprepared
+6.0,3,74,Unprepared
+8.24,0,10,Unprepared
+9.39,5,60,Needs Training
