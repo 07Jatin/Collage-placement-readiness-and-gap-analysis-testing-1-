@@ -1,0 +1,47 @@
+[
+  {
+    "student_id": "S001",
+    "test_date": "2026-01-20",
+    "readiness_score": 15
+  },
+  {
+    "student_id": "S001",
+    "test_date": "2026-02-10",
+    "readiness_score": 18
+  },
+  {
+    "student_id": "S001",
+    "test_date": "2026-02-25",
+    "readiness_score": 20
+  },
+  {
+    "student_id": "S002",
+    "test_date": "2026-01-15",
+    "readiness_score": 45
+  },
+  {
+    "student_id": "S002",
+    "test_date": "2026-02-20",
+    "readiness_score": 42
+  },
+  {
+    "student_id": "S003",
+    "test_date": "2026-01-05",
+    "readiness_score": 30
+  },
+  {
+    "student_id": "S003",
+    "test_date": "2026-01-30",
+    "readiness_score": 31
+  },
+  {
+    "student_id": "S004",
+    "test_date": "2026-02-01",
+    "readiness_score": 75
+  },
+  {
+    "student_id": "S004",
+    "test_date": "2026-02-25",
+    "readiness_score": 88
+  }
+]
