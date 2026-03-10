@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import skill_analyzer
 from predict_readiness import predict_for_student
+import resume_parser
 
 app = FastAPI(title="Education-Job Alignment API")
 
@@ -59,6 +60,73 @@ def admin_skill_gaps():
     # return sorted list of skills by frequency
     items = sorted(gap_counts.items(), key=lambda x: x[1], reverse=True)
     return {"missing_skill_frequencies": items}
+
+
+@app.post("/parse_resume")
+def parse_resume(payload: dict):
+    """Extract skills from resume text using keyword matching (no LLM)."""
+    text = payload.get("text", "")
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="No resume text provided")
+    
+    results = resume_parser.extract_skills(text)
+    summary = resume_parser.get_extraction_summary(results)
+    return summary
+
+
+@app.get("/skill_quiz/{skill_name}")
+def get_skill_quiz(skill_name: str):
+    """Return quiz questions for a specific skill."""
+    quiz_path = os.path.join(os.path.dirname(__file__), 'skill_quizzes.json')
+    try:
+        with open(quiz_path, 'r') as f:
+            quizzes = json.load(f)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Quiz bank not found")
+    
+    if skill_name not in quizzes:
+        raise HTTPException(status_code=404, detail=f"No quiz available for skill: {skill_name}")
+    
+    return {"skill": skill_name, "questions": quizzes[skill_name]}
+
+
+@app.post("/validate_skills")
+def validate_skills(payload: dict):
+    """Accept quiz results and return adjusted skill profile."""
+    quiz_results = payload.get("results", {})
+    student_id = payload.get("student_id")
+    
+    verified_skills = []
+    for skill_id, result in quiz_results.items():
+        score = result.get("score", 0)
+        total = result.get("total", 3)
+        pct = (score / total) * 100 if total > 0 else 0
+        
+        if pct == 100:
+            level = "expert"
+        elif pct >= 66:
+            level = "proficient"
+        elif pct >= 33:
+            level = "beginner"
+        else:
+            level = "unverified"
+        
+        if level != "unverified":
+            verified_skills.append(skill_id)
+    
+    # If student_id provided, re-calculate readiness with verified skills
+    readiness = None
+    if student_id and verified_skills:
+        try:
+            readiness = predict_for_student(student_id)
+        except Exception:
+            pass
+    
+    return {
+        "verified_skills": verified_skills,
+        "total_verified": len(verified_skills),
+        "readiness": readiness
+    }
 
 
 @app.post("/compile")

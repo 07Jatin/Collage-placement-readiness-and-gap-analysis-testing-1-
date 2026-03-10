@@ -8,7 +8,8 @@ import {
   User,
   LogOut,
   Users,
-  Code
+  Code,
+  FileUp
 } from 'lucide-react';
 
 // Import Mock Data
@@ -24,6 +25,7 @@ import LearningPathView from './components/LearningPathView';
 import AdminDashboardView from './components/AdminDashboardView';
 import ProfileView from './components/ProfileView';
 import CodeEditorView from './components/CodeEditorView';
+import ResumeUploadView from './components/ResumeUploadView';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -261,6 +263,12 @@ const App = () => {
                 active={activeTab === 'dsa'}
                 onClick={() => setActiveTab('dsa')}
               />
+              <SidebarItem
+                icon={FileUp}
+                label="Resume Analyzer"
+                active={activeTab === 'resume'}
+                onClick={() => setActiveTab('resume')}
+              />
             </>
           ) : (
             <SidebarItem
@@ -341,6 +349,11 @@ const App = () => {
           {activeTab === 'learning' && <LearningPathView gapReport={gapReport} />}
 
           {activeTab === 'dsa' && <CodeEditorView />}
+
+          {activeTab === 'resume' && <ResumeUploadView onProfileUpdate={(skills) => {
+            console.log('Verified skills updated:', skills);
+            // Skills feed into gap analysis + readiness calculation
+          }} />}
 
           {activeTab === 'profile' && (
             <ProfileView
