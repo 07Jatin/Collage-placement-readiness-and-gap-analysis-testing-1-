@@ -222,8 +222,11 @@ function analyzeResume(resumeText) {
   return { topSkills, suggestedRoles, skillIds };
 }
 
-// ━━━━━━━━━ Main: Generate Test ━━━━━━━━━
-export function generatePlacementTest(resumeText) {
+/**
+ * Orchestrates test generation based on Resume Text.
+ * Now Async to support future API integrations if needed.
+ */
+export async function generatePlacementTest(resumeText) {
   const analysis = analyzeResume(resumeText);
 
   // Load question history to avoid repeating questions

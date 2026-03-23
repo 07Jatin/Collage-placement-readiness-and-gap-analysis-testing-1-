@@ -3,7 +3,7 @@ import {
   Clock, ArrowRight, ArrowLeft, ShieldCheck,
   FileText, Sparkles, CheckCircle2,
   Target, AlertCircle, BookOpen, Code, Timer, Award, ChevronRight,
-  Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye
+  Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye, ExternalLink
 } from 'lucide-react';
 import { generatePlacementTest } from '../resumeTestGenerator';
 import { SAMPLE_RESUME } from '../skillData';
@@ -406,7 +406,16 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
                   </div>
                   {isSelected && <CheckCircle2 size={20} className="text-emerald-500" />}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">{q.question}</h3>
+                
+                <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center justify-between">
+                  <span>{q.question}</span>
+                  {q.link && (
+                    <a href={q.link} target="_blank" rel="noopener noreferrer" className="ml-4 flex items-center shrink-0 bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                      View Problem <ExternalLink size={14} className="ml-1.5" />
+                    </a>
+                  )}
+                </h3>
+                
                 <p className="text-sm text-slate-500 mb-4">💡 <span className="font-medium">{q.hint}</span></p>
                 <textarea
                   value={answers[i] || ''}
@@ -642,11 +651,15 @@ const MockTestView = () => {
     quantitative: {}, english: {}, reasoning: {}, computer_science: {}, dsa_random_pool: {}
   });
 
-  const handleGenerate = (resumeText) => {
-    const test = generatePlacementTest(resumeText);
-    setTestData(test);
-    setSectionProgress({ quantitative: {}, english: {}, reasoning: {}, computer_science: {}, dsa_random_pool: {} });
-    setPhase('overview');
+  const handleGenerate = async (resumeText) => {
+    try {
+      const test = await generatePlacementTest(resumeText);
+      setTestData(test);
+      setSectionProgress({ quantitative: {}, english: {}, reasoning: {}, computer_science: {}, dsa_random_pool: {} });
+      setPhase('overview');
+    } catch(e) {
+      console.error("Test generation failed", e);
+    }
   };
 
   const handleStartSection = (sectionKey) => {
