@@ -62,16 +62,61 @@ def admin_skill_gaps():
     return {"missing_skill_frequencies": items}
 
 
+import llm_resume_analyzer
+
 @app.post("/parse_resume")
 def parse_resume(payload: dict):
-    """Extract skills from resume text using keyword matching (no LLM)."""
+    """Extract skills from resume text. Uses LLM if requested and available, else falls back to regex."""
     text = payload.get("text", "")
+    use_llm = payload.get("use_llm", False)  # Client can request LLM parsing
+    
     if not text.strip():
         raise HTTPException(status_code=400, detail="No resume text provided")
     
+    # Optional LLM-powered parsing using Mistral 7B
+    if use_llm:
+        llm_result = llm_resume_analyzer.analyze_with_mistral(text)
+        if not llm_result.get("fallback", False):
+            # LLM succeeded, format it to match the expected summary structure
+            categories = {}
+            skills_dict = {}
+            
+            for skill in llm_result.get("top_skills", []):
+                cat = llm_result.get("skill_categories", {}).get(skill, "General")
+                categories.setdefault(cat, []).append(skill)
+                skills_dict[skill] = {
+                    "skill": skill,
+                    "category": cat,
+                    "confidence": 90, # High confidence since LLM extracted it
+                    "status": "unverified",
+                    "extracted_by": "Mistral-7B"
+                }
+                
+            return {
+                "total_skills": len(skills_dict),
+                "categories": categories,
+                "skills": skills_dict,
+                "suggested_roles": llm_result.get("suggested_roles", []),
+                "experience_level": llm_result.get("experience_level", "unknown"),
+                "projects_summary": llm_result.get("projects_summary", []),
+                "extraction_method": "Mistral-7B LLM"
+            }
+        
+    # Standard Regex keyword matching (used as primary or fallback)
     results = resume_parser.extract_skills(text)
     summary = resume_parser.get_extraction_summary(results)
+    summary["extraction_method"] = "Regex Keyword Matching"
+    
+    if use_llm:
+        summary["llm_error"] = "LLM parsing failed or is unconfigured. Fell back to regex."
+        
     return summary
+
+
+@app.get("/llm_status")
+def get_llm_status():
+    """Check if the Mistral 7B LLM integration is configured and available."""
+    return llm_resume_analyzer.is_llm_available()
 
 
 @app.get("/skill_quiz/{skill_name}")
@@ -258,6 +303,142 @@ def get_at_risk_students():
             pass
             
     return {"at_risk_students": at_risk}
+
+
+@app.post("/generate_questions")
+def generate_questions_with_llm(payload: dict):
+    """
+    Generate new MCQ questions using Mistral 7B (free HuggingFace API).
+    
+    This is part of the hybrid approach:
+    - Use LLM to batch-generate CS/English questions
+    - Questions are returned to the frontend for review
+    - Validated questions can be added to the question bank
+    
+    Request body:
+      - section: "computer_science" | "english" | "reasoning"
+      - count: number of questions to generate (max 10)
+      - topic: optional specific topic (e.g., "DBMS", "Networking")
+    """
+    section = payload.get("section", "computer_science")
+    count = min(payload.get("count", 5), 10)  # Cap at 10
+    topic = payload.get("topic", "")
+    
+    if not llm_resume_analyzer.HF_API_TOKEN:
+        return {
+            "error": "HF_API_TOKEN not set. LLM generation unavailable.",
+            "fallback_message": "The static question bank with parameterized templates is still active and provides unique tests every time.",
+            "questions": []
+        }
+    
+    section_prompts = {
+        "computer_science": f"Computer Science topics: Operating Systems, DBMS, Networking, Software Engineering, Data Structures{f', specifically about {topic}' if topic else ''}",
+        "english": f"English language: Grammar, Vocabulary, Synonyms, Antonyms, Idioms, Sentence Correction{f', specifically about {topic}' if topic else ''}",
+        "reasoning": f"Logical Reasoning: Number Series, Coding-Decoding, Blood Relations, Direction Sense, Syllogisms{f', specifically about {topic}' if topic else ''}"
+    }
+    
+    subject = section_prompts.get(section, section_prompts["computer_science"])
+    
+    prompt = f"""<s>[INST] You are a placement test question generator. Generate exactly {count} unique multiple-choice questions about {subject}.
+
+For each question, provide:
+1. The question text
+2. Exactly 4 options (A, B, C, D)
+3. The correct answer index (0 for A, 1 for B, 2 for C, 3 for D)
+4. Difficulty level: "easy", "medium", or "hard"
+
+Return ONLY a JSON array with objects having these fields:
+- "question": string
+- "options": array of 4 strings
+- "answer": number (0-3)
+- "difficulty": string
+
+Example format:
+[{{"question": "What is...?", "options": ["A", "B", "C", "D"], "answer": 1, "difficulty": "medium"}}]
+
+Generate {count} UNIQUE questions. Return ONLY valid JSON array. [/INST]"""
+    
+    import requests as req
+    headers = {
+        "Authorization": f"Bearer {llm_resume_analyzer.HF_API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = req.post(
+            llm_resume_analyzer.HF_API_URL,
+            headers=headers,
+            json={
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": 2048,
+                    "temperature": 0.7,
+                    "return_full_text": False,
+                    "do_sample": True
+                }
+            },
+            timeout=60
+        )
+        
+        if response.status_code == 503:
+            return {
+                "error": "Mistral 7B is loading. Please retry in 30-60 seconds.",
+                "questions": []
+            }
+        
+        if response.status_code != 200:
+            return {
+                "error": f"HuggingFace API error: {response.status_code}",
+                "questions": []
+            }
+        
+        result = response.json()
+        generated_text = ""
+        if isinstance(result, list) and len(result) > 0:
+            generated_text = result[0].get("generated_text", "")
+        elif isinstance(result, dict):
+            generated_text = result.get("generated_text", "")
+        
+        # Try to parse JSON from the response
+        parsed = llm_resume_analyzer._extract_json(generated_text)
+        
+        if parsed and isinstance(parsed, list):
+            # Validate and clean each question
+            valid_questions = []
+            for q in parsed:
+                if (isinstance(q, dict) and 
+                    "question" in q and 
+                    "options" in q and 
+                    isinstance(q["options"], list) and 
+                    len(q["options"]) == 4 and
+                    "answer" in q and 
+                    isinstance(q["answer"], int) and 
+                    0 <= q["answer"] <= 3):
+                    valid_questions.append({
+                        "question": q["question"],
+                        "options": q["options"],
+                        "answer": q["answer"],
+                        "difficulty": q.get("difficulty", "medium"),
+                        "generated_by": "Mistral-7B",
+                        "section": section
+                    })
+            
+            return {
+                "questions": valid_questions,
+                "total_generated": len(valid_questions),
+                "model": llm_resume_analyzer.MISTRAL_MODEL
+            }
+        
+        return {
+            "error": "Could not parse LLM response as valid question array",
+            "raw_preview": generated_text[:300],
+            "questions": []
+        }
+        
+    except req.exceptions.Timeout:
+        return {"error": "Request timed out (60s)", "questions": []}
+    except Exception as e:
+        return {"error": f"Generation failed: {str(e)}", "questions": []}
 
 
 if __name__ == "__main__":

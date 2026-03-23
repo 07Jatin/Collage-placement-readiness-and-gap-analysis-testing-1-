@@ -15,6 +15,16 @@ export const SKILL_KEYWORDS = {
         category: "Programming Language",
         icon: "🐍"
     },
+    java: {
+        keywords: ["java", "spring boot", "hibernate", "maven", "gradle", "jvm", "jsp", "tomcat", "javaee", "j2ee"],
+        category: "Programming Language",
+        icon: "☕"
+    },
+    javascript: {
+        keywords: ["javascript", "js", "es6", "node.js", "nodejs", "express", "typescript"],
+        category: "Programming Language",
+        icon: "📜"
+    },
     sql: {
         keywords: ["sql", "mysql", "postgresql", "postgres", "sqlite", "oracle", "sql server", "stored procedure", "database", "dbms", "rdbms", "query", "nosql", "mongodb"],
         category: "Database",
@@ -61,9 +71,14 @@ export const SKILL_KEYWORDS = {
         icon: "☁️"
     },
     "machine-learning": {
-        keywords: ["machine learning", "deep learning", "neural network", "tensorflow", "pytorch", "keras", "scikit-learn", "classification", "regression", "clustering", "nlp", "cnn", "rnn", "xgboost"],
+        keywords: ["machine learning", "ml", "deep learning", "neural network", "tensorflow", "pytorch", "keras", "scikit-learn", "classification", "regression", "clustering", "nlp", "cnn", "rnn", "xgboost", "ai", "artificial intelligence"],
         category: "AI/ML",
         icon: "🤖"
+    },
+    "data-science": {
+        keywords: ["data science", "data analysis", "data analytics", "data mining", "data pipeline", "etl", "big data", "hadoop", "spark"],
+        category: "Data Science",
+        icon: "📈"
     },
     statistics: {
         keywords: ["statistics", "statistical", "probability", "hypothesis testing", "regression analysis", "bayesian", "p-value", "confidence interval", "anova", "correlation"],
@@ -94,16 +109,21 @@ export const SKILL_KEYWORDS = {
         keywords: ["monitoring", "prometheus", "grafana", "nagios", "datadog", "alerting", "logging", "elk stack", "observability"],
         category: "DevOps",
         icon: "📡"
+    },
+    "problem-solving": {
+        keywords: ["problem solving", "analytical ability", "troubleshooting", "critical thinking", "logical reasoning"],
+        category: "Soft Skills",
+        icon: "🧠"
     }
 };
-
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PART 2: Client-side Skill Extraction Function
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export function extractSkillsFromText(text) {
-    const textLower = text.toLowerCase();
+    // Normalize text (collapse extra spaces, newlines that happen in PDF parsing)
+    const normalizedText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').toLowerCase();
     const results = {};
 
     Object.entries(SKILL_KEYWORDS).forEach(([skillId, skillInfo]) => {
@@ -111,12 +131,24 @@ export function extractSkillsFromText(text) {
         const foundKeywords = [];
 
         skillInfo.keywords.forEach(keyword => {
-            // Escape special regex chars in keyword, then match with word boundaries
-            const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const pattern = new RegExp(`\\b${escaped}(?:s|es|ing|ed)?\\b`, 'gi');
-            const matches = textLower.match(pattern);
+            const tk = keyword.toLowerCase();
+            // Broader regex: look for the keyword allowing minor punctuation variations
+            // \b logic has issues with things like "C++" or "Node.js", so we handle spaces carefully
+            const escaped = tk.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            
+            // Allow matching if preceded/followed by space, punctuation, or string start/end
+            const pattern = new RegExp(`(^|[\\s\\W_])${escaped}([\\s\\W_]|$)`, 'gi');
+            
+            let match;
+            let matchCount = 0;
+            // Use match against the normalized text
+            const matches = normalizedText.match(pattern);
             if (matches) {
-                totalMatches += matches.length;
+                matchCount = matches.length;
+            }
+
+            if (matchCount > 0) {
+                totalMatches += matchCount;
                 if (!foundKeywords.includes(keyword)) {
                     foundKeywords.push(keyword);
                 }
@@ -124,7 +156,7 @@ export function extractSkillsFromText(text) {
         });
 
         if (totalMatches > 0) {
-            const confidence = Math.min(95, 20 + totalMatches * 18);
+            const confidence = Math.min(95, 40 + totalMatches * 15);
             results[skillId] = {
                 skill: skillId,
                 category: skillInfo.category,
@@ -132,8 +164,8 @@ export function extractSkillsFromText(text) {
                 confidence,
                 matchCount: totalMatches,
                 matchedKeywords: foundKeywords,
-                status: "unverified",         // unverified | verifying | verified
-                verifiedLevel: null,          // null | "expert" | "proficient" | "beginner" | "failed"
+                status: "unverified", 
+                verifiedLevel: null,
                 quizScore: null
             };
         }
@@ -496,6 +528,10 @@ export const SKILL_QUIZZES = {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export function calculateVerifiedLevel(quizScore, totalQuestions) {
+    if (totalQuestions === 0) {
+        // Auto-approve newly added skills that don't have defined quizzes yet
+        return { level: "proficient", label: "Auto-Verified", adjustedConfidence: 80, color: "blue" };
+    }
     const percentage = (quizScore / totalQuestions) * 100;
     if (percentage === 100) return { level: "expert", label: "Expert", adjustedConfidence: 100, color: "emerald" };
     if (percentage >= 66) return { level: "proficient", label: "Proficient", adjustedConfidence: 75, color: "blue" };

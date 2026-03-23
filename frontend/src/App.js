@@ -9,7 +9,12 @@ import {
   LogOut,
   Users,
   Code,
-  FileUp
+  FileUp,
+  ChevronLeft,
+  ChevronRight,
+  Sun,
+  Moon,
+  ClipboardList
 } from 'lucide-react';
 
 // Import Mock Data
@@ -26,6 +31,7 @@ import AdminDashboardView from './components/AdminDashboardView';
 import ProfileView from './components/ProfileView';
 import CodeEditorView from './components/CodeEditorView';
 import ResumeUploadView from './components/ResumeUploadView';
+import ManageStudentsView from './components/ManageStudentsView';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -39,6 +45,8 @@ const App = () => {
   const [userRole, setUserRole] = useState(null); // 'student' or 'admin'
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [dashboardTrack, setDashboardTrack] = useState('Software Engineer');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   // Backend data states
   const [gapReport, setGapReport] = useState(null);
@@ -217,17 +225,41 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] flex font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className={`min-h-screen flex font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
       {/* Sidebar */}
-      <aside className="w-80 bg-slate-900 flex flex-col p-8 fixed h-full z-20 shadow-2xl">
-        <div className="flex items-center space-x-4 mb-16 px-2">
-          <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20">
-            <Target className="text-white" size={28} />
+      <aside
+        className={`bg-slate-900 flex flex-col fixed h-full z-20 shadow-2xl transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-80 p-8' : 'w-20 p-4'
+          }`}
+      >
+        {/* Toggle Button */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="absolute -right-3 top-8 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500 hover:scale-110 active:scale-95 transition-all z-30"
+        >
+          {sidebarOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+        </button>
+
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={`absolute -right-3 top-20 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 active:scale-95 transition-all z-30 ${darkMode ? 'bg-amber-500 shadow-amber-500/30' : 'bg-slate-700 shadow-slate-700/30'
+            }`}
+        >
+          {darkMode ? <Sun size={12} /> : <Moon size={12} />}
+        </button>
+
+        {/* Logo */}
+        <div className={`flex items-center mb-16 transition-all duration-300 ${sidebarOpen ? 'space-x-4 px-2' : 'justify-center px-0'
+          }`}>
+          <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20 shrink-0">
+            <Target className="text-white" size={sidebarOpen ? 28 : 22} />
           </div>
-          <div>
-            <span className="text-2xl font-black text-white tracking-tight block">Placify <span className="text-indigo-500">AI</span></span>
-            <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Next-Gen Alignment</span>
-          </div>
+          {sidebarOpen && (
+            <div className="overflow-hidden whitespace-nowrap">
+              <span className="text-2xl font-black text-white tracking-tight block">Placify <span className="text-indigo-500">AI</span></span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Next-Gen Alignment</span>
+            </div>
+          )}
         </div>
 
         <nav className="flex-1 space-y-3">
@@ -238,81 +270,117 @@ const App = () => {
                 label="Dashboard"
                 active={activeTab === 'dashboard'}
                 onClick={() => { setActiveTab('dashboard'); setTestActive(false); }}
+                collapsed={!sidebarOpen}
               />
               <SidebarItem
                 icon={FileText}
                 label="Mock Assessments"
                 active={activeTab === 'tests' || testActive}
                 onClick={() => setActiveTab('tests')}
+                collapsed={!sidebarOpen}
               />
               <SidebarItem
                 icon={TrendingUp}
                 label="Gap Visualizer"
                 active={activeTab === 'gap'}
                 onClick={() => setActiveTab('gap')}
+                collapsed={!sidebarOpen}
               />
               <SidebarItem
                 icon={BookOpen}
                 label="Milestone Path"
                 active={activeTab === 'learning'}
                 onClick={() => setActiveTab('learning')}
+                collapsed={!sidebarOpen}
               />
               <SidebarItem
                 icon={Code}
                 label="DSA Coding Lab"
                 active={activeTab === 'dsa'}
                 onClick={() => setActiveTab('dsa')}
+                collapsed={!sidebarOpen}
               />
               <SidebarItem
                 icon={FileUp}
                 label="Resume Analyzer"
                 active={activeTab === 'resume'}
                 onClick={() => setActiveTab('resume')}
+                collapsed={!sidebarOpen}
               />
             </>
           ) : (
-            <SidebarItem
-              icon={Users}
-              label="Admin Dashboard"
-              active={activeTab === 'admin'}
-              onClick={() => setActiveTab('admin')}
-            />
+            <>
+              <SidebarItem
+                icon={Users}
+                label="Admin Dashboard"
+                active={activeTab === 'admin'}
+                onClick={() => setActiveTab('admin')}
+                collapsed={!sidebarOpen}
+              />
+              <SidebarItem
+                icon={ClipboardList}
+                label="Manage Students"
+                active={activeTab === 'manage_students'}
+                onClick={() => setActiveTab('manage_students')}
+                collapsed={!sidebarOpen}
+              />
+            </>
           )}
 
-          <div className="pt-4 pb-2">
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest px-4">Account</p>
-          </div>
+          {sidebarOpen && (
+            <div className="pt-4 pb-2">
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest px-4">Account</p>
+            </div>
+          )}
+          {!sidebarOpen && <div className="pt-4 border-t border-white/5"></div>}
           <SidebarItem
             icon={User}
             label={userRole === 'admin' ? 'Admin Profile' : 'Student Profile'}
             active={activeTab === 'profile'}
             onClick={() => setActiveTab('profile')}
+            collapsed={!sidebarOpen}
           />
         </nav>
 
         <div className="mt-auto pt-8 border-t border-white/5 space-y-4">
-          <div className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold">
+          <div className={`bg-white/5 rounded-2xl border border-white/5 flex items-center transition-all duration-300 ${sidebarOpen ? 'p-4 space-x-3' : 'p-3 justify-center'
+            }`}>
+            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold shrink-0">
               SJ
             </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-white truncate">{selectedStudent}</p>
-              <p className="text-[10px] text-slate-500">{userRole === 'admin' ? 'Institutional Admin' : 'Premium Plan'}</p>
-            </div>
-            <LogOut
-              size={14}
-              className="text-slate-500 cursor-pointer hover:text-white transition-colors"
-              onClick={() => {
-                setIsAuthenticated(false);
-                setUserRole(null);
-              }}
-            />
+            {sidebarOpen && (
+              <>
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-xs font-bold text-white truncate">{selectedStudent}</p>
+                  <p className="text-[10px] text-slate-500">{userRole === 'admin' ? 'Institutional Admin' : 'Premium Plan'}</p>
+                </div>
+                <LogOut
+                  size={14}
+                  className="text-slate-500 cursor-pointer hover:text-white transition-colors shrink-0"
+                  onClick={() => {
+                    setIsAuthenticated(false);
+                    setUserRole(null);
+                  }}
+                />
+              </>
+            )}
+            {!sidebarOpen && (
+              <LogOut
+                size={14}
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 text-slate-500 cursor-pointer hover:text-white transition-colors"
+                onClick={() => {
+                  setIsAuthenticated(false);
+                  setUserRole(null);
+                }}
+              />
+            )}
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-80 p-12 min-h-screen">
+      <main className={`flex-1 p-12 min-h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-80' : 'ml-20'
+        }`}>
         <div className="max-w-7xl mx-auto">
           {activeTab === 'dashboard' && (
             <DashboardView
@@ -328,20 +396,12 @@ const App = () => {
               benchmarkData={benchmarkData}
               radarData={radarData}
               setActiveTab={setActiveTab}
+              darkMode={darkMode}
             />
           )}
 
           {activeTab === 'tests' && (
-            <MockTestView
-              testActive={testActive}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-              testQuestions={testQuestions}
-              userAnswers={userAnswers}
-              handleAnswer={handleAnswer}
-              finishTest={finishTest}
-              startTest={startTest}
-            />
+            <MockTestView />
           )}
 
           {activeTab === 'gap' && <GapAnalysisView gapReport={gapReport} />}
@@ -364,7 +424,9 @@ const App = () => {
             />
           )}
 
-          {activeTab === 'admin' && <AdminDashboardView atRiskStudents={atRiskStudents} />}
+          {activeTab === 'admin' && <AdminDashboardView atRiskStudents={atRiskStudents} darkMode={darkMode} setActiveTab={setActiveTab} />}
+
+          {activeTab === 'manage_students' && <ManageStudentsView darkMode={darkMode} />}
         </div>
       </main>
     </div>

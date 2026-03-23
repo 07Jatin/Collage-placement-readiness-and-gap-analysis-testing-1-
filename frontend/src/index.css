@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ━━━━━━━━━━━━━━━━━━ Base & Light Mode ━━━━━━━━━━━━━━━━━━ */
 body {
   margin: 0;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -11,8 +12,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8f9fc;
   color: #1e293b;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.dark body,
+body.dark-mode {
+  background-color: #0f1117;
+  color: #e2e8f0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Dark Mode Global ━━━━━━━━━━━━━━━━━━ */
+.dark {
+  background-color: #0f1117;
+  color: #e2e8f0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Animations ━━━━━━━━━━━━━━━━━━ */
 .animate-in {
   animation: fadeIn 0.5s ease-out;
 }
@@ -22,7 +37,23 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Premium card styles */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.15); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.3); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Premium Card ━━━━━━━━━━━━━━━━━━ */
 .premium-card {
   @apply bg-white rounded-[2.5rem] border border-slate-100 shadow-sm transition-all duration-300;
 }
@@ -31,7 +62,109 @@ body {
   @apply shadow-xl shadow-slate-200/50 border-indigo-100 -translate-y-1;
 }
 
-/* Custom Scrollbar */
+/* Dark Mode Premium Card */
+.dark .premium-card {
+  background: linear-gradient(145deg, #1a1d2e 0%, #161825 100%);
+  border-color: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .premium-card:hover {
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 40px rgba(99, 102, 241, 0.1), 0 4px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Gradient Utilities ━━━━━━━━━━━━━━━━━━ */
+.gradient-indigo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-emerald {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.gradient-rose {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-amber {
+  background: linear-gradient(135deg, #f093fb 0%, #f5af19 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, #667eea 0%, #00d2ff 100%);
+}
+
+.gradient-fire {
+  background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+}
+
+.gradient-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Colorful Stat Cards ━━━━━━━━━━━━━━━━━━ */
+.stat-card-indigo {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(129, 140, 248, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.stat-card-emerald {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.stat-card-amber {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.stat-card-rose {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.08) 0%, rgba(251, 113, 133, 0.05) 100%);
+  border: 1px solid rgba(244, 63, 94, 0.1);
+}
+
+/* Dark Mode Stat Cards — More vibrant */
+.dark .stat-card-indigo {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(129, 140, 248, 0.05) 100%);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.dark .stat-card-emerald {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.05) 100%);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.dark .stat-card-amber {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.dark .stat-card-rose {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(251, 113, 133, 0.05) 100%);
+  border-color: rgba(244, 63, 94, 0.2);
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Glow Effects ━━━━━━━━━━━━━━━━━━ */
+.glow-indigo {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2), 0 0 60px rgba(99, 102, 241, 0.05);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 60px rgba(16, 185, 129, 0.05);
+}
+
+.glow-rose {
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.2), 0 0 60px rgba(244, 63, 94, 0.05);
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Custom Scrollbar ━━━━━━━━━━━━━━━━━━ */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -47,4 +180,99 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ━━━━━━━━━━━━━━━━━━ Dark Mode Overrides ━━━━━━━━━━━━━━━━━━ */
+/* White backgrounds → dark slate */
+.dark .bg-white {
+  background-color: #1a1d2e !important;
+}
+
+.dark .bg-\[\\#f8f9fc\] {
+  background-color: #0f1117 !important;
+}
+
+/* Border colors */
+.dark .border-gray-100,
+.dark .border-slate-100 {
+  border-color: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* Text colors */
+.dark .text-slate-900,
+.dark .text-gray-900 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-slate-700,
+.dark .text-gray-700 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-400,
+.dark .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Backgrounds */
+.dark .bg-slate-50,
+.dark .bg-gray-50 {
+  background-color: rgba(30, 32, 48, 0.6) !important;
+}
+
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.12) !important;
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+.dark .bg-rose-50,
+.dark .bg-rose-50\/50 {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+}
+
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+/* Shadows */
+.dark .shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow-indigo-200 {
+  --tw-shadow-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Select/Input elements */
+.dark select,
+.dark input,
+.dark textarea {
+  background-color: #1a1d2e !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+.dark select option {
+  background-color: #1a1d2e;
+  color: #e2e8f0;
 }

@@ -11,19 +11,65 @@ import {
     SAMPLE_RESUME
 } from '../skillData';
 
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+// ━━━━━━━━━ PDF Text Extraction ━━━━━━━━━
+async function extractTextFromPDF(arrayBuffer) {
+    try {
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const strings = content.items.map(item => item.str);
+            fullText += strings.join(' ') + '\n';
+        }
+        return fullText;
+    } catch (err) {
+        console.error('PDF parsing error:', err);
+        return '';
+    }
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
     const [dragOver, setDragOver] = useState(false);
     const [fileName, setFileName] = useState('');
+    const [parseStatus, setParseStatus] = useState(''); // '', 'parsing', 'done', 'error'
 
-    const handleFileRead = (file) => {
+    const handleFileRead = async (file) => {
         setFileName(file.name);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setResumeText(e.target.result);
-        };
-        reader.readAsText(file);
+        const ext = file.name.split('.').pop().toLowerCase();
+
+        if (ext === 'pdf') {
+            setParseStatus('parsing');
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const text = await extractTextFromPDF(arrayBuffer);
+                if (text.trim()) {
+                    setResumeText(text);
+                    setParseStatus('done');
+                } else {
+                    setParseStatus('error');
+                    setResumeText('');
+                }
+            } catch (err) {
+                console.error('Error reading PDF:', err);
+                setParseStatus('error');
+            }
+        } else {
+            setParseStatus('');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setResumeText(e.target.result);
+                setParseStatus('done');
+            };
+            reader.readAsText(file);
+        }
     };
 
     const handleDrop = (e) => {
@@ -39,6 +85,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
     };
 
     const loadSample = () => {
+        setParseStatus('');
         setResumeText(SAMPLE_RESUME);
         setFileName('sample_resume.txt');
     };
@@ -87,9 +134,19 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                             <p className="font-bold text-slate-700 text-lg">
                                 {fileName ? fileName : 'Drop your resume here'}
                             </p>
-                            <p className="text-sm text-slate-400 mt-1">Supports .txt files (paste for PDF content)</p>
+                            <p className="text-sm text-slate-400 mt-1">Supports .txt and .pdf files</p>
                         </div>
-                        {fileName && (
+                        {parseStatus === 'parsing' && (
+                            <div className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-bold">
+                                <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mr-2"></div> Extracting text from PDF...
+                            </div>
+                        )}
+                        {parseStatus === 'error' && (
+                            <div className="inline-flex items-center px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-sm font-bold">
+                                <AlertCircle size={16} className="mr-2" /> Could not extract text. Try pasting content instead.
+                            </div>
+                        )}
+                        {(parseStatus === 'done' || (fileName && parseStatus === '')) && (
                             <div className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-bold">
                                 <CheckCircle2 size={16} className="mr-2" /> File loaded
                             </div>
@@ -387,6 +444,29 @@ const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
                 <p className="text-slate-400 text-sm font-medium animate-pulse">
                     Returning to skills dashboard...
                 </p>
+            </div>
+        );
+    }
+
+    if (questions.length === 0) {
+        return (
+            <div className="max-w-2xl mx-auto text-center space-y-8 animate-in py-12">
+                <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl bg-blue-500 shadow-blue-200">
+                    <CheckCircle2 size={48} className="text-white" />
+                </div>
+                <div className="space-y-4">
+                    <h3 className="text-3xl font-black text-slate-900">Auto-Verified</h3>
+                    <p className="text-slate-500 font-medium">
+                        Great! Your experience with <span className="font-bold text-slate-800 capitalize">{skillId.replace(/-/g, ' ')}</span> is noted. 
+                        No specific quiz is required for this newly added skill.
+                    </p>
+                </div>
+                <button
+                    onClick={() => onFinishQuiz(skillId, 1, 0)}
+                    className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+                >
+                    Return to Skills Dashboard
+                </button>
             </div>
         );
     }
