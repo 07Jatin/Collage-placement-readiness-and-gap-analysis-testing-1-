@@ -1,7 +1,7 @@
 [
   {
     "id": "S001",
-    "name": "Student 1",
+    "name": "Jatin kumar",
     "current_skills": [
       "python",
       "linux"
@@ -29,7 +29,9 @@
         ]
       }
     ],
-    "cgpa": 7.36
+    "cgpa": 7.36,
+    "email": "Jatin,001@stu.in",
+    "mobile": "8005171233"
   },
   {
     "id": "S002",
@@ -321,5 +323,17 @@
       }
     ],
     "cgpa": 7.04
+  },
+  {
+    "id": "S999",
+    "name": "Test Student",
+    "mobile": "1234567890",
+    "email": "test@example.com",
+    "department": "Unknown",
+    "semester": 1,
+    "current_skills": [],
+    "projects": [],
+    "cgpa": 0.0,
+    "placementStatus": "In Progress"
   }
 ]

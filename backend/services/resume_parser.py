@@ -1,5 +1,5 @@
 """
-Resume Skill Extractor — No LLM Required
+Resume Skill Extractor
 
 Approach:
   1. Define a dictionary of skills with associated keywords/synonyms
@@ -7,7 +7,7 @@ Approach:
   3. Score confidence based on keyword frequency
   4. Return structured skill profile
 
-This replaces LLM-based extraction with deterministic keyword matching.
+This relies purely on deterministic keyword matching.
 """
 
 import re
@@ -162,7 +162,7 @@ SKILL_KEYWORDS = {
 def extract_skills(text):
     """
     Extract skills from resume text using keyword matching.
-    No LLM, no ML model — pure deterministic regex matching.
+    Pure deterministic regex matching.
 
     Returns dict of skill_id -> { confidence, match_count, matched_keywords, ... }
     """

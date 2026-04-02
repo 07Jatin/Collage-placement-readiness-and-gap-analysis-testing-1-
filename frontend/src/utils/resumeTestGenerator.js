@@ -11,7 +11,7 @@ import {
   REASONING_BANK,
   CS_BANK,
   DSA_BANK
-} from './mockTestQuestionBank';
+} from '../data/mockTestQuestionBank';
 import { generateQuantQuestions, generateReasoningQuestions } from './questionTemplates';
 
 // ━━━━━━━━━ Utility: Shuffle Array (Fisher-Yates) ━━━━━━━━━
@@ -31,32 +31,28 @@ function generateTestId() {
   return `PMOCK-${ts}-${rand}`.toUpperCase();
 }
 
-// ━━━━━━━━━ Question History Tracking ━━━━━━━━━
 // Tracks which questions a student has already seen across test attempts.
-// Prioritizes unseen questions first; resets history after 10 tests or when
-// all questions in a bank have been exhausted.
+// Prioritizes unseen questions first; NEVER resets history automatically,
+// ensuring the chance of repeated static questions is mathematically minimized.
 const HISTORY_KEY = 'placify_question_history';
-const MAX_HISTORY_TESTS = 10;
 
 function getQuestionHistory() {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
     if (raw) return JSON.parse(raw);
   } catch (e) { /* ignore */ }
-  return { seenIds: [], testCount: 0 };
+  return { seenIds: [] };
 }
 
 function saveQuestionHistory(pickedIds) {
   try {
     const history = getQuestionHistory();
-    const newSeen = [...new Set([...history.seenIds, ...pickedIds])];
-    const newCount = history.testCount + 1;
-    // Auto-reset history after MAX_HISTORY_TESTS to keep tests fresh
-    if (newCount >= MAX_HISTORY_TESTS) {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify({ seenIds: pickedIds, testCount: 1 }));
-    } else {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify({ seenIds: newSeen, testCount: newCount }));
-    }
+    // Filter out template IDs (e.g. tpl_...) since they are dynamically generated anyway
+    const staticIds = pickedIds.filter(id => id && !String(id).startsWith('tpl_'));
+    const newSeen = [...new Set([...history.seenIds, ...staticIds])];
+    
+    // Save indefinitely to minimize repetition
+    localStorage.setItem(HISTORY_KEY, JSON.stringify({ seenIds: newSeen }));
   } catch (e) { /* ignore */ }
 }
 

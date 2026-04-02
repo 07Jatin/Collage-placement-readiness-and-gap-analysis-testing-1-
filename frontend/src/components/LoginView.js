@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
-import { Target, GraduationCap, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Target, GraduationCap, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 
 const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedStudent }) => {
     const [selected, setSelected] = useState('student');
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState(''); // Roll No / Admin Name
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [mobile, setMobile] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const allowedAdmins = ['jatin', 'trilok', 'akshar', 'bhavya', 'jatin trilok akshar bhbaya'];
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         setError('');
         const cleanUsername = username.trim().toLowerCase();
-        const cleanPassword = password.trim();
-
+        
         if (selected === 'admin') {
+            const cleanPassword = password.trim();
             if (!cleanUsername || !cleanPassword) {
                 setError('Please enter both username and password');
                 return;
@@ -28,9 +32,40 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                 setError('Invalid administrator credentials');
             }
         } else {
-            setUserRole('student');
-            setIsAuthenticated(true);
-            setActiveTab('dashboard');
+            // Student Login/Signup
+            if (!cleanUsername || !name.trim()) {
+                setError('Name and Roll Number are required.');
+                return;
+            }
+            
+            setLoading(true);
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/students/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roll_no: username.trim().toUpperCase(),
+                        name: name.trim(),
+                        email: email.trim(),
+                        mobile: mobile.trim()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to register/authenticate student');
+                }
+                const data = await response.json();
+                
+                setSelectedStudent(data.id);
+                setUserRole('student');
+                setIsAuthenticated(true);
+                setActiveTab('dashboard');
+                
+            } catch (err) {
+                setError(err.message || 'Server error. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -39,7 +74,7 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2"></div>
 
-            <div className="w-full max-w-xl relative z-10 space-y-8">
+            <div className="w-full max-w-xl relative z-10 space-y-8 my-8">
                 <div className="text-center space-y-4">
                     <div className="inline-flex p-4 rounded-3xl bg-white shadow-xl border border-slate-100 mb-4 animate-bounce-slow">
                         <Target size={48} className="text-indigo-600" />
@@ -92,7 +127,7 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                         </button>
                     </div>
 
-                    {selected === 'admin' && (
+                    {selected === 'admin' ? (
                         <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                             <div className="space-y-2">
                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Admin Name</label>
@@ -115,6 +150,49 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                                 />
                             </div>
                         </div>
+                    ) : (
+                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Full Name *</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter Your Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Roll Number *</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., S001"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    placeholder="Enter College Email (Optional)"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Mobile Number</label>
+                                <input
+                                    type="tel"
+                                    placeholder="Enter Mobile Number (Optional)"
+                                    value={mobile}
+                                    onChange={(e) => setMobile(e.target.value)}
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
+                                />
+                            </div>
+                        </div>
                     )}
 
                     {error && (
@@ -126,9 +204,11 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
 
                     <button
                         onClick={handleLogin}
-                        className="w-full py-5 rounded-2xl font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-indigo-600 shadow-indigo-200 hover:bg-indigo-700"
+                        disabled={loading}
+                        className="w-full py-5 rounded-2xl font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-indigo-600 shadow-indigo-200 hover:bg-indigo-700 disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center"
                     >
-                        Sign In to Dashboard
+                        {loading && <Loader2 size={20} className="animate-spin mr-2" />}
+                        {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
                     </button>
                 </div>
 
@@ -141,3 +221,4 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
 };
 
 export default LoginView;
+

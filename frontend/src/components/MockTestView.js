@@ -5,8 +5,8 @@ import {
   Target, AlertCircle, BookOpen, Code, Timer, Award, ChevronRight,
   Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye, ExternalLink
 } from 'lucide-react';
-import { generatePlacementTest } from '../resumeTestGenerator';
-import { SAMPLE_RESUME } from '../skillData';
+import { generatePlacementTest } from '../utils/resumeTestGenerator';
+import { SAMPLE_RESUME } from '../data/skillData';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 
 // Configure PDF.js worker

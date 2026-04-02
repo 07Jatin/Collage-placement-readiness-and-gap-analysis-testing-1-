@@ -12,6 +12,8 @@
  * Large banks ensure every test attempt gets a unique set of questions.
  */
 
+import { MOCK_QUESTIONS } from './questions';
+
 // ━━━━━━━━━ QUANTITATIVE ━━━━━━━━━
 export const QUANTITATIVE_BANK = [
   // ─── Easy ───
@@ -325,3 +327,54 @@ export const DSA_BANK = [
   { id:"dsa29", question:"Implement a function to flatten a nested list.", type:"coding", hint:"Use recursion: if element is a list, recurse; otherwise add to result.", tags:["python","data-structures"], difficulty:"medium" },
   { id:"dsa30", question:"Design a stack that supports push, pop, and getMin in O(1).", type:"coding", hint:"Use an auxiliary stack to track minimum values.", tags:["data-structures","algorithms"], difficulty:"hard" },
 ];
+
+// Map external MOCK_QUESTIONS into the static banks to ensure 
+// the largest possible pool of questions, driving repetition near zero.
+if (MOCK_QUESTIONS) {
+  if (MOCK_QUESTIONS.aptitude) {
+    MOCK_QUESTIONS.aptitude.forEach(q => {
+      const formattedQ = {
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        answer: q.correct,
+        difficulty: q.difficulty ? q.difficulty.toLowerCase() : 'medium'
+      };
+      if (['Quantitative', 'Time & Work', 'Geometry', 'Mixture & Alligation', 'Number System'].includes(q.category)) {
+        QUANTITATIVE_BANK.push(formattedQ);
+      } else {
+        REASONING_BANK.push(formattedQ);
+      }
+    });
+  }
+
+  if (MOCK_QUESTIONS.software_engineering) {
+    MOCK_QUESTIONS.software_engineering.forEach(q => {
+      const formattedQ = {
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        answer: q.correct,
+        difficulty: q.difficulty ? q.difficulty.toLowerCase() : 'medium'
+      };
+      if (['Data Structures', 'Algorithms'].includes(q.category)) {
+        DSA_BANK.push({ ...formattedQ, type: 'theory', tags: ['algorithms', 'data-structures'] });
+      } else {
+        CS_BANK.push(formattedQ);
+      }
+    });
+  }
+
+  if (MOCK_QUESTIONS.data_science) {
+    MOCK_QUESTIONS.data_science.forEach(q => {
+      const formattedQ = {
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        answer: q.correct,
+        difficulty: q.difficulty ? q.difficulty.toLowerCase() : 'medium'
+      };
+      CS_BANK.push(formattedQ);
+    });
+  }
+}

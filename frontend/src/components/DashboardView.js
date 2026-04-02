@@ -96,10 +96,12 @@ const DashboardView = ({
                         <select
                             value={selectedStudent}
                             onChange={(e) => setSelectedStudent(e.target.value)}
-                            className="bg-transparent font-bold focus:outline-none cursor-pointer"
+                            className="bg-transparent font-bold focus:outline-none cursor-pointer w-48 text-ellipsis overflow-hidden whitespace-nowrap"
                         >
-                            {students.map((sid) => (
-                                <option key={sid} value={sid}>{sid}</option>
+                            {students.map((stu) => (
+                                <option key={stu.id || stu} value={stu.id || stu}>
+                                    {stu.name ? `${stu.name} (${stu.id})` : stu}
+                                </option>
                             ))}
                         </select>
                     </div>

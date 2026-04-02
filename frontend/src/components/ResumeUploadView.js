@@ -9,9 +9,10 @@ import {
     SKILL_QUIZZES,
     calculateVerifiedLevel,
     SAMPLE_RESUME
-} from '../skillData';
+} from '../data/skillData';
 
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import mammoth from 'mammoth';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -34,6 +35,28 @@ async function extractTextFromPDF(arrayBuffer) {
     }
 }
 
+// ━━━━━━━━━ Word / HTML Text Extraction ━━━━━━━━━
+async function extractTextFromDOCX(arrayBuffer) {
+    try {
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value || '';
+    } catch (err) {
+        console.error('DOC/DOCX parsing error:', err);
+        return '';
+    }
+}
+
+function extractTextFromHTML(htmlString) {
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+        return doc.body.textContent || '';
+    } catch (err) {
+        console.error('HTML parsing error:', err);
+        return '';
+    }
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
@@ -45,8 +68,9 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
         setFileName(file.name);
         const ext = file.name.split('.').pop().toLowerCase();
 
+        setParseStatus('parsing');
+
         if (ext === 'pdf') {
-            setParseStatus('parsing');
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const text = await extractTextFromPDF(arrayBuffer);
@@ -61,8 +85,35 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                 console.error('Error reading PDF:', err);
                 setParseStatus('error');
             }
+        } else if (ext === 'doc' || ext === 'docx') {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const text = await extractTextFromDOCX(arrayBuffer);
+                if (text.trim()) {
+                    setResumeText(text);
+                    setParseStatus('done');
+                } else {
+                    setParseStatus('error');
+                    setResumeText('');
+                }
+            } catch (err) {
+                console.error('Error reading DOC:', err);
+                setParseStatus('error');
+            }
+        } else if (ext === 'html' || ext === 'htm') {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = extractTextFromHTML(e.target.result);
+                if (text.trim()) {
+                    setResumeText(text);
+                    setParseStatus('done');
+                } else {
+                    setParseStatus('error');
+                    setResumeText('');
+                }
+            };
+            reader.readAsText(file);
         } else {
-            setParseStatus('');
             const reader = new FileReader();
             reader.onload = (e) => {
                 setResumeText(e.target.result);
@@ -102,7 +153,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                 </div>
                 <h2 className="text-4xl font-black text-slate-900 tracking-tight">Upload Your Resume</h2>
                 <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto">
-                    We'll extract your skills using <span className="text-indigo-600 font-bold">keyword analysis</span> — no AI/LLM required.
+                    We'll extract your skills using <span className="text-indigo-600 font-bold">keyword analysis</span>.
                     Then validate each skill with a quick quiz.
                 </p>
             </div>
@@ -121,7 +172,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                 >
                     <input
                         type="file"
-                        accept=".txt,.pdf,.doc,.docx"
+                        accept=".txt,.pdf,.doc,.docx,.html,.htm"
                         onChange={handleFileInput}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
@@ -134,11 +185,11 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                             <p className="font-bold text-slate-700 text-lg">
                                 {fileName ? fileName : 'Drop your resume here'}
                             </p>
-                            <p className="text-sm text-slate-400 mt-1">Supports .txt and .pdf files</p>
+                            <p className="text-sm text-slate-400 mt-1">Supports .txt, .pdf, .doc, .docx, .html</p>
                         </div>
                         {parseStatus === 'parsing' && (
                             <div className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-bold">
-                                <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mr-2"></div> Extracting text from PDF...
+                                <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mr-2"></div> Extracting text from document...
                             </div>
                         )}
                         {parseStatus === 'error' && (
@@ -179,7 +230,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
             {/* How It Works */}
             <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden">
                 <div className="relative z-10">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-6">How It Works — No LLM Needed</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-6">How It Works</h4>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {[
                             { step: "1", title: "Upload", desc: "Paste or upload your resume text" },
@@ -326,10 +377,9 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
                         {skillInfo.status !== 'verified' ? (
                             <button
                                 onClick={() => onStartQuiz(skillId)}
-                                disabled={!SKILL_QUIZZES[skillId]}
                                 className="w-full py-3 rounded-xl font-bold text-sm bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-40 flex items-center justify-center"
                             >
-                                <Shield size={14} className="mr-2" /> Verify with Quiz
+                                <Shield size={14} className="mr-2" /> {SKILL_QUIZZES[skillId] ? 'Verify with Quiz' : 'Auto-Verify Skill'}
                             </button>
                         ) : (
                             <div className="flex items-center justify-center py-3 text-emerald-600">

@@ -1,12 +1,12 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 import os
-import skill_analyzer
+from services import skill_analyzer
 
 def predict_for_student(student_id):
     # Load historical data for training
     base_dir = os.path.dirname(__file__)
-    csv_path = os.path.join(base_dir, 'historical_placement.csv')
+    csv_path = os.path.join(base_dir, '..', 'data', 'historical_placement.csv')
     
     if not os.path.exists(csv_path):
         return {"error": "Historical data not found"}

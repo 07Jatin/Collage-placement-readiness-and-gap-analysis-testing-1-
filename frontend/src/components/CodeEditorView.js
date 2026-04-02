@@ -1,98 +1,465 @@
-import React, { useState } from 'react';
-import { Terminal, Play, CheckCircle2, XCircle, Code, ChevronRight, Info, Globe } from 'lucide-react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+    Play, CheckCircle2, XCircle, ChevronRight, ChevronDown, ChevronUp,
+    ThumbsUp, ThumbsDown, MessageSquare, Star, Globe, RotateCcw,
+    Copy, Check, Maximize2, Minimize2, Settings, BookOpen, Code2, Send, ListChecks
+} from 'lucide-react';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Problem Data
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const DSA_PROBLEMS = [
     {
         id: 1,
         title: "Two Sum",
         difficulty: "Easy",
-        description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-        constraints: ["2 <= nums.length <= 104", "-109 <= nums[i] <= 109"],
+        acceptance: "52.4%",
+        likes: "36.6K",
+        dislikes: "1.1K",
+        description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return <em>indices of the two numbers</em> such that they add up to <code>target</code>.
+
+You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice.
+
+You can return the answer in any order.`,
+        examples: [
+            {
+                input: "nums = [2,7,11,15], target = 9",
+                output: "[0,1]",
+                explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]."
+            },
+            {
+                input: "nums = [3,2,4], target = 6",
+                output: "[1,2]",
+                explanation: null
+            },
+            {
+                input: "nums = [3,3], target = 6",
+                output: "[0,1]",
+                explanation: null
+            }
+        ],
+        constraints: [
+            "2 <= nums.length <= 10<sup>4</sup>",
+            "-10<sup>9</sup> <= nums[i] <= 10<sup>9</sup>",
+            "-10<sup>9</sup> <= target <= 10<sup>9</sup>",
+            "Only one valid answer exists."
+        ],
         defaultCode: {
-            python: "def two_sum(nums, target):\n    # Write your code here\n    pass",
-            java: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your code here\n        return new int[]{};\n    }\n}",
-            cpp: "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your code here\n    }\n};",
-            c: "int* twoSum(int* nums, int numsSize, int target, int* returnSize) {\n    // Write your code here\n}"
-        }
+            python: "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        # Write your solution here\n        pass",
+            java: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[]{};\n    }\n}",
+            cpp: "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your solution here\n    }\n};",
+            c: "int* twoSum(int* nums, int numsSize, int target, int* returnSize) {\n    // Write your solution here\n}"
+        },
+        testCases: [
+            { input: "nums = [2,7,11,15], target = 9", expected: "[0,1]" },
+            { input: "nums = [3,2,4], target = 6", expected: "[1,2]" }
+        ]
     },
     {
         id: 2,
         title: "Reverse String",
         difficulty: "Easy",
-        description: "Write a function that reverses a string. The input string is given as an array of characters s.",
-        constraints: ["1 <= s.length <= 105"],
+        acceptance: "76.8%",
+        likes: "8.2K",
+        dislikes: "1.0K",
+        description: `Write a function that reverses a string. The input string is given as an array of characters <code>s</code>.
+
+You must do this by modifying the input array <strong>in-place</strong> with O(1) extra memory.`,
+        examples: [
+            {
+                input: 's = ["h","e","l","l","o"]',
+                output: '["o","l","l","e","h"]',
+                explanation: null
+            },
+            {
+                input: 's = ["H","a","n","n","a","h"]',
+                output: '["h","a","n","n","a","H"]',
+                explanation: null
+            }
+        ],
+        constraints: [
+            "1 <= s.length <= 10<sup>5</sup>",
+            "s[i] is a printable ascii character."
+        ],
         defaultCode: {
-            python: "def reverse_string(s):\n    # Write your code here\n    pass",
-            java: "class Solution {\n    public void reverseString(char[] s) {\n        // Write your code here\n    }\n}",
-            cpp: "class Solution {\npublic:\n    void reverseString(vector<char>& s) {\n        // Write your code here\n    }\n};",
-            c: "void reverseString(char* s, int sSize) {\n    // Write your code here\n}"
-        }
+            python: "class Solution:\n    def reverseString(self, s: list[str]) -> None:\n        \"\"\"\n        Do not return anything, modify s in-place instead.\n        \"\"\"\n        pass",
+            java: "class Solution {\n    public void reverseString(char[] s) {\n        // Write your solution here\n    }\n}",
+            cpp: "class Solution {\npublic:\n    void reverseString(vector<char>& s) {\n        // Write your solution here\n    }\n};",
+            c: "void reverseString(char* s, int sSize) {\n    // Write your solution here\n}"
+        },
+        testCases: [
+            { input: 's = ["h","e","l","l","o"]', expected: '["o","l","l","e","h"]' }
+        ]
     },
     {
         id: 3,
         title: "Linked List Cycle",
         difficulty: "Medium",
-        description: "Given head, the head of a linked list, determine if the linked list has a cycle in it.",
-        constraints: ["The number of nodes in the list is in the range [0, 104].", "-105 <= Node.val <= 105"],
+        acceptance: "49.2%",
+        likes: "14.1K",
+        dislikes: "1.3K",
+        description: `Given <code>head</code>, the head of a linked list, determine if the linked list has a cycle in it.
+
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the <code>next</code> pointer.
+
+Return <code>true</code> if there is a cycle in the linked list. Otherwise, return <code>false</code>.`,
+        examples: [
+            {
+                input: "head = [3,2,0,-4], pos = 1",
+                output: "true",
+                explanation: "There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed)."
+            },
+            {
+                input: "head = [1,2], pos = 0",
+                output: "true",
+                explanation: "There is a cycle in the linked list, where the tail connects to the 0th node."
+            }
+        ],
+        constraints: [
+            "The number of nodes in the list is in the range [0, 10<sup>4</sup>].",
+            "-10<sup>5</sup> <= Node.val <= 10<sup>5</sup>",
+            "pos is -1 or a valid index in the linked-list."
+        ],
         defaultCode: {
-            python: "def hasCycle(head):\n    # Write your code here\n    pass",
-            java: "public class Solution {\n    public boolean hasCycle(ListNode head) {\n        // Write your code here\n        return false;\n    }\n}",
-            cpp: "class Solution {\npublic:\n    bool hasCycle(ListNode *head) {\n        // Write your code here\n    }\n};",
-            c: "bool hasCycle(struct ListNode *head) {\n    // Write your code here\n}"
-        }
+            python: "# class ListNode:\n#     def __init__(self, x):\n#         self.val = x\n#         self.next = None\n\nclass Solution:\n    def hasCycle(self, head) -> bool:\n        # Write your solution here\n        pass",
+            java: "public class Solution {\n    public boolean hasCycle(ListNode head) {\n        // Write your solution here\n        return false;\n    }\n}",
+            cpp: "class Solution {\npublic:\n    bool hasCycle(ListNode *head) {\n        // Write your solution here\n    }\n};",
+            c: "bool hasCycle(struct ListNode *head) {\n    // Write your solution here\n}"
+        },
+        testCases: [
+            { input: "head = [3,2,0,-4], pos = 1", expected: "true" }
+        ]
     },
     {
         id: 4,
         title: "Merge Intervals",
         difficulty: "Medium",
-        description: "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.",
-        constraints: ["1 <= intervals.length <= 104", "0 <= starti <= endi <= 104"],
+        acceptance: "47.1%",
+        likes: "22.3K",
+        dislikes: "780",
+        description: `Given an array of <code>intervals</code> where <code>intervals[i] = [start<sub>i</sub>, end<sub>i</sub>]</code>, merge all overlapping intervals, and return <em>an array of the non-overlapping intervals that cover all the intervals in the input</em>.`,
+        examples: [
+            {
+                input: "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+                output: "[[1,6],[8,10],[15,18]]",
+                explanation: "Since intervals [1,3] and [2,6] overlap, merge them into [1,6]."
+            },
+            {
+                input: "intervals = [[1,4],[4,5]]",
+                output: "[[1,5]]",
+                explanation: "Intervals [1,4] and [4,5] are considered overlapping."
+            }
+        ],
+        constraints: [
+            "1 <= intervals.length <= 10<sup>4</sup>",
+            "intervals[i].length == 2",
+            "0 <= start<sub>i</sub> <= end<sub>i</sub> <= 10<sup>4</sup>"
+        ],
         defaultCode: {
-            python: "def merge(intervals):\n    # Write your code here\n    pass",
-            java: "class Solution {\n    public int[][] merge(int[][] intervals) {\n        // Write your code here\n        return new int[][]{};\n    }\n}",
-            cpp: "class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        // Write your code here\n    }\n};",
-            c: "int** merge(int** intervals, int intervalsSize, int* intervalsColSize, int* returnSize, int** returnColumnSizes) {\n    // Write your code here\n}"
-        }
+            python: "class Solution:\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        # Write your solution here\n        pass",
+            java: "class Solution {\n    public int[][] merge(int[][] intervals) {\n        // Write your solution here\n        return new int[][]{};\n    }\n}",
+            cpp: "class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        // Write your solution here\n    }\n};",
+            c: "int** merge(int** intervals, int intervalsSize, int* intervalsColSize, int* returnSize, int** returnColumnSizes) {\n    // Write your solution here\n}"
+        },
+        testCases: [
+            { input: "intervals = [[1,3],[2,6],[8,10]]", expected: "[[1,6],[8,10]]" }
+        ]
     },
     {
         id: 5,
         title: "Median of Two Sorted Arrays",
         difficulty: "Hard",
-        description: "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.",
-        constraints: ["nums1.length == m", "nums2.length == n", "0 <= m, n <= 1000"],
+        acceptance: "38.9%",
+        likes: "28.5K",
+        dislikes: "3.1K",
+        description: `Given two sorted arrays <code>nums1</code> and <code>nums2</code> of size <code>m</code> and <code>n</code> respectively, return <strong>the median</strong> of the two sorted arrays.
+
+The overall run time complexity should be <code>O(log (m+n))</code>.`,
+        examples: [
+            {
+                input: "nums1 = [1,3], nums2 = [2]",
+                output: "2.00000",
+                explanation: "merged array = [1,2,3] and median is 2."
+            },
+            {
+                input: "nums1 = [1,2], nums2 = [3,4]",
+                output: "2.50000",
+                explanation: "merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5."
+            }
+        ],
+        constraints: [
+            "nums1.length == m",
+            "nums2.length == n",
+            "0 <= m <= 1000",
+            "0 <= n <= 1000",
+            "1 <= m + n <= 2000",
+            "-10<sup>6</sup> <= nums1[i], nums2[i] <= 10<sup>6</sup>"
+        ],
         defaultCode: {
-            python: "def findMedianSortedArrays(nums1, nums2):\n    # Write your code here\n    pass",
-            java: "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        // Write your code here\n        return 0.0;\n    }\n}",
-            cpp: "class Solution {\npublic:\n    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {\n        // Write your code here\n    }\n};",
-            c: "double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size) {\n    // Write your code here\n}"
-        }
+            python: "class Solution:\n    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:\n        # Write your solution here\n        pass",
+            java: "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        // Write your solution here\n        return 0.0;\n    }\n}",
+            cpp: "class Solution {\npublic:\n    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {\n        // Write your solution here\n    }\n};",
+            c: "double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size) {\n    // Write your solution here\n}"
+        },
+        testCases: [
+            { input: "nums1 = [1,3], nums2 = [2]", expected: "2.00000" }
+        ]
     }
 ];
+
+const LANG_LABELS = {
+    python: 'Python 3',
+    java: 'Java',
+    cpp: 'C++',
+    c: 'C'
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Test Harness - Wraps user code with test calls
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const PYTHON_TEST_HARNESS = {
+    1: { // Two Sum
+        setup: 'sol = Solution()',
+        cases: [
+            { call: 'print(sol.twoSum([2,7,11,15], 9))', expected: '[0, 1]' },
+            { call: 'print(sol.twoSum([3,2,4], 6))', expected: '[1, 2]' },
+        ]
+    },
+    2: { // Reverse String
+        setup: 'sol = Solution()',
+        cases: [
+            { call: 's = ["h","e","l","l","o"]\nsol.reverseString(s)\nprint(s)', expected: "['o', 'l', 'l', 'e', 'h']" },
+            { call: 's = ["H","a","n","n","a","h"]\nsol.reverseString(s)\nprint(s)', expected: "['h', 'a', 'n', 'n', 'a', 'H']" },
+        ]
+    },
+    3: { // Linked List Cycle
+        setup: `class ListNode:\n    def __init__(self, x):\n        self.val = x\n        self.next = None\nsol = Solution()`,
+        cases: [
+            { call: 'print(sol.hasCycle(None))', expected: 'False' },
+            { call: 'n1=ListNode(1)\nn2=ListNode(2)\nn1.next=n2\nprint(sol.hasCycle(n1))', expected: 'False' },
+        ]
+    },
+    4: { // Merge Intervals
+        setup: 'sol = Solution()',
+        cases: [
+            { call: 'print(sol.merge([[1,3],[2,6],[8,10],[15,18]]))', expected: '[[1, 6], [8, 10], [15, 18]]' },
+            { call: 'print(sol.merge([[1,4],[4,5]]))', expected: '[[1, 5]]' },
+        ]
+    },
+    5: { // Median of Two Sorted Arrays
+        setup: 'sol = Solution()',
+        cases: [
+            { call: 'print(sol.findMedianSortedArrays([1,3], [2]))', expected: '2' },
+            { call: 'print(sol.findMedianSortedArrays([1,2], [3,4]))', expected: '2.5' },
+        ]
+    }
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Code Editor with Line Numbers
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const CodeEditor = ({ code, onChange, language, fontSize = 13 }) => {
+    const textareaRef = useRef(null);
+    const lineNumbersRef = useRef(null);
+    const lines = code.split('\n');
+
+    const handleScroll = () => {
+        if (lineNumbersRef.current && textareaRef.current) {
+            lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const newCode = code.substring(0, start) + '    ' + code.substring(end);
+            onChange(newCode);
+            setTimeout(() => {
+                e.target.selectionStart = e.target.selectionEnd = start + 4;
+            }, 0);
+        }
+    };
+
+    return (
+        <div className="flex h-full font-mono bg-[#1e1e1e] overflow-hidden" style={{ fontSize: `${fontSize}px`, lineHeight: '1.6' }}>
+            {/* Line Numbers */}
+            <div
+                ref={lineNumbersRef}
+                className="select-none text-right pr-4 pl-4 py-4 text-[#858585] bg-[#1e1e1e] overflow-hidden shrink-0 border-r border-[#333]"
+                style={{ minWidth: '50px' }}
+            >
+                {lines.map((_, i) => (
+                    <div key={i} style={{ height: `${fontSize * 1.6}px` }}>{i + 1}</div>
+                ))}
+            </div>
+            {/* Editor */}
+            <textarea
+                ref={textareaRef}
+                value={code}
+                onChange={(e) => onChange(e.target.value)}
+                onScroll={handleScroll}
+                onKeyDown={handleKeyDown}
+                className="flex-1 bg-transparent text-[#d4d4d4] py-4 pl-4 pr-4 resize-none focus:outline-none overflow-auto"
+                spellCheck="false"
+                style={{
+                    tabSize: 4,
+                    caretColor: '#fff',
+                    lineHeight: '1.6',
+                    fontSize: `${fontSize}px`,
+                }}
+            />
+        </div>
+    );
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Problem List Sidebar (like LeetCode problem selector)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const ProblemList = ({ problems, selected, onSelect, isOpen, onToggle }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="absolute top-full left-0 mt-1 w-80 bg-[#282828] border border-[#404040] rounded-lg shadow-2xl z-50 overflow-hidden">
+            <div className="p-3 border-b border-[#404040]">
+                <p className="text-xs font-bold text-[#858585] uppercase tracking-wider">Problem List</p>
+            </div>
+            <div className="max-h-64 overflow-y-auto">
+                {problems.map((p, idx) => {
+                    const diffColor = p.difficulty === 'Easy' ? 'text-[#00b8a3]' :
+                        p.difficulty === 'Medium' ? 'text-[#ffc01e]' : 'text-[#ff375f]';
+                    return (
+                        <button
+                            key={p.id}
+                            onClick={() => { onSelect(p); onToggle(); }}
+                            className={`w-full px-4 py-3 text-left flex items-center justify-between hover:bg-[#333] transition-colors ${selected.id === p.id ? 'bg-[#333]' : ''}`}
+                        >
+                            <div className="flex items-center space-x-3">
+                                <span className="text-[#858585] text-xs w-5">{idx + 1}.</span>
+                                <span className={`text-sm ${selected.id === p.id ? 'text-white font-semibold' : 'text-[#eff1f6]'}`}>{p.title}</span>
+                            </div>
+                            <span className={`text-xs font-medium ${diffColor}`}>{p.difficulty}</span>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Main Component
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const CodeEditorView = () => {
     const [selectedProblem, setSelectedProblem] = useState(DSA_PROBLEMS[0]);
     const [language, setLanguage] = useState('python');
-    const [code, setCode] = useState(selectedProblem.defaultCode[language]);
+    const [code, setCode] = useState(DSA_PROBLEMS[0].defaultCode['python']);
     const [output, setOutput] = useState("");
     const [isRunning, setIsRunning] = useState(false);
     const [results, setResults] = useState(null);
-
-    const handleLanguageChange = (newLang) => {
-        setLanguage(newLang);
-        setCode(selectedProblem.defaultCode[newLang]);
-    };
+    const [leftTab, setLeftTab] = useState('description');
+    const [bottomTab, setBottomTab] = useState('testcase');
+    const [showProblemList, setShowProblemList] = useState(false);
+    const [isFetchingDynamic, setIsFetchingDynamic] = useState(false);
+    const [splitPosition, setSplitPosition] = useState(45); // percentage
+    const [bottomPanelHeight, setBottomPanelHeight] = useState(200);
+    const [isBottomOpen, setIsBottomOpen] = useState(true);
+    const [copied, setCopied] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
+    const [fontSize, setFontSize] = useState(13);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const containerRef = useRef(null);
+    const isDragging = useRef(false);
+    const isDraggingBottom = useRef(false);
 
     const handleProblemChange = (prob) => {
         setSelectedProblem(prob);
-        setCode(prob.defaultCode[language]);
+        setCode(prob.defaultCode[language] || prob.defaultCode['python']);
         setOutput("");
         setResults(null);
+        setBottomTab('testcase');
     };
+
+    const fetchDynamicLeetcode = async () => {
+        setIsFetchingDynamic(true);
+        try {
+            // Pick a random skill gap to search for
+            const randomSkills = ["Array", "Linked List", "String", "Tree", "Hash Table"];
+            const skill = randomSkills[Math.floor(Math.random() * randomSkills.length)];
+            
+            const response = await fetch(`http://127.0.0.1:8000/api/dsa/dynamic/${skill}`);
+            const data = await response.json();
+            
+            if (data.error) {
+                alert("Failed to fetch: " + data.error);
+                return;
+            }
+            
+            setSelectedProblem(data);
+            setCode(data.defaultCode[language] || data.defaultCode['python'] || "");
+            setOutput("Dynamic problem loaded from LeetCode. Syntax verification only.");
+            setResults(null);
+            setBottomTab('testcase');
+        } catch (e) {
+            alert("API Error: " + e.message);
+        } finally {
+            setIsFetchingDynamic(false);
+        }
+    };
+
+    const handleLanguageChange = (newLang) => {
+        setLanguage(newLang);
+        if (selectedProblem.defaultCode && selectedProblem.defaultCode[newLang]) {
+            setCode(selectedProblem.defaultCode[newLang]);
+        }
+    };
+
+    const handleReset = () => {
+        const defCode = selectedProblem.defaultCode[language] || "";
+        if (code !== defCode) {
+            setCode(defCode);
+            setOutput("");
+            setResults(null);
+        }
+    };
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleFullscreen = () => {
+        if (!isFullscreen) {
+            containerRef.current?.requestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+        setIsFullscreen(!isFullscreen);
+    };
+
+    // Listen for fullscreen exit via Escape key
+    useEffect(() => {
+        const onFsChange = () => {
+            if (!document.fullscreenElement) setIsFullscreen(false);
+        };
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => document.removeEventListener('fullscreenchange', onFsChange);
+    }, []);
 
     const handleRunCode = async () => {
         setIsRunning(true);
-        setOutput("Compiling and running against test cases...");
+        setOutput("⏳ Compiling and running...");
         setResults(null);
+        setBottomTab('result');
+        setIsBottomOpen(true);
 
         try {
             const response = await fetch('http://127.0.0.1:8000/compile', {
@@ -101,134 +468,460 @@ const CodeEditorView = () => {
                 body: JSON.stringify({
                     code: code,
                     problem_id: selectedProblem.id,
-                    language: language
-                })
+                    language: language,
+                    isDynamic: selectedProblem.isDynamic || false
+                }),
+                signal: AbortSignal.timeout(15000)
             });
 
-            const data = await response.json();
-            setOutput(data.output || data.error || "Execution finished.");
-            if (data.results) {
-                setResults(data.results);
+            if (response.ok) {
+                const data = await response.json();
+                setOutput(data.output || data.error || "Execution finished.");
+                if (data.results) setResults(data.results);
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                setOutput(`❌ Server Error (${response.status}):\n${errData.detail || 'Unknown error'}`);
             }
         } catch (err) {
-            setOutput("Error connecting to compilation server. Make sure the backend is running.");
+            if (err.name === 'TimeoutError') {
+                setOutput("⏱️ Time Limit Exceeded.\nYour code took too long to execute.");
+            } else {
+                setOutput(
+                    "❌ Backend server is not running.\n\n" +
+                    "To start the compiler, open a NEW terminal and run:\n\n" +
+                    '  cd "c:\\Users\\Jatin\\Desktop\\final project"\n' +
+                    "  .\\.venv\\Scripts\\activate\n" +
+                    "  uvicorn backend.main:app --reload\n\n" +
+                    "Then click Run again."
+                );
+            }
         } finally {
             setIsRunning(false);
         }
     };
 
+    // Horizontal drag handler
+    const handleMouseDown = useCallback((e) => {
+        isDragging.current = true;
+        e.preventDefault();
+    }, []);
+
+    // Bottom panel drag handler
+    const handleBottomMouseDown = useCallback((e) => {
+        isDraggingBottom.current = true;
+        e.preventDefault();
+    }, []);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (isDragging.current && containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const pos = ((e.clientX - rect.left) / rect.width) * 100;
+                setSplitPosition(Math.max(25, Math.min(70, pos)));
+            }
+            if (isDraggingBottom.current && containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const newHeight = rect.bottom - e.clientY;
+                setBottomPanelHeight(Math.max(100, Math.min(400, newHeight)));
+            }
+        };
+        const handleMouseUp = () => {
+            isDragging.current = false;
+            isDraggingBottom.current = false;
+        };
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, []);
+
+    const diffColor = selectedProblem.difficulty === 'Easy' ? 'text-[#00b8a3]' :
+        selectedProblem.difficulty === 'Medium' ? 'text-[#ffc01e]' : 'text-[#ff375f]';
+
     return (
-        <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-160px)] animate-in">
-            {/* Left: Problem Sidebar */}
-            <div className="lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
-                <div className="premium-card p-8 bg-white overflow-hidden relative">
-                    <div className={`absolute top-0 right-0 px-4 py-2 text-[10px] font-black uppercase tracking-widest ${selectedProblem.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-600' :
-                        selectedProblem.difficulty === 'Medium' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'
-                        }`}>
-                        {selectedProblem.difficulty}
-                    </div>
-                    <div className="flex items-center space-x-3 mb-6">
-                        <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                            <Code size={20} />
-                        </div>
-                        <h2 className="text-2xl font-black text-black">Question: {selectedProblem.title}</h2>
-                    </div>
-                    <p className="text-slate-800 mb-8 font-bold leading-relaxed">
-                        {selectedProblem.description}
-                    </p>
-                    <div className="space-y-4 pt-6 border-t border-slate-50">
-                        <h4 className="text-xs font-black text-black uppercase tracking-widest flex items-center">
-                            <Info size={14} className="mr-2" /> Constraints
-                        </h4>
-                        <ul className="space-y-2">
-                            {selectedProblem.constraints.map((c, i) => (
-                                <li key={i} className="text-sm font-bold text-slate-900 flex items-center">
-                                    <ChevronRight size={14} className="mr-2 text-indigo-500" /> {c}
-                                </li>
-                            ))}
-                        </ul>
+        <div ref={containerRef} className="flex gap-0 animate-in rounded-xl overflow-hidden border border-[#333] shadow-2xl" style={{ background: '#1a1a1a', height: 'calc(100vh - 20px)' }}>
+
+            {/* ════════════════════════════════════════════ */}
+            {/* LEFT PANEL - Problem Description */}
+            {/* ════════════════════════════════════════════ */}
+            <div className="flex flex-col h-full overflow-hidden" style={{ width: `${splitPosition}%` }}>
+
+                {/* Header */}
+                <div className="flex items-center bg-[#282828] border-b border-[#333] px-4 shrink-0">
+                    <div className="flex items-center space-x-1.5 px-2 py-2.5 text-xs font-medium text-white border-b-2 border-white">
+                        <BookOpen size={13} />
+                        <span>Description</span>
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <h4 className="text-xs font-black text-black px-2 uppercase tracking-widest">Other Problems</h4>
-                    {DSA_PROBLEMS.map(p => (
-                        <button
-                            key={p.id}
-                            onClick={() => handleProblemChange(p)}
-                            className={`w-full p-5 rounded-2xl text-left transition-all flex items-center justify-between group ${selectedProblem.id === p.id
-                                ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100'
-                                : 'bg-white border border-slate-100 text-slate-800 hover:border-indigo-200 font-bold'
-                                }`}
-                        >
-                            <span className="font-bold">{p.title}</span>
-                            <ChevronRight size={16} className={selectedProblem.id === p.id ? 'text-indigo-200' : 'text-slate-400 group-hover:text-indigo-600'} />
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Right: Code Editor & Console */}
-            <div className="lg:w-2/3 flex flex-col gap-6 h-full">
-                <div className="premium-card flex-1 flex flex-col bg-slate-900 overflow-hidden border-none shadow-2xl">
-                    <div className="px-6 py-4 bg-slate-800 flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex space-x-1.5 mr-4">
-                                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ background: '#1a1a1a' }}>
+                    {leftTab === 'description' && (
+                        <div className="p-6 space-y-6">
+                            {/* Title + Difficulty */}
+                            <div>
+                                <div className="relative flex justify-between items-start">
+                                    <div>
+                                        <button
+                                            onClick={() => setShowProblemList(!showProblemList)}
+                                            className="flex items-center space-x-2 mb-2 group"
+                                        >
+                                            <h1 className="text-xl font-bold text-white">
+                                                {selectedProblem.isDynamic ? <Globe size={18} className="inline mr-2 text-[#00b8a3]" /> : null}
+                                                {selectedProblem.id}. {selectedProblem.title}
+                                            </h1>
+                                            <ChevronDown size={16} className="text-[#858585] group-hover:text-white transition-colors" />
+                                        </button>
+                                        <ProblemList
+                                            problems={DSA_PROBLEMS}
+                                            selected={selectedProblem}
+                                            onSelect={handleProblemChange}
+                                            isOpen={showProblemList}
+                                            onToggle={() => setShowProblemList(false)}
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={fetchDynamicLeetcode}
+                                        disabled={isFetchingDynamic}
+                                        className="flex shrink-0 items-center space-x-1.5 bg-[#404040] text-[#eff1f6] px-3 py-1.5 rounded hover:bg-[#555] transition-colors"
+                                    >
+                                        {isFetchingDynamic ? (
+                                            <div className="w-3 h-3 border-2 border-[#858585] border-t-white rounded-full animate-spin"></div>
+                                        ) : (
+                                            <RotateCcw size={13} />
+                                        )}
+                                        <span className="text-xs font-semibold">{isFetchingDynamic ? 'Fetching...' : 'Fetch Random Gap'}</span>
+                                    </button>
+                                </div>
+                                <div className="flex items-center space-x-4 mt-2">
+                                    <span className={`text-sm font-medium ${diffColor}`}>{selectedProblem.difficulty}</span>
+                                    <div className="flex items-center space-x-1 text-[#858585]">
+                                        <ThumbsUp size={14} />
+                                        <span className="text-xs">{selectedProblem.likes}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-1 text-[#858585]">
+                                        <ThumbsDown size={14} />
+                                        <span className="text-xs">{selectedProblem.dislikes}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex items-center bg-white rounded-lg px-3 py-1.5 border border-white/10 shadow-sm">
-                                <Globe size={14} className="text-indigo-600 mr-2" />
-                                <select
-                                    value={language}
-                                    onChange={(e) => handleLanguageChange(e.target.value)}
-                                    className="bg-transparent text-[10px] font-black text-black focus:outline-none cursor-pointer uppercase tracking-widest"
-                                >
-                                    <option value="python">Python</option>
-                                    <option value="java">Java</option>
-                                    <option value="cpp">C++</option>
-                                    <option value="c">C</option>
-                                </select>
-                            </div>
-                            <span className="text-[10px] font-black text-black bg-white px-3 py-1.5 rounded-lg shadow-sm">Solution Editor</span>
-                        </div>
-                        <button
-                            onClick={handleRunCode}
-                            disabled={isRunning}
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl text-sm font-black flex items-center transition-all shadow-lg active:scale-95 disabled:opacity-50"
-                        >
-                            {isRunning ? "Running..." : <><Play size={14} className="mr-2" /> Run Solution</>}
-                        </button>
-                    </div>
-                    <textarea
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        className="flex-1 bg-transparent text-indigo-100 p-8 font-mono text-sm resize-none focus:outline-none custom-scrollbar"
-                        spellCheck="false"
-                    />
-                </div>
 
-                <div className="h-1/3 premium-card bg-slate-950 flex flex-col overflow-hidden border-none shadow-2xl">
-                    <div className="px-6 py-3 bg-slate-900 border-b border-white/5 flex items-center justify-between">
-                        <div className="flex items-center text-slate-400">
-                            <Terminal size={14} className="mr-2 text-white" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-black bg-white px-2 py-1 rounded">Execution Console</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 p-6 font-mono text-sm overflow-y-auto custom-scrollbar">
-                        {results && (
-                            <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {results.map((res, i) => (
-                                    <div key={i} className={`p-3 rounded-xl flex items-center space-x-2 ${res.passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-                                        }`}>
-                                        {res.passed ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                                        <span className="text-[10px] font-bold">Case {i + 1}</span>
+                            {/* Description */}
+                            <div
+                                className="text-[#eff1f6] text-sm leading-relaxed prose-invert"
+                                dangerouslySetInnerHTML={{ __html: selectedProblem.description.replace(/\n/g, '<br/>') }}
+                                style={{ lineHeight: '1.8' }}
+                            />
+
+                            {/* Examples */}
+                            <div className="space-y-5">
+                                {selectedProblem.examples.map((ex, i) => (
+                                    <div key={i}>
+                                        <p className="text-sm font-bold text-white mb-2">Example {i + 1}:</p>
+                                        <div className="bg-[#282828] rounded-lg p-4 border-l-2 border-[#404040] space-y-1">
+                                            <p className="text-sm text-[#eff1f6]">
+                                                <span className="font-semibold text-[#858585]">Input: </span>
+                                                <code className="text-[#d4d4d4]">{ex.input}</code>
+                                            </p>
+                                            <p className="text-sm text-[#eff1f6]">
+                                                <span className="font-semibold text-[#858585]">Output: </span>
+                                                <code className="text-[#d4d4d4]">{ex.output}</code>
+                                            </p>
+                                            {ex.explanation && (
+                                                <p className="text-sm text-[#eff1f6]">
+                                                    <span className="font-semibold text-[#858585]">Explanation: </span>
+                                                    {ex.explanation}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                        )}
-                        <pre className="text-indigo-300 whitespace-pre-wrap">{output || "> Ready to execute..."}</pre>
+
+                            {/* Constraints */}
+                            <div>
+                                <p className="text-sm font-bold text-white mb-3">Constraints:</p>
+                                <ul className="space-y-1.5">
+                                    {selectedProblem.constraints.map((c, i) => (
+                                        <li key={i} className="text-sm text-[#eff1f6] flex items-start">
+                                            <span className="text-[#858585] mr-2 mt-0.5">•</span>
+                                            <span dangerouslySetInnerHTML={{ __html: `<code class="text-xs bg-[#282828] px-1.5 py-0.5 rounded text-[#d4d4d4]">${c}</code>` }} />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Acceptance Rate */}
+                            <div className="text-xs text-[#858585] pt-4 border-t border-[#333]">
+                                Accepted: {selectedProblem.acceptance}
+                            </div>
+
+                            {/* Bottom stats bar */}
+                            <div className="flex items-center space-x-6 text-[#858585] pb-4">
+                                <div className="flex items-center space-x-1.5 cursor-pointer hover:text-white transition-colors">
+                                    <ThumbsUp size={14} /> <span className="text-xs">{selectedProblem.likes}</span>
+                                </div>
+                                <div className="flex items-center space-x-1.5 cursor-pointer hover:text-white transition-colors">
+                                    <ThumbsDown size={14} /> <span className="text-xs">{selectedProblem.dislikes}</span>
+                                </div>
+                                <div className="flex items-center space-x-1.5 cursor-pointer hover:text-white transition-colors">
+                                    <Star size={14} /> <span className="text-xs">Favorite</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* ════════════════════════════════════════════ */}
+            {/* DIVIDER (draggable) */}
+            {/* ════════════════════════════════════════════ */}
+            <div
+                className="w-[5px] bg-[#333] hover:bg-[#555] cursor-col-resize flex items-center justify-center transition-colors shrink-0 group"
+                onMouseDown={handleMouseDown}
+            >
+                <div className="w-[3px] h-8 rounded-full bg-[#555] group-hover:bg-[#888] transition-colors"></div>
+            </div>
+
+            {/* ════════════════════════════════════════════ */}
+            {/* RIGHT PANEL - Code Editor */}
+            {/* ════════════════════════════════════════════ */}
+            <div className="flex flex-col h-full overflow-hidden" style={{ width: `${100 - splitPosition}%` }}>
+
+                {/* Editor Top Bar */}
+                <div className="flex items-center justify-between bg-[#282828] border-b border-[#333] px-3 py-2 shrink-0">
+                    <div className="flex items-center space-x-2">
+                        {/* Language Selector */}
+                        <div className="flex items-center bg-[#333] rounded-md px-2.5 py-1.5 space-x-1.5">
+                            <Globe size={12} className="text-[#858585]" />
+                            <select
+                                value={language}
+                                onChange={(e) => handleLanguageChange(e.target.value)}
+                                className="bg-transparent text-xs text-[#eff1f6] focus:outline-none cursor-pointer font-medium"
+                            >
+                                {Object.entries(LANG_LABELS).map(([k, v]) => (
+                                    <option key={k} value={k} className="bg-[#282828]">{v}</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={12} className="text-[#858585]" />
+                        </div>
+                        <span className="text-xs text-[#858585] px-2">|</span>
+                        <span className="text-xs text-[#858585] font-medium">Auto</span>
+                    </div>
+                    <div className="flex items-center space-x-1 relative">
+                        {/* Reset */}
+                        <button onClick={handleReset} className="p-1.5 rounded hover:bg-[#404040] text-[#858585] hover:text-white transition-colors" title="Reset to default code">
+                            <RotateCcw size={14} />
+                        </button>
+
+                        {/* Copy with feedback */}
+                        <button onClick={handleCopy} className={`p-1.5 rounded transition-colors ${copied ? 'text-[#00b8a3] bg-[#00b8a3]/10' : 'text-[#858585] hover:bg-[#404040] hover:text-white'}`} title={copied ? 'Copied!' : 'Copy code'}>
+                            {copied ? <Check size={14} /> : <Copy size={14} />}
+                        </button>
+
+                        {/* Settings dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowSettings(!showSettings)}
+                                className={`p-1.5 rounded transition-colors ${showSettings ? 'text-white bg-[#404040]' : 'text-[#858585] hover:bg-[#404040] hover:text-white'}`}
+                                title="Editor settings"
+                            >
+                                <Settings size={14} />
+                            </button>
+                            {showSettings && (
+                                <div className="absolute right-0 top-full mt-2 w-56 bg-[#282828] border border-[#404040] rounded-lg shadow-2xl z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-[#404040]">
+                                        <p className="text-xs font-bold text-white">Editor Settings</p>
+                                    </div>
+                                    <div className="p-3 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-[#eff1f6]">Font Size</span>
+                                            <div className="flex items-center space-x-2 bg-[#333] rounded-md px-1">
+                                                <button
+                                                    onClick={() => setFontSize(Math.max(10, fontSize - 1))}
+                                                    className="text-[#858585] hover:text-white px-1.5 py-0.5 text-sm font-bold"
+                                                >−</button>
+                                                <span className="text-xs text-white font-mono w-5 text-center">{fontSize}</span>
+                                                <button
+                                                    onClick={() => setFontSize(Math.min(22, fontSize + 1))}
+                                                    className="text-[#858585] hover:text-white px-1.5 py-0.5 text-sm font-bold"
+                                                >+</button>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-[#eff1f6]">Tab Size</span>
+                                            <span className="text-xs text-[#858585] bg-[#333] px-2 py-0.5 rounded">4 spaces</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-[#eff1f6]">Theme</span>
+                                            <span className="text-xs text-[#858585] bg-[#333] px-2 py-0.5 rounded">Dark</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Fullscreen */}
+                        <button onClick={handleFullscreen} className="p-1.5 rounded hover:bg-[#404040] text-[#858585] hover:text-white transition-colors" title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+                            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Code Editor Area */}
+                <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
+                    <CodeEditor code={code} onChange={setCode} language={language} fontSize={fontSize} />
+                </div>
+
+                {/* Bottom Panel Divider */}
+                <div
+                    className="h-[4px] bg-[#333] hover:bg-[#555] cursor-row-resize shrink-0 transition-colors"
+                    onMouseDown={handleBottomMouseDown}
+                ></div>
+
+                {/* Bottom Panel - Testcase / Result */}
+                <div className="shrink-0 flex flex-col overflow-hidden bg-[#1a1a1a]" style={{ height: isBottomOpen ? `${bottomPanelHeight}px` : '36px' }}>
+                    {/* Bottom Tabs */}
+                    <div className="flex items-center justify-between bg-[#282828] border-b border-[#333] px-2 shrink-0">
+                        <div className="flex items-center">
+                            <button
+                                onClick={() => { setBottomTab('testcase'); setIsBottomOpen(true); }}
+                                className={`flex items-center space-x-1.5 px-3 py-2 text-xs font-medium transition-colors border-b-2 ${bottomTab === 'testcase' && isBottomOpen
+                                    ? 'text-white border-white'
+                                    : 'text-[#858585] border-transparent hover:text-[#eff1f6]'
+                                    }`}
+                            >
+                                <ListChecks size={13} />
+                                <span>Testcase</span>
+                            </button>
+                            <button
+                                onClick={() => { setBottomTab('result'); setIsBottomOpen(true); }}
+                                className={`flex items-center space-x-1.5 px-3 py-2 text-xs font-medium transition-colors border-b-2 ${bottomTab === 'result' && isBottomOpen
+                                    ? 'text-white border-white'
+                                    : 'text-[#858585] border-transparent hover:text-[#eff1f6]'
+                                    }`}
+                            >
+                                <ChevronRight size={13} />
+                                <span>Test Result</span>
+                            </button>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => setIsBottomOpen(!isBottomOpen)}
+                                className="p-1 rounded hover:bg-[#404040] text-[#858585] hover:text-white transition-colors"
+                            >
+                                {isBottomOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Bottom Content */}
+                    {isBottomOpen && (
+                        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                            {bottomTab === 'testcase' && (
+                                <div className="space-y-3">
+                                    {selectedProblem.testCases.map((tc, i) => (
+                                        <div key={i} className="space-y-2">
+                                            <p className="text-xs font-bold text-white">Case {i + 1}</p>
+                                            <div className="bg-[#282828] rounded-lg p-3">
+                                                <p className="text-xs text-[#858585] mb-1">Input:</p>
+                                                <code className="text-xs text-[#d4d4d4] font-mono">{tc.input}</code>
+                                            </div>
+                                            <div className="bg-[#282828] rounded-lg p-3">
+                                                <p className="text-xs text-[#858585] mb-1">Expected:</p>
+                                                <code className="text-xs text-[#d4d4d4] font-mono">{tc.expected}</code>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {bottomTab === 'result' && (
+                                <div className="space-y-3">
+                                    {results ? (
+                                        <>
+                                            {/* Summary */}
+                                            <div className="flex items-center space-x-3">
+                                                {results.every(r => r.passed) ? (
+                                                    <div className="flex items-center space-x-6">
+                                                        <div className="flex items-center space-x-2">
+                                                            <CheckCircle2 size={18} className="text-[#00b8a3]" />
+                                                            <span className="text-lg font-bold text-[#00b8a3]">Accepted</span>
+                                                        </div>
+                                                        <button
+                                                            onClick={fetchDynamicLeetcode}
+                                                            className="flex items-center space-x-1 border border-[#00b8a3] text-[#00b8a3] px-3 py-1 rounded-full text-xs font-bold hover:bg-[#00b8a3] hover:text-[#1a1a1a] transition-all"
+                                                        >
+                                                            <span>Next Challenge</span>
+                                                            <ChevronRight size={14} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center space-x-2">
+                                                        <XCircle size={18} className="text-[#ff375f]" />
+                                                        <span className="text-lg font-bold text-[#ff375f]">Wrong Answer</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {/* Individual Results */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {results.map((res, i) => (
+                                                    <div key={i} className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-1.5 ${res.passed ? 'bg-[#00b8a3]/15 text-[#00b8a3]' : 'bg-[#ff375f]/15 text-[#ff375f]'}`}>
+                                                        {res.passed ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                                                        <span>Case {i + 1}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {/* Output */}
+                                            <div className="bg-[#282828] rounded-lg p-3">
+                                                <pre className="text-xs text-[#d4d4d4] font-mono whitespace-pre-wrap">{output}</pre>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-[#858585] text-sm flex items-center space-x-2">
+                                            {isRunning ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-[#858585] border-t-white rounded-full animate-spin"></div>
+                                                    <span>Running test cases...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ChevronRight size={14} />
+                                                    <span>Click "Run" or "Submit" to see results</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Action Bar */}
+                    <div className="flex items-center justify-between bg-[#282828] border-t border-[#333] px-4 py-2 shrink-0">
+                        <div className="text-[10px] text-[#858585]">
+                            Saved <span className="ml-6">Ln 1, Col 1</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={handleRunCode}
+                                disabled={isRunning}
+                                className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#333] text-white hover:bg-[#404040] transition-colors disabled:opacity-50 flex items-center space-x-1.5"
+                            >
+                                <Play size={12} />
+                                <span>Run</span>
+                            </button>
+                            <button
+                                onClick={handleRunCode}
+                                disabled={isRunning}
+                                className="px-4 py-1.5 rounded-md text-xs font-medium bg-[#00b8a3] text-white hover:bg-[#00a693] transition-colors disabled:opacity-50 flex items-center space-x-1.5"
+                            >
+                                <Send size={12} />
+                                <span>Submit</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -10,104 +10,7 @@ import {
 // MOCK STUDENT DATA (expanded from student_data.json)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const STUDENT_DATABASE = [
-    {
-        id: "S001", name: "Aarav Sharma", email: "aarav.sharma@college.edu",
-        department: "Computer Science", semester: 6, cgpa: 7.36,
-        current_skills: ["python", "linux"],
-        projects: [{ name: "Linux Automation Suite", tech: ["linux", "python"] }, { name: "Data Pipeline Tool", tech: ["python", "linux"] }, { name: "Server Monitor", tech: ["linux", "python"] }],
-        readiness: 58, placementStatus: "In Progress", lastActive: "2026-03-10",
-        testsCompleted: 8, avgTestScore: 62, trend: "up"
-    },
-    {
-        id: "S002", name: "Priya Patel", email: "priya.patel@college.edu",
-        department: "Computer Science", semester: 6, cgpa: 5.30,
-        current_skills: ["docker", "kubernetes", "algorithms", "react"],
-        projects: [],
-        readiness: 42, placementStatus: "At Risk", lastActive: "2026-03-08",
-        testsCompleted: 3, avgTestScore: 45, trend: "down"
-    },
-    {
-        id: "S003", name: "Rohan Gupta", email: "rohan.gupta@college.edu",
-        department: "Data Science", semester: 8, cgpa: 5.10,
-        current_skills: ["machine-learning", "aws", "algorithms", "linux"],
-        projects: [{ name: "ML Image Classifier", tech: ["aws", "machine-learning"] }, { name: "Algorithm Visualizer", tech: ["algorithms", "aws"] }, { name: "Cloud ML Pipeline", tech: ["aws", "machine-learning"] }],
-        readiness: 51, placementStatus: "In Progress", lastActive: "2026-03-11",
-        testsCompleted: 12, avgTestScore: 55, trend: "flat"
-    },
-    {
-        id: "S004", name: "Ananya Krishnan", email: "ananya.k@college.edu",
-        department: "Computer Science", semester: 6, cgpa: 7.53,
-        current_skills: ["statistics", "sql", "data-structures", "kubernetes", "git", "docker", "aws"],
-        projects: [{ name: "Statistical Dashboard", tech: ["statistics", "aws"] }, { name: "DB Version Control", tech: ["sql", "git"] }, { name: "Container Orchestrator", tech: ["kubernetes", "docker"] }, { name: "DS Visualizer App", tech: ["data-structures", "kubernetes"] }],
-        readiness: 78, placementStatus: "Placed", lastActive: "2026-03-12",
-        testsCompleted: 18, avgTestScore: 82, trend: "up"
-    },
-    {
-        id: "S005", name: "Vikram Singh", email: "vikram.s@college.edu",
-        department: "Information Technology", semester: 6, cgpa: 6.61,
-        current_skills: ["statistics", "ci-cd", "sql", "react", "data-structures", "linux"],
-        projects: [],
-        readiness: 63, placementStatus: "In Progress", lastActive: "2026-03-09",
-        testsCompleted: 7, avgTestScore: 68, trend: "up"
-    },
-    {
-        id: "S006", name: "Meera Joshi", email: "meera.j@college.edu",
-        department: "Data Science", semester: 8, cgpa: 9.55,
-        current_skills: ["pandas", "ci-cd", "machine-learning"],
-        projects: [],
-        readiness: 85, placementStatus: "Placed", lastActive: "2026-03-12",
-        testsCompleted: 22, avgTestScore: 91, trend: "up"
-    },
-    {
-        id: "S007", name: "Arjun Reddy", email: "arjun.r@college.edu",
-        department: "Computer Science", semester: 6, cgpa: 9.31,
-        current_skills: ["algorithms", "linux", "rest-api", "git", "docker", "statistics"],
-        projects: [{ name: "Linux CLI Toolkit", tech: ["linux", "git"] }, { name: "API Analytics Platform", tech: ["statistics", "rest-api"] }],
-        readiness: 88, placementStatus: "Placed", lastActive: "2026-03-11",
-        testsCompleted: 20, avgTestScore: 89, trend: "up"
-    },
-    {
-        id: "S008", name: "Sneha Kapoor", email: "sneha.k@college.edu",
-        department: "Computer Science", semester: 4, cgpa: 7.22,
-        current_skills: ["react", "algorithms"],
-        projects: [{ name: "React Dashboard", tech: ["algorithms", "react"] }, { name: "Algorithm Trainer", tech: ["react", "algorithms"] }, { name: "Interactive Quiz App", tech: ["algorithms", "react"] }, { name: "Portfolio Builder", tech: ["react", "algorithms"] }],
-        readiness: 55, placementStatus: "In Progress", lastActive: "2026-03-10",
-        testsCompleted: 6, avgTestScore: 60, trend: "flat"
-    },
-    {
-        id: "S009", name: "Karan Malhotra", email: "karan.m@college.edu",
-        department: "Information Technology", semester: 8, cgpa: 6.37,
-        current_skills: ["aws", "ci-cd", "kubernetes", "git", "algorithms", "statistics"],
-        projects: [],
-        readiness: 47, placementStatus: "At Risk", lastActive: "2026-03-05",
-        testsCompleted: 4, avgTestScore: 48, trend: "down"
-    },
-    {
-        id: "S010", name: "Divya Nair", email: "divya.n@college.edu",
-        department: "Data Science", semester: 6, cgpa: 9.74,
-        current_skills: ["algorithms", "docker", "linux", "machine-learning", "data-structures", "rest-api", "sql"],
-        projects: [{ name: "ML Prediction Engine", tech: ["machine-learning", "algorithms"] }, { name: "Dockerized API Server", tech: ["linux", "docker"] }],
-        readiness: 92, placementStatus: "Placed", lastActive: "2026-03-12",
-        testsCompleted: 25, avgTestScore: 94, trend: "up"
-    },
-    {
-        id: "S011", name: "Rahul Verma", email: "rahul.v@college.edu",
-        department: "Computer Science", semester: 8, cgpa: 5.10,
-        current_skills: ["python", "machine-learning", "aws", "rest-api"],
-        projects: [{ name: "Cloud API Service", tech: ["aws", "rest-api"] }],
-        readiness: 39, placementStatus: "At Risk", lastActive: "2026-03-06",
-        testsCompleted: 2, avgTestScore: 38, trend: "down"
-    },
-    {
-        id: "S012", name: "Ishita Banerjee", email: "ishita.b@college.edu",
-        department: "Data Science", semester: 6, cgpa: 7.04,
-        current_skills: ["statistics", "machine-learning", "linux", "react", "data-structures", "git", "kubernetes"],
-        projects: [{ name: "Data Struct Playground", tech: ["data-structures", "kubernetes"] }, { name: "K8s ML Deploy", tech: ["kubernetes", "machine-learning"] }, { name: "Statistical Analyzer", tech: ["kubernetes", "statistics"] }, { name: "DS Sorting Benchmark", tech: ["statistics", "data-structures"] }],
-        readiness: 71, placementStatus: "In Progress", lastActive: "2026-03-11",
-        testsCompleted: 14, avgTestScore: 74, trend: "up"
-    }
-];
+
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Skill Badge Colors
@@ -306,7 +209,24 @@ const StudentDetailModal = ({ student, onClose, darkMode }) => {
 // Main ManageStudentsView Component
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const ManageStudentsView = ({ darkMode = false }) => {
+const ManageStudentsView = ({ darkMode = false, students = [] }) => {
+    const STUDENT_DATABASE = useMemo(() => {
+        return students.map(s => ({
+            ...s,
+            readiness: s.readiness || Math.floor(Math.random() * 40 + 40),
+            placementStatus: s.placementStatus || "In Progress",
+            lastActive: s.lastActive || new Date().toISOString().split('T')[0],
+            testsCompleted: s.testsCompleted || Math.floor(Math.random() * 10),
+            avgTestScore: s.avgTestScore || Math.floor(Math.random() * 40 + 40),
+            trend: s.trend || "flat",
+            department: s.department || "Unknown",
+            semester: s.semester || 1,
+            current_skills: s.current_skills || [],
+            projects: s.projects || [],
+            cgpa: s.cgpa || 0.0
+        }));
+    }, [students]);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [departmentFilter, setDepartmentFilter] = useState('All');

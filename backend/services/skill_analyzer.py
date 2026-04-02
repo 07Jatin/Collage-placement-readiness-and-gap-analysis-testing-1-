@@ -2,7 +2,7 @@ import json
 import os
 
 def load_market():
-    path = os.path.join(os.path.dirname(__file__), 'market_data.json')
+    path = os.path.join(os.path.dirname(__file__), '..', 'data', 'market_data.json')
     try:
         with open(path, 'r') as f:
             return json.load(f)
@@ -10,7 +10,7 @@ def load_market():
         return []
 
 def load_students():
-    path = os.path.join(os.path.dirname(__file__), 'student_data.json')
+    path = os.path.join(os.path.dirname(__file__), '..', 'data', 'student_data.json')
     try:
         with open(path, 'r') as f:
             return json.load(f)

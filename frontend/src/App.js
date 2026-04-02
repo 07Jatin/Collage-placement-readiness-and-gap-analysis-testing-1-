@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 // Import Mock Data
-import { MOCK_QUESTIONS } from './questions';
+import { MOCK_QUESTIONS } from './data/questions';
 
 // Import Components
 import { SidebarItem } from './components/Common';
@@ -42,8 +42,8 @@ const App = () => {
   const [selectedStudent, setSelectedStudent] = useState('S001');
   const [testTrack, setTestTrack] = useState('software_engineering');
   const [testQuestions, setTestQuestions] = useState([]);
-  const [userRole, setUserRole] = useState(null); // 'student' or 'admin'
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState('student'); // 'student' or 'admin'
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [dashboardTrack, setDashboardTrack] = useState('Software Engineer');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -110,13 +110,21 @@ const App = () => {
     fetchAtRiskStudents();
   }, [selectedStudent, dashboardTrack]);
 
-  // Generate student list
+  // Fetch student list
   useEffect(() => {
-    const studentList = [];
-    for (let i = 1; i <= 12; i++) {
-      studentList.push(`S${String(i).padStart(3, '0')}`);
-    }
-    setStudents(studentList);
+    const fetchStudents = async () => {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/students');
+        const data = await res.json();
+        setStudents(data);
+        if (data.length > 0 && selectedStudent === 'S001') {
+            setSelectedStudent(data[0].id);
+        }
+      } catch (err) {
+        console.error('Error fetching students list:', err);
+      }
+    };
+    fetchStudents();
   }, []);
 
   // Calculated Metrics
@@ -213,16 +221,7 @@ const App = () => {
     }]);
   };
 
-  if (!isAuthenticated) {
-    return (
-      <LoginView
-        setUserRole={setUserRole}
-        setIsAuthenticated={setIsAuthenticated}
-        setActiveTab={setActiveTab}
-        setSelectedStudent={setSelectedStudent}
-      />
-    );
-  }
+  // Login page bypassed - going straight to dashboard
 
   return (
     <div className={`min-h-screen flex font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
@@ -379,9 +378,8 @@ const App = () => {
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 p-12 min-h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-80' : 'ml-20'
-        }`}>
-        <div className="max-w-7xl mx-auto">
+      <main className={`flex-1 min-h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-80' : 'ml-20'} ${activeTab === 'dsa' ? 'p-2' : 'p-12'}`}>
+        <div className={activeTab === 'dsa' ? '' : 'max-w-7xl mx-auto'}>
           {activeTab === 'dashboard' && (
             <DashboardView
               dashboardTrack={dashboardTrack}
@@ -418,6 +416,7 @@ const App = () => {
           {activeTab === 'profile' && (
             <ProfileView
               selectedStudent={selectedStudent}
+              students={students}
               readinessScore={readinessScore}
               gapReport={gapReport}
               history={history}
@@ -426,7 +425,7 @@ const App = () => {
 
           {activeTab === 'admin' && <AdminDashboardView atRiskStudents={atRiskStudents} darkMode={darkMode} setActiveTab={setActiveTab} />}
 
-          {activeTab === 'manage_students' && <ManageStudentsView darkMode={darkMode} />}
+          {activeTab === 'manage_students' && <ManageStudentsView darkMode={darkMode} students={students} />}
         </div>
       </main>
     </div>
