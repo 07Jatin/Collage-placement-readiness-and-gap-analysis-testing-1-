@@ -7,6 +7,7 @@ import {
 import {
     extractSkillsFromText,
     SKILL_QUIZZES,
+    SKILL_KEYWORDS,
     calculateVerifiedLevel,
     SAMPLE_RESUME
 } from '../data/skillData';
