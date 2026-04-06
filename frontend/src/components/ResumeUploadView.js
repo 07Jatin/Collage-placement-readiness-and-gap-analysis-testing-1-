@@ -59,7 +59,7 @@ function extractTextFromHTML(htmlString) {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
+const UploadStep = ({ resumeText, setResumeText, onExtract, useLLM, setUseLLM, isExtracting }) => {
     const [dragOver, setDragOver] = useState(false);
     const [fileName, setFileName] = useState('');
     const [parseStatus, setParseStatus] = useState(''); // '', 'parsing', 'done', 'error'
@@ -153,9 +153,29 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                 </div>
                 <h2 className="text-4xl font-black text-slate-900 tracking-tight">Upload Your Resume</h2>
                 <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto">
-                    We'll extract your skills using <span className="text-indigo-600 font-bold">keyword analysis</span>.
+                    We'll extract your skills using a <span className="text-indigo-600 font-bold">Hybrid Engine</span> (Regex + LLM).
                     Then validate each skill with a quick quiz.
                 </p>
+            </div>
+
+            {/* AI Toggle */}
+            <div className="flex justify-center">
+                <div className="bg-slate-50 p-2 rounded-2xl border border-slate-100 inline-flex items-center space-x-2">
+                    <button 
+                        onClick={() => setUseLLM(false)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${!useLLM ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        Standard Extraction
+                    </button>
+                    <button 
+                        onClick={() => {
+                            setUseLLM(true);
+                        }}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center ${useLLM ? 'bg-indigo-600 shadow-lg shadow-indigo-100 text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        <Sparkles size={14} className="mr-2" /> Deep AI Analysis (Mistral-7B)
+                    </button>
+                </div>
             </div>
 
             {/* Upload Area */}
@@ -257,10 +277,19 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
             <div className="flex justify-center">
                 <button
                     onClick={onExtract}
-                    disabled={!resumeText || !resumeText.trim()}
+                    disabled={!resumeText || !resumeText.trim() || isExtracting}
                     className="bg-indigo-600 text-white px-16 py-5 rounded-2xl font-black text-lg shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100 flex items-center"
                 >
-                    <Zap size={22} className="mr-3" /> Extract Skills
+                    {isExtracting ? (
+                        <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                            Analyzing Resume...
+                        </>
+                    ) : (
+                        <>
+                            <Zap size={22} className="mr-3" /> Extract Skills
+                        </>
+                    )}
                 </button>
             </div>
         </div>
@@ -764,11 +793,47 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
     const [resumeText, setResumeText] = useState('');
     const [extractedSkills, setExtractedSkills] = useState({});
     const [activeQuizSkill, setActiveQuizSkill] = useState(null);
+    const [useLLM, setUseLLM] = useState(false);
+    const [isExtracting, setIsExtracting] = useState(false);
 
-    const handleExtract = () => {
-        const skills = extractSkillsFromText(resumeText);
-        setExtractedSkills(skills);
-        setStep('results');
+    const handleExtract = async () => {
+        setIsExtracting(true);
+        try {
+            const response = await fetch('http://127.0.0.1:8000/parse_resume', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: resumeText, use_llm: useLLM })
+            });
+            
+            const data = await response.json();
+            
+            // Map backend data to frontend format, adding icons from skillData
+            const enrichedSkills = {};
+            if (data.skills) {
+                Object.entries(data.skills).forEach(([id, info]) => {
+                    const frontendSkillInfo = SKILL_KEYWORDS[id] || { icon: "🛠️", category: info.category };
+                    enrichedSkills[id] = {
+                        ...info,
+                        icon: frontendSkillInfo.icon,
+                        verifiedLevel: null,
+                        quizScore: null,
+                        skillId: id, // Ensure id is preserved
+                        matchedKeywords: info.matched_keywords || [id]
+                    };
+                });
+            }
+            
+            setExtractedSkills(enrichedSkills);
+            setStep('results');
+        } catch (err) {
+            console.error('Extraction error:', err);
+            // Fallback to local extraction if backend fails
+            const skills = extractSkillsFromText(resumeText);
+            setExtractedSkills(skills);
+            setStep('results');
+        } finally {
+            setIsExtracting(false);
+        }
     };
 
     const handleStartQuiz = (skillId) => {
@@ -815,6 +880,9 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
                     resumeText={resumeText}
                     setResumeText={setResumeText}
                     onExtract={handleExtract}
+                    useLLM={useLLM}
+                    setUseLLM={setUseLLM}
+                    isExtracting={isExtracting}
                 />
             )}
             {step === 'results' && (

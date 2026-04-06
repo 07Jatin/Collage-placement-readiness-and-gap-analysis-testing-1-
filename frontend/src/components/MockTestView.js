@@ -533,12 +533,12 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
 };
 
 // ━━━━━━━━━ STEP 4: Results Screen ━━━━━━━━━
-const ResultsScreen = ({ testData, sectionProgress, onReset }) => {
+const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, onTestSubmitted, setActiveTab }) => {
   const scores = {};
   SECTION_ORDER.forEach(key => {
     if (key === 'dsa_random_pool') {
       const dsaAnswered = Object.keys(sectionProgress[key] || {}).filter(k => sectionProgress[key][k] !== '').length;
-      scores[key] = { answered: dsaAnswered, total: 6, correct: dsaAnswered, label: 'Attempted' };
+      scores[key] = { score: dsaAnswered, total: 6, label: 'Attempted' };
     } else {
       const questions = testData.sections[key];
       const answers = sectionProgress[key] || {};
@@ -546,11 +546,11 @@ const ResultsScreen = ({ testData, sectionProgress, onReset }) => {
       questions.forEach((q, i) => {
         if (answers[i] === q.answer) correct++;
       });
-      scores[key] = { answered: Object.keys(answers).length, total: questions.length, correct, label: `${correct}/${questions.length}` };
+      scores[key] = { score: correct, total: questions.length, label: `${correct}/${questions.length}` };
     }
   });
 
-  const totalCorrect = Object.values(scores).reduce((s, v) => s + (v.key !== 'dsa_random_pool' ? v.correct : 0), 0);
+  const totalCorrect = Object.values(scores).reduce((s, v, i) => s + (i < 4 ? v.score : 0), 0);
   const totalMCQ = 25 + 25 + 30 + 15;
   const percentage = Math.round((totalCorrect / totalMCQ) * 100);
 
@@ -633,6 +633,46 @@ const ResultsScreen = ({ testData, sectionProgress, onReset }) => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 pb-8">
+        <button 
+          onClick={async () => {
+            const btn = document.getElementById('sync-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div> Syncing...';
+            
+            try {
+              const response = await fetch('http://127.0.0.1:8000/api/submit_test_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  student_id: selectedStudent,
+                  test_id: testData.test_id,
+                  overall_score: percentage,
+                  category_scores: scores
+                })
+              });
+              
+              if (response.ok) {
+                if (onTestSubmitted) onTestSubmitted();
+                btn.innerHTML = '✓ Synced with Roadmap';
+                btn.className = 'bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-emerald-200 transition-all flex items-center justify-center';
+                setTimeout(() => {
+                  if (setActiveTab) setActiveTab('learning');
+                }, 1000);
+              } else {
+                btn.innerHTML = 'Failed to Sync';
+                btn.disabled = false;
+              }
+            } catch (err) {
+              console.error('Sync error:', err);
+              btn.innerHTML = 'Error Syncing';
+              btn.disabled = false;
+            }
+          }}
+          id="sync-btn"
+          className="bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center"
+        >
+          <Sparkles size={20} className="mr-3" /> Sync with Milestone Roadmap
+        </button>
         <button onClick={onReset}
           className="bg-indigo-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center">
           <RotateCcw size={20} className="mr-3" /> Take Another Test
@@ -643,7 +683,7 @@ const ResultsScreen = ({ testData, sectionProgress, onReset }) => {
 };
 
 // ━━━━━━━━━ MAIN COMPONENT ━━━━━━━━━
-const MockTestView = () => {
+const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
   const [phase, setPhase] = useState('upload'); // upload | overview | section | results
   const [testData, setTestData] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
@@ -722,6 +762,9 @@ const MockTestView = () => {
         testData={testData}
         sectionProgress={sectionProgress}
         onReset={handleReset}
+        selectedStudent={selectedStudent}
+        onTestSubmitted={onTestSubmitted}
+        setActiveTab={setActiveTab}
       />
     );
   }

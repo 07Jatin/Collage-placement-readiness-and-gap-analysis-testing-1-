@@ -34,36 +34,55 @@ const LearningPathView = ({ gapReport }) => (
                 <div className="absolute left-[27px] top-4 bottom-4 w-1 bg-gradient-to-b from-indigo-500 via-indigo-200 to-indigo-50 rounded-full"></div>
 
                 {gapReport?.missing_skills?.length > 0 ? (
-                    gapReport.missing_skills.map((skill, i) => (
-                        <div key={i} className="relative flex items-start group">
-                            <div className={`z-10 w-14 h-14 rounded-[1.25rem] bg-indigo-600 text-white flex items-center justify-center font-black shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform`}>
-                                {i + 1}
-                            </div>
-                            <div className="ml-8 pt-1 flex-1">
-                                <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 group-hover:bg-white group-hover:shadow-xl group-hover:border-indigo-100 transition-all duration-300">
-                                    <h4 className="text-xl font-bold text-gray-900 mb-2">{skill} Mastery</h4>
-                                    <p className="text-gray-500 text-sm mb-4">Complete the technical deep-dive and project-based assessments for {skill}.</p>
-                                    <div className="flex flex-wrap items-center gap-3">
-                                        {getLearningLinks(skill).map((link, idx) => {
-                                            const Icon = link.icon;
-                                            return (
-                                                <a 
-                                                    key={idx} 
-                                                    href={link.url} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className={`text-xs font-black uppercase tracking-wider flex items-center px-4 py-2.5 rounded-xl border transition-all ${link.color}`}
-                                                >
-                                                    <Icon size={14} className="mr-2" /> {link.name} 
-                                                </a>
-                                            );
-                                        })}
-                                        <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest ml-auto">Est. 10-15 Hours</span>
+                    gapReport.missing_skills.map((skill, i) => {
+                        const isTestGap = gapReport.test_gaps?.includes(skill);
+                        return (
+                            <div key={i} className="relative flex items-start group">
+                                <div className={`z-10 w-14 h-14 rounded-[1.25rem] ${isTestGap ? 'bg-rose-600 shadow-rose-100' : 'bg-indigo-600 shadow-indigo-100'} text-white flex items-center justify-center font-black shadow-lg group-hover:scale-110 transition-transform`}>
+                                    {i + 1}
+                                </div>
+                                <div className="ml-8 pt-1 flex-1">
+                                    <div className={`p-6 rounded-[2rem] border transition-all duration-300 ${
+                                        isTestGap 
+                                            ? 'bg-rose-50 border-rose-100 group-hover:bg-white group-hover:shadow-xl group-hover:border-rose-200' 
+                                            : 'bg-slate-50 border-slate-100 group-hover:bg-white group-hover:shadow-xl group-hover:border-indigo-100'
+                                    }`}>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h4 className="text-xl font-bold text-gray-900">{skill} Mastery</h4>
+                                            {isTestGap && (
+                                                <span className="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                                                    Action Required (Test Result)
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-gray-500 text-sm mb-4">
+                                            {isTestGap 
+                                                ? `Recent test results indicate a need for improvement in ${skill}. Complete this module to bridge the gap.`
+                                                : `Complete the technical deep-dive and project-based assessments for ${skill}.`
+                                            }
+                                        </p>
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            {getLearningLinks(skill).map((link, idx) => {
+                                                const Icon = link.icon;
+                                                return (
+                                                    <a 
+                                                        key={idx} 
+                                                        href={link.url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className={`text-xs font-black uppercase tracking-wider flex items-center px-4 py-2.5 rounded-xl border transition-all ${link.color}`}
+                                                    >
+                                                        <Icon size={14} className="mr-2" /> {link.name} 
+                                                    </a>
+                                                );
+                                            })}
+                                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest ml-auto">Est. 10-15 Hours</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="text-center py-16 bg-emerald-50 rounded-[3rem] border-2 border-dashed border-emerald-100">
                         <Trophy size={64} className="mx-auto text-emerald-500 mb-4" />

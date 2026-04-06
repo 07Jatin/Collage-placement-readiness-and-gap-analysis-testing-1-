@@ -115,6 +115,16 @@ const App = () => {
     fetchAtRiskStudents();
   }, [selectedStudent, dashboardTrack]);
 
+  const refreshGapReport = async () => {
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/gap_report/${selectedStudent}?role=${encodeURIComponent(dashboardTrack)}`);
+        const data = await res.json();
+        setGapReport(data);
+    } catch (err) {
+        console.error('Error refreshing gap report:', err);
+    }
+  };
+
   // Fetch student list
   useEffect(() => {
     const fetchStudents = async () => {
@@ -417,7 +427,11 @@ const App = () => {
           )}
 
           {activeTab === 'tests' && (
-            <MockTestView />
+            <MockTestView 
+                selectedStudent={selectedStudent} 
+                onTestSubmitted={refreshGapReport}
+                setActiveTab={setActiveTab}
+            />
           )}
 
           {activeTab === 'gap' && <GapAnalysisView gapReport={gapReport} />}

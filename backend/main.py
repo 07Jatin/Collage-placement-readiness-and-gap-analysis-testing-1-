@@ -67,49 +67,68 @@ from services import adzuna_client
 
 @app.post("/parse_resume")
 def parse_resume(payload: dict):
-    """Extract skills from resume text. Uses LLM if requested and available, else falls back to regex."""
+    """Extract skills from resume text. Uses a hybrid approach: Regex for precision + LLM for semantics."""
     text = payload.get("text", "")
     use_llm = payload.get("use_llm", False)  # Client can request LLM parsing
     
     if not text.strip():
         raise HTTPException(status_code=400, detail="No resume text provided")
     
-    # Optional LLM-powered parsing using Mistral 7B
+    # 1. Always run Regex keyword matching (Fast & Reliable for known skills)
+    regex_results = resume_parser.extract_skills(text)
+    summary = resume_parser.get_extraction_summary(regex_results)
+    
+    # 2. Run LLM parsing if requested and available
     if use_llm:
         llm_result = llm_resume_analyzer.analyze_with_mistral(text)
-        if not llm_result.get("fallback", False):
-            # LLM succeeded, format it to match the expected summary structure
-            categories = {}
-            skills_dict = {}
-            
-            for skill in llm_result.get("top_skills", []):
-                cat = llm_result.get("skill_categories", {}).get(skill, "General")
-                categories.setdefault(cat, []).append(skill)
-                skills_dict[skill] = {
-                    "skill": skill,
-                    "category": cat,
-                    "confidence": 90, # High confidence since LLM extracted it
-                    "status": "unverified",
-                    "extracted_by": "Mistral-7B"
-                }
-                
-            return {
-                "total_skills": len(skills_dict),
-                "categories": categories,
-                "skills": skills_dict,
-                "suggested_roles": llm_result.get("suggested_roles", []),
-                "experience_level": llm_result.get("experience_level", "unknown"),
-                "projects_summary": llm_result.get("projects_summary", []),
-                "extraction_method": "Mistral-7B LLM"
-            }
         
-    # Standard Regex keyword matching (used as primary or fallback)
-    results = resume_parser.extract_skills(text)
-    summary = resume_parser.get_extraction_summary(results)
-    summary["extraction_method"] = "Regex Keyword Matching"
-    
-    if use_llm:
-        summary["llm_error"] = "LLM parsing failed or is unconfigured. Fell back to regex."
+        if not llm_result.get("fallback", False):
+            # LLM Succeeded! Merge semantic findings into regex findings
+            llm_skills = llm_result.get("top_skills", [])
+            llm_cats = llm_result.get("skill_categories", {})
+            
+            # Add/Update skills found by LLM
+            for skill in llm_skills:
+                skill_id = skill.lower().replace(" ", "-")
+                cat = llm_cats.get(skill, "General")
+                
+                if skill_id in summary["skills"]:
+                    # Skill already found by regex, boost confidence and add metadata
+                    summary["skills"][skill_id]["confidence"] = min(100, summary["skills"][skill_id]["confidence"] + 15)
+                    summary["skills"][skill_id]["extracted_by"] = "Hybrid (Regex + LLM)"
+                    summary["skills"][skill_id]["llm_validated"] = True
+                else:
+                    # New skill found by LLM that regex missed
+                    summary["skills"][skill_id] = {
+                        "skill": skill,
+                        "category": cat,
+                        "confidence": 85,
+                        "match_count": 1,
+                        "matched_keywords": [skill],
+                        "status": "unverified",
+                        "extracted_by": "Mistral-7B (Semantic)"
+                    }
+            
+            # Update summary metrics
+            summary["total_skills"] = len(summary["skills"])
+            summary["suggested_roles"] = llm_result.get("suggested_roles", [])
+            summary["experience_level"] = llm_result.get("experience_level", "unknown")
+            summary["projects_summary"] = llm_result.get("projects_summary", [])
+            summary["extraction_method"] = "Hybrid Engine (Mistral-7B + Regex)"
+            
+            # Rebuild categories
+            new_cats = {}
+            for s_id, s_info in summary["skills"].items():
+                c = s_info["category"]
+                new_cats.setdefault(c, []).append(s_id)
+            summary["categories"] = new_cats
+            
+            return summary
+        else:
+            summary["llm_error"] = llm_result.get("error", "LLM failed")
+            summary["extraction_method"] = "Regex (Fallback)"
+    else:
+        summary["extraction_method"] = "Regex Engine"
         
     return summary
 
@@ -241,6 +260,43 @@ def get_at_risk_students():
             pass
             
     return {"at_risk_students": at_risk}
+
+
+@app.post("/api/submit_test_result")
+def submit_test_result(payload: dict):
+    student_id = payload.get("student_id")
+    test_id = payload.get("test_id")
+    overall_score = payload.get("overall_score", 0)
+    category_scores = payload.get("category_scores", {})
+    
+    if not student_id:
+        raise HTTPException(status_code=400, detail="Student ID is required")
+        
+    history_path = os.path.join(os.path.dirname(__file__), 'data', 'test_history.json')
+    try:
+        with open(history_path, 'r') as f:
+            history = json.load(f)
+    except FileNotFoundError:
+        history = []
+        
+    import datetime
+    new_entry = {
+        "student_id": student_id,
+        "test_id": test_id,
+        "test_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+        "readiness_score": overall_score,
+        "category_scores": category_scores
+    }
+    
+    history.append(new_entry)
+    
+    with open(history_path, 'w') as f:
+        json.dump(history, f, indent=2)
+        
+    # Also update student's current_skills if they excel in a certain section?
+    # For now, we'll just store the history, and skill_analyzer will use it to suggest roadmap gaps.
+    
+    return {"message": "Test result submitted successfully", "entry": new_entry}
 
 
 @app.post("/generate_questions")
