@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport, history }) => {
+const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport, history, dashboardTrack }) => {
     const studentData = students.find(s => s.id === selectedStudent) || {};
 
     return (
@@ -29,7 +29,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                 </div>
                 <div className="p-4 bg-gray-50 rounded-xl">
                     <p className="text-sm text-gray-500 mb-1">Target Role</p>
-                    <p className="text-2xl font-bold text-gray-900">{gapReport?.best_role_match || 'Analyzing...'}</p>
+                    <p className="text-2xl font-bold text-gray-900">{gapReport?.target_role || dashboardTrack || 'Analyzing...'}</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-xl">
                     <p className="text-sm text-gray-500 mb-1">Tests Completed</p>

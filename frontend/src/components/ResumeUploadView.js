@@ -257,7 +257,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
             <div className="flex justify-center">
                 <button
                     onClick={onExtract}
-                    disabled={!resumeText.trim()}
+                    disabled={!resumeText || !resumeText.trim()}
                     className="bg-indigo-600 text-white px-16 py-5 rounded-2xl font-black text-lg shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100 flex items-center"
                 >
                     <Zap size={22} className="mr-3" /> Extract Skills

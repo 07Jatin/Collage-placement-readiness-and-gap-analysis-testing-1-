@@ -55,11 +55,16 @@ const App = () => {
   const [students, setStudents] = useState([]);
   const [atRiskStudents, setAtRiskStudents] = useState([]);
 
-  // Mock history data
+  // Mock history data with dynamic dates
+  const today = new Date();
+  const past3 = new Date(today); past3.setDate(today.getDate() - 10);
+  const past2 = new Date(today); past2.setDate(today.getDate() - 5);
+  const past1 = new Date(today); past1.setDate(today.getDate() - 2);
+
   const [history, setHistory] = useState([
-    { date: '2024-05-10', score: 65, readiness: 62, track: 'Software Engineer' },
-    { date: '2024-05-15', score: 72, readiness: 68, track: 'Software Engineer' },
-    { date: '2024-05-20', score: 78, readiness: 75, track: 'Data Scientist' }
+    { date: past3.toISOString().split('T')[0], score: 65, readiness: 62, track: 'Software Engineer' },
+    { date: past2.toISOString().split('T')[0], score: 72, readiness: 68, track: 'Software Engineer' },
+    { date: past1.toISOString().split('T')[0], score: 78, readiness: 75, track: 'Data Scientist' }
   ]);
 
   // Fetch backend data
@@ -127,14 +132,6 @@ const App = () => {
     fetchStudents();
   }, []);
 
-  // Calculated Metrics
-  const readinessScore = useMemo(() => {
-    if (readiness && readiness.readiness_score_percent !== undefined) {
-      return readiness.readiness_score_percent;
-    }
-    return history[history.length - 1]?.readiness || 0;
-  }, [readiness, history]);
-
   // Radar data based on skill gaps
   const radarData = useMemo(() => {
     if (gapReport && gapReport.missing_skills) {
@@ -160,6 +157,19 @@ const App = () => {
       { subject: 'Soft Skills', A: 80, full: 100 },
     ];
   }, [gapReport]);
+
+  // Calculated Metrics
+  const readinessScore = useMemo(() => {
+    if (readiness && readiness.readiness_score_percent > 0) {
+      return readiness.readiness_score_percent;
+    }
+    // Aggregate skill radar data if readiness API returns 0 or null
+    if (radarData && radarData.length > 0) {
+      const total = radarData.reduce((sum, item) => sum + item.A, 0);
+      return total / radarData.length;
+    }
+    return history[history.length - 1]?.readiness || 0;
+  }, [readiness, history, radarData]);
 
   // Dummy benchmark data
   const benchmarkData = [
@@ -223,8 +233,16 @@ const App = () => {
 
   // Login page bypassed - going straight to dashboard
 
+  // Bug 4 Fix: Proper route guards for static assets and catch-all
+  if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+    if (window.location.pathname.startsWith('/_next') || window.location.pathname.includes('.') || window.location.pathname.startsWith('/static')) {
+        return null;
+    }
+    window.history.replaceState(null, '', '/');
+  }
+
   return (
-    <div className={`min-h-screen flex font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
       {/* Sidebar */}
       <aside
         className={`bg-slate-900 flex flex-col fixed h-full z-20 shadow-2xl transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-80 p-8' : 'w-20 p-4'
@@ -420,6 +438,7 @@ const App = () => {
               readinessScore={readinessScore}
               gapReport={gapReport}
               history={history}
+              dashboardTrack={dashboardTrack}
             />
           )}
 

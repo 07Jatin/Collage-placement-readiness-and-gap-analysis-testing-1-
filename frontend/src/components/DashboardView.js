@@ -259,7 +259,7 @@ const DashboardView = ({
                                             <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
                                                 <div className={`h-full bg-gradient-to-r ${colors[i % colors.length]} rounded-full`} style={{ width: `${d.A}%` }} />
                                             </div>
-                                            <span className="text-xs font-bold w-8">{d.A}%</span>
+                                            <span className="text-xs font-bold w-10 text-right">{typeof d.A === 'number' ? d.A.toFixed(1) : d.A}%</span>
                                         </div>
                                     </div>
                                 );

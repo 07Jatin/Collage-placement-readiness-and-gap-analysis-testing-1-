@@ -1,5 +1,20 @@
 import React from 'react';
-import { Map, ArrowRight, Trophy } from 'lucide-react';
+import { Map, ArrowRight, Trophy, Youtube, BookOpen } from 'lucide-react';
+
+const getLearningLinks = (skill) => [
+    { 
+        name: 'Watch Free Course', 
+        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(skill + " full course tutorial")}`, 
+        icon: Youtube,
+        color: 'text-red-600 bg-red-50 hover:bg-red-600 hover:text-white border-red-100'
+    },
+    {
+        name: 'FreeCodeCamp',
+        url: `https://www.freecodecamp.org/news/search/?query=${encodeURIComponent(skill)}`,
+        icon: BookOpen,
+        color: 'text-slate-700 bg-slate-100 hover:bg-slate-800 hover:text-white border-slate-200'
+    }
+];
 
 const LearningPathView = ({ gapReport }) => (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -11,7 +26,7 @@ const LearningPathView = ({ gapReport }) => (
         <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm">
             <h3 className="text-xl font-black text-gray-900 mb-10 flex items-center">
                 <Map size={24} className="mr-3 text-indigo-600" />
-                Path to {gapReport?.best_role_match || 'Target Role'} Expertise
+                Path to {gapReport?.target_role || gapReport?.best_role_match || 'Target Role'} Expertise
             </h3>
 
             <div className="relative space-y-12">
@@ -28,11 +43,22 @@ const LearningPathView = ({ gapReport }) => (
                                 <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 group-hover:bg-white group-hover:shadow-xl group-hover:border-indigo-100 transition-all duration-300">
                                     <h4 className="text-xl font-bold text-gray-900 mb-2">{skill} Mastery</h4>
                                     <p className="text-gray-500 text-sm mb-4">Complete the technical deep-dive and project-based assessments for {skill}.</p>
-                                    <div className="flex items-center space-x-4">
-                                        <button className="text-indigo-600 text-xs font-black uppercase tracking-widest flex items-center bg-indigo-50 px-4 py-2 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
-                                            Start Module <ArrowRight size={14} className="ml-2" />
-                                        </button>
-                                        <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Est. 12 Hours</span>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        {getLearningLinks(skill).map((link, idx) => {
+                                            const Icon = link.icon;
+                                            return (
+                                                <a 
+                                                    key={idx} 
+                                                    href={link.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className={`text-xs font-black uppercase tracking-wider flex items-center px-4 py-2.5 rounded-xl border transition-all ${link.color}`}
+                                                >
+                                                    <Icon size={14} className="mr-2" /> {link.name} 
+                                                </a>
+                                            );
+                                        })}
+                                        <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest ml-auto">Est. 10-15 Hours</span>
                                     </div>
                                 </div>
                             </div>
@@ -42,7 +68,7 @@ const LearningPathView = ({ gapReport }) => (
                     <div className="text-center py-16 bg-emerald-50 rounded-[3rem] border-2 border-dashed border-emerald-100">
                         <Trophy size={64} className="mx-auto text-emerald-500 mb-4" />
                         <h3 className="text-2xl font-black text-emerald-900">Roadmap Complete!</h3>
-                        <p className="text-emerald-600 font-medium">You are fully prepared for the {gapReport?.best_role_match} track.</p>
+                        <p className="text-emerald-600 font-medium">You are fully prepared for the {gapReport?.target_role || gapReport?.best_role_match || 'Target Role'} track.</p>
                     </div>
                 )}
             </div>

@@ -91,7 +91,7 @@ const GapAnalysisView = ({ gapReport }) => (
                 </div>
                 <div className="flex-1 space-y-6">
                     <h3 className="text-2xl font-black text-slate-900">Skill Composition Analysis</h3>
-                    <p className="text-slate-500 font-medium">Your profile is currently <span className="text-emerald-600 font-bold">{Math.round(((gapReport?.current_skills?.length || 0) / ((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0))) * 100)}%</span> complete based on job market requirements for {gapReport?.best_role_match}.</p>
+                    <p className="text-slate-500 font-medium">Your profile is currently <span className="text-emerald-600 font-bold">{((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0)) > 0 ? Math.round(((gapReport?.current_skills?.length || 0) / ((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0))) * 100) : 0}%</span> complete based on job market requirements for {gapReport?.best_role_match}.</p>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                             <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Current Assets</p>
@@ -116,7 +116,7 @@ const GapAnalysisView = ({ gapReport }) => (
                         </h3>
                         <div className="flex items-center space-x-6">
                             <div className="flex flex-col">
-                                <span className="text-3xl font-black">{Math.round(gapReport?.jaccard_score * 100)}%</span>
+                                <span className="text-3xl font-black">{gapReport?.jaccard_score ? Math.round(gapReport.jaccard_score * 100) : 0}%</span>
                                 <span className="text-indigo-300 text-xs font-bold uppercase">Affinity Match</span>
                             </div>
                             <div className="w-px h-10 bg-white/10"></div>
