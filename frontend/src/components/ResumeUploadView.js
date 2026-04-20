@@ -2,12 +2,14 @@ import React, { useState, useMemo } from 'react';
 import {
     Upload, FileText, CheckCircle2, XCircle, ChevronRight,
     Zap, Shield, Award, ArrowRight, ArrowLeft, RotateCcw,
-    Sparkles, Target, AlertCircle, ClipboardPaste, FileUp
+    Sparkles, Target, AlertCircle, ClipboardPaste, FileUp, Send
 } from 'lucide-react';
 import {
     extractSkillsFromText,
     SKILL_QUIZZES,
+    SKILL_KEYWORDS,
     calculateVerifiedLevel,
+    buildExtendedQuiz,
     SAMPLE_RESUME
 } from '../data/skillData';
 
@@ -59,7 +61,7 @@ function extractTextFromHTML(htmlString) {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
+const UploadStep = ({ resumeText, setResumeText, onExtract, useLLM, setUseLLM, isExtracting }) => {
     const [dragOver, setDragOver] = useState(false);
     const [fileName, setFileName] = useState('');
     const [parseStatus, setParseStatus] = useState(''); // '', 'parsing', 'done', 'error'
@@ -153,9 +155,29 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
                 </div>
                 <h2 className="text-4xl font-black text-slate-900 tracking-tight">Upload Your Resume</h2>
                 <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto">
-                    We'll extract your skills using <span className="text-indigo-600 font-bold">keyword analysis</span>.
+                    We'll extract your skills using a <span className="text-indigo-600 font-bold">Hybrid Engine</span> (Regex + LLM).
                     Then validate each skill with a quick quiz.
                 </p>
+            </div>
+
+            {/* AI Toggle */}
+            <div className="flex justify-center">
+                <div className="bg-slate-50 p-2 rounded-2xl border border-slate-100 inline-flex items-center space-x-2">
+                    <button 
+                        onClick={() => setUseLLM(false)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${!useLLM ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        Standard Extraction
+                    </button>
+                    <button 
+                        onClick={() => {
+                            setUseLLM(true);
+                        }}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center ${useLLM ? 'bg-indigo-600 shadow-lg shadow-indigo-100 text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        <Sparkles size={14} className="mr-2" /> Deep AI Analysis (Mistral-7B)
+                    </button>
+                </div>
             </div>
 
             {/* Upload Area */}
@@ -257,10 +279,19 @@ const UploadStep = ({ resumeText, setResumeText, onExtract }) => {
             <div className="flex justify-center">
                 <button
                     onClick={onExtract}
-                    disabled={!resumeText.trim()}
+                    disabled={!resumeText || !resumeText.trim() || isExtracting}
                     className="bg-indigo-600 text-white px-16 py-5 rounded-2xl font-black text-lg shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 disabled:hover:scale-100 flex items-center"
                 >
-                    <Zap size={22} className="mr-3" /> Extract Skills
+                    {isExtracting ? (
+                        <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                            Analyzing Resume...
+                        </>
+                    ) : (
+                        <>
+                            <Zap size={22} className="mr-3" /> Extract Skills
+                        </>
+                    )}
                 </button>
             </div>
         </div>
@@ -379,7 +410,7 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
                                 onClick={() => onStartQuiz(skillId)}
                                 className="w-full py-3 rounded-xl font-bold text-sm bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-40 flex items-center justify-center"
                             >
-                                <Shield size={14} className="mr-2" /> {SKILL_QUIZZES[skillId] ? 'Verify with Quiz' : 'Auto-Verify Skill'}
+                                <Shield size={14} className="mr-2" /> Verify with Quiz
                             </button>
                         ) : (
                             <div className="flex items-center justify-center py-3 text-emerald-600">
@@ -420,12 +451,11 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 3: Quiz ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
+const QuizStep = ({ skillId, skills, questions, onFinishQuiz, onBack }) => {
     const [currentQ, setCurrentQ] = useState(0);
     const [answers, setAnswers] = useState({});
     const [showResult, setShowResult] = useState(false);
 
-    const questions = SKILL_QUIZZES[skillId] || [];
     const skill = skills[skillId];
 
     const handleAnswer = (optIdx) => {
@@ -501,18 +531,18 @@ const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
     if (questions.length === 0) {
         return (
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-in py-12">
-                <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl bg-blue-500 shadow-blue-200">
-                    <CheckCircle2 size={48} className="text-white" />
+                <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl bg-rose-500 shadow-rose-200">
+                    <XCircle size={48} className="text-white" />
                 </div>
                 <div className="space-y-4">
-                    <h3 className="text-3xl font-black text-slate-900">Auto-Verified</h3>
+                    <h3 className="text-3xl font-black text-slate-900">Verification Required</h3>
                     <p className="text-slate-500 font-medium">
-                        Great! Your experience with <span className="font-bold text-slate-800 capitalize">{skillId.replace(/-/g, ' ')}</span> is noted. 
-                        No specific quiz is required for this newly added skill.
+                        We do not currently have a quiz available for <span className="font-bold text-slate-800 capitalize">{skillId.replace(/-/g, ' ')}</span>.
+                        This skill cannot be auto-verified and must be reviewed manually or added to the quiz bank.
                     </p>
                 </div>
                 <button
-                    onClick={() => onFinishQuiz(skillId, 1, 0)}
+                    onClick={() => onFinishQuiz(skillId, 0, 0)}
                     className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
                 >
                     Return to Skills Dashboard
@@ -537,8 +567,15 @@ const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
                     <span className="text-2xl">{skill?.icon}</span>
                     <span className="font-black text-slate-900 capitalize text-lg">{skillId.replace(/-/g, ' ')}</span>
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-black">
-                        Verification Quiz
+                        Verification Quiz ({questions.length || 25} Questions)
                     </span>
+                    <button
+                        onClick={finishQuiz}
+                        disabled={Object.keys(answers).length === 0}
+                        className="flex items-center bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-40 shadow-lg"
+                    >
+                        <Send size={16} className="mr-2" /> Submit Quiz
+                    </button>
                 </div>
             </div>
 
@@ -764,15 +801,53 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
     const [resumeText, setResumeText] = useState('');
     const [extractedSkills, setExtractedSkills] = useState({});
     const [activeQuizSkill, setActiveQuizSkill] = useState(null);
+    const [quizQuestions, setQuizQuestions] = useState([]);
+    const [useLLM, setUseLLM] = useState(false);
+    const [isExtracting, setIsExtracting] = useState(false);
 
-    const handleExtract = () => {
-        const skills = extractSkillsFromText(resumeText);
-        setExtractedSkills(skills);
-        setStep('results');
+    const handleExtract = async () => {
+        setIsExtracting(true);
+        try {
+            const response = await fetch('http://127.0.0.1:8000/parse_resume', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: resumeText, use_llm: useLLM })
+            });
+            
+            const data = await response.json();
+            
+            // Map backend data to frontend format, adding icons from skillData
+            const enrichedSkills = {};
+            if (data.skills) {
+                Object.entries(data.skills).forEach(([id, info]) => {
+                    const frontendSkillInfo = SKILL_KEYWORDS[id] || { icon: "🛠️", category: info.category };
+                    enrichedSkills[id] = {
+                        ...info,
+                        icon: frontendSkillInfo.icon,
+                        verifiedLevel: null,
+                        quizScore: null,
+                        skillId: id, // Ensure id is preserved
+                        matchedKeywords: info.matched_keywords || [id]
+                    };
+                });
+            }
+            
+            setExtractedSkills(enrichedSkills);
+            setStep('results');
+        } catch (err) {
+            console.error('Extraction error:', err);
+            // Fallback to local extraction if backend fails
+            const skills = extractSkillsFromText(resumeText);
+            setExtractedSkills(skills);
+            setStep('results');
+        } finally {
+            setIsExtracting(false);
+        }
     };
 
     const handleStartQuiz = (skillId) => {
         setActiveQuizSkill(skillId);
+        setQuizQuestions(buildExtendedQuiz(skillId, 25));
         setStep('quiz');
     };
 
@@ -782,9 +857,9 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
             ...prev,
             [skillId]: {
                 ...prev[skillId],
-                status: 'verified',
-                verifiedLevel: level,
-                quizScore: score
+                status: total > 0 ? 'verified' : 'unverified',
+                verifiedLevel: total > 0 ? level : null,
+                quizScore: total > 0 ? score : null
             }
         }));
         setStep('results');
@@ -799,6 +874,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
         setResumeText('');
         setExtractedSkills({});
         setActiveQuizSkill(null);
+        setQuizQuestions([]);
     };
 
     const handleUpdateProfile = (verifiedSkillIds) => {
@@ -815,6 +891,9 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
                     resumeText={resumeText}
                     setResumeText={setResumeText}
                     onExtract={handleExtract}
+                    useLLM={useLLM}
+                    setUseLLM={setUseLLM}
+                    isExtracting={isExtracting}
                 />
             )}
             {step === 'results' && (
@@ -830,6 +909,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
                 <QuizStep
                     skillId={activeQuizSkill}
                     skills={extractedSkills}
+                    questions={quizQuestions}
                     onFinishQuiz={handleFinishQuiz}
                     onBack={() => setStep('results')}
                 />

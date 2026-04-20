@@ -6,6 +6,12 @@ import {
     CheckCircle2, ShieldCheck, AlertCircle, Zap, Trophy, Briefcase, Award, ChevronRight
 } from 'lucide-react';
 
+const getAffinityScore = (gapReport) => {
+    if (!gapReport?.current_skills?.length) return 0;
+    const total = (gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0);
+    return total > 0 ? Math.round((gapReport.current_skills.length / total) * 100) : 0;
+};
+
 const GapAnalysisView = ({ gapReport }) => (
     <div className="space-y-8 animate-in fade-in duration-500">
         <header className="space-y-1">
@@ -91,7 +97,7 @@ const GapAnalysisView = ({ gapReport }) => (
                 </div>
                 <div className="flex-1 space-y-6">
                     <h3 className="text-2xl font-black text-slate-900">Skill Composition Analysis</h3>
-                    <p className="text-slate-500 font-medium">Your profile is currently <span className="text-emerald-600 font-bold">{Math.round(((gapReport?.current_skills?.length || 0) / ((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0))) * 100)}%</span> complete based on job market requirements for {gapReport?.best_role_match}.</p>
+                    <p className="text-slate-500 font-medium">Your profile is currently <span className="text-emerald-600 font-bold">{((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0)) > 0 ? Math.round(((gapReport?.current_skills?.length || 0) / ((gapReport?.current_skills?.length || 0) + (gapReport?.missing_skills?.length || 0))) * 100) : 0}%</span> complete based on job market requirements for <span className="text-indigo-600 font-bold">{gapReport?.target_role || gapReport?.best_role_match || 'Target Role'}</span>.</p>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                             <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Current Assets</p>
@@ -112,11 +118,11 @@ const GapAnalysisView = ({ gapReport }) => (
                     <div className="space-y-4">
                         <p className="text-indigo-300 font-black uppercase tracking-widest text-xs">Primary Market Goal</p>
                         <h3 className="text-4xl font-black leading-tight">
-                            Targeting: <span className="text-indigo-400">{gapReport?.best_role_match}</span>
+                            Targeting: <span className="text-indigo-400 capitalize">{gapReport?.target_role || gapReport?.best_role_match || 'Target Role'}</span>
                         </h3>
                         <div className="flex items-center space-x-6">
                             <div className="flex flex-col">
-                                <span className="text-3xl font-black">{Math.round(gapReport?.jaccard_score * 100)}%</span>
+                                <span className="text-3xl font-black">{getAffinityScore(gapReport)}%</span>
                                 <span className="text-indigo-300 text-xs font-bold uppercase">Affinity Match</span>
                             </div>
                             <div className="w-px h-10 bg-white/10"></div>
@@ -136,17 +142,25 @@ const GapAnalysisView = ({ gapReport }) => (
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-6">
                 <h3 className="text-lg font-bold text-gray-900 flex items-center">
                     <Award size={22} className="mr-2 text-amber-500" />
-                    Certifications
+                    Recommended Certifications
                 </h3>
                 <div className="space-y-4">
-                    {gapReport?.recommended_certifications?.map((cert, i) => (
-                        <div key={i} className="group p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50 transition-all cursor-pointer">
-                            <p className="font-bold text-gray-900 text-sm group-hover:text-indigo-900">{cert}</p>
-                            <div className="flex items-center mt-2 text-[10px] font-black uppercase tracking-tighter text-indigo-400">
-                                Verify Credentials <ChevronRight size={10} className="ml-1" />
+                    {gapReport?.recommended_certifications && gapReport.recommended_certifications.length > 0 ? (
+                        gapReport.recommended_certifications.map((cert, i) => (
+                            <div key={i} className="group p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50 transition-all cursor-pointer">
+                                <p className="font-bold text-gray-900 text-sm group-hover:text-indigo-900">{cert}</p>
+                                <div className="flex items-center mt-2 text-[10px] font-black uppercase tracking-tighter text-indigo-400">
+                                    Verify Credentials <ChevronRight size={10} className="ml-1" />
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="p-6 text-center bg-amber-50 rounded-2xl border border-amber-100">
+                            <Award size={32} className="mx-auto text-amber-500 mb-2 opacity-60" />
+                            <p className="text-amber-800 font-bold text-sm">No certifications recommended yet</p>
+                            <p className="text-amber-600 text-xs mt-1">Complete missing skills to unlock certification paths</p>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </div>

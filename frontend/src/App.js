@@ -55,11 +55,16 @@ const App = () => {
   const [students, setStudents] = useState([]);
   const [atRiskStudents, setAtRiskStudents] = useState([]);
 
-  // Mock history data
+  // Mock history data with dynamic dates
+  const today = new Date();
+  const past3 = new Date(today); past3.setDate(today.getDate() - 10);
+  const past2 = new Date(today); past2.setDate(today.getDate() - 5);
+  const past1 = new Date(today); past1.setDate(today.getDate() - 2);
+
   const [history, setHistory] = useState([
-    { date: '2024-05-10', score: 65, readiness: 62, track: 'Software Engineer' },
-    { date: '2024-05-15', score: 72, readiness: 68, track: 'Software Engineer' },
-    { date: '2024-05-20', score: 78, readiness: 75, track: 'Data Scientist' }
+    { date: past3.toISOString().split('T')[0], score: 65, readiness: 62, track: 'Software Engineer' },
+    { date: past2.toISOString().split('T')[0], score: 72, readiness: 68, track: 'Software Engineer' },
+    { date: past1.toISOString().split('T')[0], score: 78, readiness: 75, track: 'Data Scientist' }
   ]);
 
   // Fetch backend data
@@ -110,6 +115,59 @@ const App = () => {
     fetchAtRiskStudents();
   }, [selectedStudent, dashboardTrack]);
 
+  const buildLocalGapReportFromTest = ({ testData, scores }) => {
+    const skillMap = {
+      quantitative: ['Probability', 'Statistics', 'Algebra'],
+      english: ['Communication', 'Grammar', 'Vocabulary'],
+      reasoning: ['Logical Reasoning', 'Analytical Thinking', 'Pattern Recognition'],
+      computer_science: ['Data Structures', 'Algorithms', 'OOP'],
+      dsa_random_pool: ['Problem Solving', 'Coding Efficiency', 'Complexity Analysis']
+    };
+
+    const missing = Object.entries(scores)
+      .filter(([key, score]) => key !== 'dsa_random_pool' && score.total > 0 && (score.score / score.total) < 0.6)
+      .flatMap(([key]) => skillMap[key] || [])
+      .slice(0, 5);
+
+    const mastered = Object.entries(scores)
+      .filter(([key, score]) => key !== 'dsa_random_pool' && score.total > 0 && (score.score / score.total) >= 0.6)
+      .flatMap(([key]) => skillMap[key] || [])
+      .slice(0, 5);
+
+    return {
+      target_role: dashboardTrack,
+      match_percent: Math.round(scores.quantitative?.score / (scores.quantitative?.total || 1) * 20
+        + scores.english?.score / (scores.english?.total || 1) * 20
+        + scores.reasoning?.score / (scores.reasoning?.total || 1) * 20
+        + scores.computer_science?.score / (scores.computer_science?.total || 1) * 20
+        + Math.min(20, (scores.dsa_random_pool?.score || 0) * 3)),
+      current_skills: mastered,
+      missing_skills: missing,
+      recommended_certifications: ['Problem Solving', 'Aptitude', 'DSA Fundamentals'],
+      test_gaps: missing
+    };
+  };
+
+  const refreshGapReport = async (fallbackData = null) => {
+    if (fallbackData) {
+      setGapReport(buildLocalGapReportFromTest(fallbackData));
+    }
+
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/gap_report/${selectedStudent}?role=${encodeURIComponent(dashboardTrack)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setGapReport(data);
+    } catch (err) {
+        console.error('Error refreshing gap report:', err);
+        if (fallbackData) {
+          return;
+        }
+        // Keep previous gapReport or fallback to empty object if none available
+        setGapReport(prev => prev || { current_skills: [], missing_skills: [], match_percent: 0, target_role: dashboardTrack });
+    }
+  };
+
   // Fetch student list
   useEffect(() => {
     const fetchStudents = async () => {
@@ -126,14 +184,6 @@ const App = () => {
     };
     fetchStudents();
   }, []);
-
-  // Calculated Metrics
-  const readinessScore = useMemo(() => {
-    if (readiness && readiness.readiness_score_percent !== undefined) {
-      return readiness.readiness_score_percent;
-    }
-    return history[history.length - 1]?.readiness || 0;
-  }, [readiness, history]);
 
   // Radar data based on skill gaps
   const radarData = useMemo(() => {
@@ -160,6 +210,19 @@ const App = () => {
       { subject: 'Soft Skills', A: 80, full: 100 },
     ];
   }, [gapReport]);
+
+  // Calculated Metrics
+  const readinessScore = useMemo(() => {
+    if (readiness && readiness.readiness_score_percent > 0) {
+      return readiness.readiness_score_percent;
+    }
+    // Aggregate skill radar data if readiness API returns 0 or null
+    if (radarData && radarData.length > 0) {
+      const total = radarData.reduce((sum, item) => sum + item.A, 0);
+      return total / radarData.length;
+    }
+    return history[history.length - 1]?.readiness || 0;
+  }, [readiness, history, radarData]);
 
   // Dummy benchmark data
   const benchmarkData = [
@@ -223,8 +286,16 @@ const App = () => {
 
   // Login page bypassed - going straight to dashboard
 
+  // Bug 4 Fix: Proper route guards for static assets and catch-all
+  if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+    if (window.location.pathname.startsWith('/_next') || window.location.pathname.includes('.') || window.location.pathname.startsWith('/static')) {
+        return null;
+    }
+    window.history.replaceState(null, '', '/');
+  }
+
   return (
-    <div className={`min-h-screen flex font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${darkMode ? 'dark bg-[#0f1117]' : 'bg-[#f8f9fc]'} selection:bg-indigo-100 selection:text-indigo-900`}>
       {/* Sidebar */}
       <aside
         className={`bg-slate-900 flex flex-col fixed h-full z-20 shadow-2xl transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-80 p-8' : 'w-20 p-4'
@@ -342,8 +413,11 @@ const App = () => {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-white/5 space-y-4">
-          <div className={`bg-white/5 rounded-2xl border border-white/5 flex items-center transition-all duration-300 ${sidebarOpen ? 'p-4 space-x-3' : 'p-3 justify-center'
-            }`}>
+          <div 
+            onClick={() => setActiveTab('profile')}
+            className={`bg-white/5 hover:bg-white/10 active:scale-95 rounded-2xl border border-white/5 flex items-center transition-all duration-300 cursor-pointer ${sidebarOpen ? 'p-4 space-x-3' : 'p-3 justify-center'
+            }`}
+          >
             <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold shrink-0">
               SJ
             </div>
@@ -355,8 +429,9 @@ const App = () => {
                 </div>
                 <LogOut
                   size={14}
-                  className="text-slate-500 cursor-pointer hover:text-white transition-colors shrink-0"
-                  onClick={() => {
+                  className="text-slate-500 cursor-pointer hover:text-red-400 transition-colors shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsAuthenticated(false);
                     setUserRole(null);
                   }}
@@ -366,8 +441,9 @@ const App = () => {
             {!sidebarOpen && (
               <LogOut
                 size={14}
-                className="absolute bottom-6 left-1/2 -translate-x-1/2 text-slate-500 cursor-pointer hover:text-white transition-colors"
-                onClick={() => {
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 text-slate-500 cursor-pointer hover:text-red-400 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
                   setIsAuthenticated(false);
                   setUserRole(null);
                 }}
@@ -399,14 +475,19 @@ const App = () => {
           )}
 
           {activeTab === 'tests' && (
-            <MockTestView />
+            <MockTestView 
+                selectedStudent={selectedStudent} 
+                onTestSubmitted={(result) => refreshGapReport(result)}
+                setActiveTab={setActiveTab}
+                testHistory={history}
+            />
           )}
 
           {activeTab === 'gap' && <GapAnalysisView gapReport={gapReport} />}
 
           {activeTab === 'learning' && <LearningPathView gapReport={gapReport} />}
 
-          {activeTab === 'dsa' && <CodeEditorView />}
+          {activeTab === 'dsa' && <CodeEditorView gapReport={gapReport} />}
 
           {activeTab === 'resume' && <ResumeUploadView onProfileUpdate={(skills) => {
             console.log('Verified skills updated:', skills);
@@ -420,6 +501,7 @@ const App = () => {
               readinessScore={readinessScore}
               gapReport={gapReport}
               history={history}
+              dashboardTrack={dashboardTrack}
             />
           )}
 

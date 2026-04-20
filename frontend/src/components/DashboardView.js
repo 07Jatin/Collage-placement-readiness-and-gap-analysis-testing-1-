@@ -59,6 +59,36 @@ const DashboardView = ({
     setActiveTab,
     darkMode
 }) => {
+    // Handle empty state when no student data available
+    if (!gapReport && !readiness && (!history || history.length === 0)) {
+        return (
+            <div className="space-y-10 animate-in pb-12">
+                <header>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Insights</h1>
+                    <p className="font-medium text-lg text-slate-600 dark:text-slate-300">Predicting your trajectory in the global tech ecosystem.</p>
+                </header>
+                
+                <div className={`rounded-[2.5rem] p-16 text-center space-y-6 ${darkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-slate-50 border border-slate-200'}`}>
+                    <div className="inline-flex p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950">
+                        <AlertCircle size={40} className="text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                        <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>No Data Available</h3>
+                        <p className={darkMode ? 'text-slate-400' : 'text-slate-600'}>Upload your resume or take a mock assessment to generate insights and recommendations.</p>
+                    </div>
+                    <div className="flex gap-4 justify-center pt-4">
+                        <button onClick={() => setActiveTab('resume')} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors">
+                            Upload Resume
+                        </button>
+                        <button onClick={() => setActiveTab('tests')} className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                            Take Mock Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const chartText = darkMode ? '#94a3b8' : '#94a3b8';
     const gridColor = darkMode ? '#1e293b' : '#f1f5f9';
 
@@ -236,9 +266,13 @@ const DashboardView = ({
                         <h4 className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-8">Skill Radar Profile</h4>
                         <div className="h-64 mb-8">
                             <ResponsiveContainer width="100%" height="100%">
-                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                                     <PolarGrid stroke="rgba(255,255,255,0.05)" />
-                                    <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 'bold' }} />
+                                    <PolarAngleAxis 
+                                        dataKey="subject" 
+                                        tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: 'bold' }}
+                                        label={{ value: '', angle: 90, distance: 120 }}
+                                    />
                                     <Radar name="Proficiency" dataKey="A" stroke="#818cf8" fill="url(#radarFill)" fillOpacity={0.6} strokeWidth={2} />
                                     <defs>
                                         <linearGradient id="radarFill" x1="0" y1="0" x2="1" y2="1">
@@ -259,7 +293,7 @@ const DashboardView = ({
                                             <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
                                                 <div className={`h-full bg-gradient-to-r ${colors[i % colors.length]} rounded-full`} style={{ width: `${d.A}%` }} />
                                             </div>
-                                            <span className="text-xs font-bold w-8">{d.A}%</span>
+                                            <span className="text-xs font-bold w-10 text-right">{typeof d.A === 'number' ? d.A.toFixed(1) : d.A}%</span>
                                         </div>
                                     </div>
                                 );

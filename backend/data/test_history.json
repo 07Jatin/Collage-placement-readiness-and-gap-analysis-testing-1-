@@ -43,5 +43,99 @@
     "student_id": "S004",
     "test_date": "2026-02-25",
     "readiness_score": 88
+  },
+  {
+    "student_id": "S001",
+    "test_id": "TEST_AUTO_999",
+    "test_date": "2026-04-06",
+    "readiness_score": 45,
+    "category_scores": {
+      "quantitative": {
+        "score": 2,
+        "total": 25
+      },
+      "english": {
+        "score": 5,
+        "total": 25
+      },
+      "reasoning": {
+        "score": 28,
+        "total": 30
+      },
+      "computer_science": {
+        "score": 14,
+        "total": 15
+      },
+      "dsa_random_pool": {
+        "score": 5,
+        "total": 6
+      }
+    }
+  },
+  {
+    "student_id": "S001",
+    "test_id": "PMOCK-MNOKL7GP-EIM9N7",
+    "test_date": "2026-04-07",
+    "readiness_score": 20,
+    "category_scores": {
+      "quantitative": {
+        "score": 2,
+        "total": 25,
+        "label": "2/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 2,
+        "total": 30,
+        "label": "2/30"
+      },
+      "computer_science": {
+        "score": 15,
+        "total": 15,
+        "label": "15/15"
+      },
+      "dsa_random_pool": {
+        "score": 3,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
+  },
+  {
+    "student_id": "S001",
+    "test_id": "PMOCK-MNPN10N6-CYBYDR",
+    "test_date": "2026-04-08",
+    "readiness_score": 3,
+    "category_scores": {
+      "quantitative": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 0,
+        "total": 30,
+        "label": "0/30"
+      },
+      "computer_science": {
+        "score": 3,
+        "total": 15,
+        "label": "3/15"
+      },
+      "dsa_random_pool": {
+        "score": 0,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
   }
 ]

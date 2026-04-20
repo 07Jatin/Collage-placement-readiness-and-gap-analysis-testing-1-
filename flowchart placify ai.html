@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placify AI - Placement Readiness & Gap Analysis Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Shapes */
+        .node {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            font-weight: 600;
+            margin: 20px 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            font-size: 14px;
+            min-width: 140px;
+        }
+
+        .start-end {
+            background-color: #e9d5ff; /* Purple */
+            border: 2px solid #c084fc;
+            border-radius: 9999px;
+            aspect-ratio: 1 / 1;
+            width: 120px;
+        }
+
+        .action {
+            background-color: #bae6fd; /* Light Blue */
+            border: 2px solid #38bdf8;
+            border-radius: 4px;
+            width: 180px;
+        }
+
+        .decision {
+            background-color: #fef08a; /* Yellow */
+            border: 2px solid #facc15;
+            width: 140px;
+            height: 140px;
+            transform: rotate(45deg);
+        }
+
+        .decision span {
+            transform: rotate(-45deg);
+        }
+
+        /* Arrows & Connections (SVG-based logic) */
+        .arrow-v {
+            width: 2px;
+            height: 40px;
+            background-color: #3b82f6;
+            position: relative;
+        }
+        .arrow-v::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: -4px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 8px solid #3b82f6;
+        }
+
+        .label {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            position: absolute;
+        }
+        .label-yes { background-color: #22c55e; }
+        .label-no { background-color: #ef4444; }
+
+        .star { font-size: 24px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <div class="flow-container">
+        <!-- START -->
+        <div class="flex items-center gap-2 mb-2 font-bold text-lg">
+            <span class="text-yellow-500">⭐</span> START! <span class="text-yellow-500">⭐</span>
+        </div>
+        <div class="node start-end">Select Target Role / Domain</div>
+        <div class="arrow-v"></div>
+
+        <!-- ACTION 1 -->
+        <div class="node action">Attempt Readiness Assessment Test</div>
+        <div class="arrow-v"></div>
+
+        <!-- DECISION 1 -->
+        <div class="node decision">
+            <span>Score above 75%?</span>
+        </div>
+        
+        <div class="flex w-full max-w-2xl justify-between px-20 relative" style="margin-top: -20px;">
+            <!-- Path YES -->
+            <div class="flex flex-col items-center">
+                <div class="h-10 w-0.5 bg-green-500 relative">
+                    <span class="label label-yes -left-10 top-2">yes</span>
+                </div>
+                <div class="node action" style="border-color: #22c55e;">Proceed to Mock Interviews</div>
+                <div class="h-10 w-0.5 bg-green-500"></div>
+                <div class="node start-end">Placement Ready!</div>
+                <div class="flex items-center gap-2 mt-2 font-bold text-lg">
+                    <span class="text-yellow-500">⭐</span> END! <span class="text-yellow-500">⭐</span>
+                </div>
+            </div>
+
+            <!-- Path NO -->
+            <div class="flex flex-col items-center">
+                <div class="h-10 w-0.5 bg-red-500 relative">
+                    <span class="label label-no -right-10 top-2">no</span>
+                </div>
+                <div class="node action">Review Gap Analysis Report</div>
+                <div class="h-10 w-0.5 bg-blue-500"></div>
+                
+                <div class="node decision">
+                    <span>Is it a Skill Gap?</span>
+                </div>
+
+                <div class="flex gap-10 mt-10">
+                    <!-- Specific Gaps -->
+                    <div class="flex flex-col items-center">
+                         <div class="h-10 w-0.5 bg-green-500 relative">
+                             <span class="label label-yes -left-10 top-0">yes</span>
+                         </div>
+                         <div class="node action">Complete Technical Projects</div>
+                         <!-- Loop back -->
+                         <div class="h-8 w-0.5 bg-gray-400"></div>
+                         <div class="text-[10px] text-gray-400">Loop back to assessment</div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                         <div class="h-10 w-0.5 bg-red-500 relative">
+                             <span class="label label-no -right-10 top-0">no</span>
+                         </div>
+                         <div class="node action">Enroll in Soft Skills Training</div>
+                         <div class="h-8 w-0.5 bg-gray-400"></div>
+                         <div class="text-[10px] text-gray-400">Loop back to assessment</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-20 p-6 bg-white rounded-xl shadow-inner border border-gray-200 max-w-3xl text-sm text-gray-600">
+            <h3 class="font-bold text-gray-800 mb-2">Process Overview:</h3>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><strong>Assessment:</strong> Evaluates your current standing in technical and aptitude skills.</li>
+                <li><strong>Gap Analysis:</strong> Automatically identifies modules where performance is below industry benchmarks.</li>
+                <li><strong>Remediation:</strong> Recommends specific projects (Skill Gaps) or certifications (Knowledge Gaps).</li>
+                <li><strong>Iterative Improvement:</strong> The loop continues until the "Placement Ready" criteria are met.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

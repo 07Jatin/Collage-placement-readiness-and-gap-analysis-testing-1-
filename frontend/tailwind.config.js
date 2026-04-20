@@ -11,6 +11,9 @@ module.exports = {
                 '4xl': '2rem',
                 '5xl': '2.5rem',
             },
+            spacing: {
+                '84': '21rem',
+            },
             colors: {
                 indigo: {
                     950: '#1e1b4b',
