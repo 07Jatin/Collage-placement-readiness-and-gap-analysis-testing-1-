@@ -527,10 +527,39 @@ export const SKILL_QUIZZES = {
 // PART 4: Verification Level Calculator
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+function shuffleQuestions(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+export function buildExtendedQuiz(skillId, targetCount = 25) {
+    const base = SKILL_QUIZZES[skillId] || [];
+    if (!base.length) return [];
+
+    const extended = [];
+    let idx = 0;
+    while (extended.length < targetCount) {
+        const source = base[idx % base.length];
+        const repeat = Math.floor(idx / base.length) + 1;
+        const clone = {
+            ...source,
+            question: repeat > 1 ? `${source.question} (Round ${repeat})` : source.question
+        };
+        extended.push(clone);
+        idx += 1;
+    }
+
+    return shuffleQuestions(extended).slice(0, targetCount);
+}
+
 export function calculateVerifiedLevel(quizScore, totalQuestions) {
     if (totalQuestions === 0) {
-        // Auto-approve newly added skills that don't have defined quizzes yet
-        return { level: "proficient", label: "Auto-Verified", adjustedConfidence: 80, color: "blue" };
+        // No quiz available: do not auto-verify any skill without an explicit quiz.
+        return { level: "failed", label: "Not Verified", adjustedConfidence: 0, color: "rose" };
     }
     const percentage = (quizScore / totalQuestions) * 100;
     if (percentage === 100) return { level: "expert", label: "Expert", adjustedConfidence: 100, color: "emerald" };

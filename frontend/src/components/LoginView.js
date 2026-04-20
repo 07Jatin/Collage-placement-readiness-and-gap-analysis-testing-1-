@@ -1,58 +1,83 @@
 import React, { useState } from 'react';
-import { Target, GraduationCap, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
+import { Target, GraduationCap, ShieldCheck, AlertCircle, Loader2, Sun, Moon, Eye, EyeOff } from 'lucide-react';
 
-const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedStudent }) => {
+const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedStudent, darkMode, setDarkMode }) => {
     const [selected, setSelected] = useState('student');
-    const [username, setUsername] = useState(''); // Roll No / Admin Name
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [mobile, setMobile] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const allowedAdmins = ['jatin', 'trilok', 'akshar', 'bhavya', 'jatin trilok akshar bhbaya'];
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
         setError('');
-        const cleanUsername = username.trim().toLowerCase();
+        const cleanUsername = username.trim();
+        const cleanPassword = password.trim();
         
         if (selected === 'admin') {
-            const cleanPassword = password.trim();
             if (!cleanUsername || !cleanPassword) {
                 setError('Please enter both username and password');
-                return;
-            }
-            if (allowedAdmins.includes(cleanUsername) && cleanPassword === '12345') {
-                setUserRole('admin');
-                setIsAuthenticated(true);
-                setActiveTab('admin');
-                setSelectedStudent(username.trim().toUpperCase());
-            } else {
-                setError('Invalid administrator credentials');
-            }
-        } else {
-            // Student Login/Signup
-            if (!cleanUsername || !name.trim()) {
-                setError('Name and Roll Number are required.');
                 return;
             }
             
             setLoading(true);
             try {
+                const response = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: cleanUsername,
+                        password: cleanPassword
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Invalid administrator credentials');
+                }
+                
+                const data = await response.json();
+                localStorage.setItem('placify_token', data.token);
+                
+                setUserRole('admin');
+                setIsAuthenticated(true);
+                setActiveTab('admin');
+                setSelectedStudent(cleanUsername.toUpperCase());
+                
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            // Roll Number is treated as varchar (string) automatically
+            if (!cleanUsername || !cleanPassword) {
+                setError('Roll Number and Password are required.');
+                return;
+            }
+            
+            setLoading(true);
+            try {
+                // If student is already in JSON, name is optional. 
+                // If they are new, name will be updated/set on backend.
                 const response = await fetch('http://127.0.0.1:8000/api/students/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        roll_no: username.trim().toUpperCase(),
-                        name: name.trim(),
+                        roll_no: cleanUsername.toUpperCase(),
+                        password: cleanPassword,
+                        name: name.trim() || undefined, // Allow empty name if existing
                         email: email.trim(),
                         mobile: mobile.trim()
                     })
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Failed to register/authenticate student');
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Authentication failed');
                 }
                 const data = await response.json();
                 
@@ -70,150 +95,176 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
     };
 
     return (
-        <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-6 md:p-12 relative overflow-y-auto">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2"></div>
+        <div className={`min-h-screen flex items-center justify-center p-6 md:p-12 relative overflow-hidden font-sans transition-colors duration-700 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+            {/* Animated Background Blobs */}
+            <div className={`absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40`}>
+                <div className={`absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full blur-[120px] animate-pulse duration-[8s] ${darkMode ? 'bg-indigo-900/30' : 'bg-indigo-200/50'}`}></div>
+                <div className={`absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full blur-[120px] animate-pulse duration-[10s] ${darkMode ? 'bg-emerald-900/20' : 'bg-emerald-100/50'}`}></div>
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] rounded-full blur-[150px] animate-pulse duration-[12s] ${darkMode ? 'bg-purple-900/20' : 'bg-purple-100/40'}`}></div>
+            </div>
 
-            <div className="w-full max-w-xl relative z-10 space-y-8 my-8">
+            {/* Subtle Tech Pattern Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: `radial-gradient(${darkMode ? '#fff' : '#000'} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
+
+            <div className="w-full max-w-xl relative z-20 space-y-8 my-8">
+                {/* Header Section */}
                 <div className="text-center space-y-4">
-                    <div className="inline-flex p-4 rounded-3xl bg-white shadow-xl border border-slate-100 mb-4 animate-bounce-slow">
-                        <Target size={48} className="text-indigo-600" />
-                    </div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tight">
-                        Placify <span className="text-indigo-600">AI</span>
-                    </h1>
-                    <p className="text-slate-500 font-medium text-lg">Next-Gen Placement Readiness & Market Fit</p>
-                </div>
-
-                <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 space-y-8">
-                    <div className="space-y-2">
-                        <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
-                        <p className="text-slate-400 text-sm">Please select your portal to continue</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                        <button
-                            onClick={() => { setSelected('student'); setError(''); }}
-                            className={`p-6 rounded-[2rem] border-2 transition-all duration-300 text-left space-y-4 ${selected === 'student'
-                                ? 'border-indigo-600 bg-indigo-50 shadow-lg shadow-indigo-100'
-                                : 'border-slate-100 hover:border-indigo-200 bg-white'
-                                }`}
-                        >
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${selected === 'student' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
-                                }`}>
-                                <GraduationCap size={24} />
-                            </div>
-                            <div>
-                                <p className={`font-bold ${selected === 'student' ? 'text-indigo-900' : 'text-slate-600'}`}>Student</p>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Learning Portal</p>
-                            </div>
-                        </button>
-
-                        <button
-                            onClick={() => { setSelected('admin'); setError(''); }}
-                            className={`p-6 rounded-[2rem] border-2 transition-all duration-300 text-left space-y-4 ${selected === 'admin'
-                                ? 'border-rose-600 bg-rose-50 shadow-lg shadow-rose-100'
-                                : 'border-slate-100 hover:border-rose-200 bg-white'
-                                }`}
-                        >
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${selected === 'admin' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-400'
-                                }`}>
-                                <ShieldCheck size={24} />
-                            </div>
-                            <div>
-                                <p className={`font-bold ${selected === 'admin' ? 'text-rose-900' : 'text-slate-600'}`}>Administrator</p>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Insight Engine</p>
-                            </div>
-                        </button>
-                    </div>
-
-                    {selected === 'admin' ? (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Admin Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Admin Name"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Security Key</label>
-                                <input
-                                    type="password"
-                                    placeholder="•••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium"
-                                />
-                            </div>
+                    <div className={`inline-flex p-5 rounded-[2.5rem] shadow-2xl transition-all duration-500 hover:rotate-6 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} border`}>
+                        <div className="bg-gradient-to-tr from-indigo-600 to-purple-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20">
+                            <Target size={42} className="text-white" />
                         </div>
-                    ) : (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Full Name *</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Your Name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Roll Number *</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g., S001"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Email Address</label>
-                                <input
-                                    type="email"
-                                    placeholder="Enter College Email (Optional)"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Mobile Number</label>
-                                <input
-                                    type="tel"
-                                    placeholder="Enter Mobile Number (Optional)"
-                                    value={mobile}
-                                    onChange={(e) => setMobile(e.target.value)}
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center text-rose-600 space-x-3 text-sm font-bold animate-pulse">
-                            <AlertCircle size={18} />
-                            <span>{error}</span>
-                        </div>
-                    )}
-
-                    <button
-                        onClick={handleLogin}
-                        disabled={loading}
-                        className="w-full py-5 rounded-2xl font-black text-white shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-indigo-600 shadow-indigo-200 hover:bg-indigo-700 disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center"
+                    </div>
+                    <div className="space-y-1">
+                        <h1 className={`text-6xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                            Placify <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">AI</span>
+                        </h1>
+                        <p className={`font-bold text-lg ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>The Future of Career Orchestration</p>
+                    </div>
+                    
+                    {/* Theme Toggle Button */}
+                    <button 
+                        onClick={() => setDarkMode(!darkMode)}
+                        className={`absolute top-0 right-0 p-3 rounded-2xl transition-all active:scale-90 ${darkMode ? 'bg-slate-900 text-amber-400 border-slate-800' : 'bg-white text-slate-500 border-slate-100'} border shadow-xl`}
                     >
-                        {loading && <Loader2 size={20} className="animate-spin mr-2" />}
-                        {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
+                        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </div>
 
-                <p className="text-center text-slate-400 text-sm font-medium">
-                    Contact your department for portal access issues.
+                {/* Main Auth Card */}
+                <div className={`p-10 rounded-[3.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] border transition-all duration-500 backdrop-blur-3xl ${darkMode ? 'bg-slate-900/80 border-slate-800/80' : 'bg-white/80 border-white/20'}`}>
+                    <div className="space-y-3 mb-10">
+                        <h2 className={`text-3xl font-black ${darkMode ? 'text-white' : 'text-slate-900'}`}>Welcome Back</h2>
+                        <p className={`font-medium ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Select your portal to synchronize your progress.</p>
+                    </div>
+
+                    {/* Portal Switcher */}
+                    <div className={`p-2 rounded-[2.5rem] flex items-center mb-10 ${darkMode ? 'bg-slate-950/50' : 'bg-slate-100/50'}`}>
+                        <button
+                            onClick={() => { setSelected('student'); setError(''); }}
+                            className={`flex-1 flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'student'
+                                ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/30'
+                                : `${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`
+                                }`}
+                        >
+                            <GraduationCap size={20} />
+                            <span>STUDENT</span>
+                        </button>
+                        <button
+                            onClick={() => { setSelected('admin'); setError(''); }}
+                            className={`flex-1 flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'admin'
+                                ? 'bg-rose-600 text-white shadow-xl shadow-rose-500/30'
+                                : `${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`
+                                }`}
+                        >
+                            <ShieldCheck size={20} />
+                            <span>INSTITUTIONAL</span>
+                        </button>
+                    </div>
+
+                    {/* Interaction Fields */}
+                    <div className="space-y-6">
+                        {selected === 'admin' ? (
+                            <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="space-y-2">
+                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Institutional ID</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Admin Username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-rose-500/10 focus:border-rose-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-rose-500/10 focus:border-rose-500'}`}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Access Key</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-rose-500/10 focus:border-rose-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-rose-500/10 focus:border-rose-500'}`}
+                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="space-y-2">
+                                        <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Full Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Your Name (Optional if existing)"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Roll No</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. S001"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Security Crypt / Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Secret Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                    <p className={`text-[10px] font-bold px-4 ${darkMode ? 'text-slate-600' : 'text-slate-400'}`}>New users: Create a password. Existing users: Enter your registered key.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-3xl flex items-center text-rose-500 space-x-3 text-sm font-black animate-in fade-in zoom-in duration-300">
+                                <AlertCircle size={20} />
+                                <span>{error}</span>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleLogin}
+                            disabled={loading}
+                            className={`w-full py-6 rounded-3xl font-black text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 flex items-center justify-center text-lg ${
+                                selected === 'admin' 
+                                ? 'bg-gradient-to-r from-rose-600 to-red-600 shadow-rose-900/10' 
+                                : 'bg-gradient-to-r from-indigo-600 to-purple-600 shadow-indigo-900/10'
+                            }`}
+                        >
+                            {loading ? <Loader2 size={24} className="animate-spin" /> : 'Synchronize Identity'}
+                        </button>
+                    </div>
+                </div>
+
+                <p className={`text-center font-bold text-sm ${darkMode ? 'text-slate-600' : 'text-slate-400'}`}>
+                    Placify AI Secure Authentication Layer v4.0.1
                 </p>
             </div>
         </div>
@@ -221,4 +272,3 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
 };
 
 export default LoginView;
-

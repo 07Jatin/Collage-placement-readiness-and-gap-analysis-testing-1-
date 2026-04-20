@@ -151,6 +151,15 @@ body.dark-mode {
   border-color: rgba(244, 63, 94, 0.2);
 }
 
+/* ━━━━━━━━━━━━━━━━━━ Utility classes ━━━━━━━━━━━━━━━━━━ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ━━━━━━━━━━━━━━━━━━ Glow Effects ━━━━━━━━━━━━━━━━━━ */
 .glow-indigo {
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.2), 0 0 60px rgba(99, 102, 241, 0.05);

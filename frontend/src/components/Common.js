@@ -4,16 +4,26 @@ export const SidebarItem = ({ icon: Icon, label, active, onClick, collapsed }) =
     <button
         onClick={onClick}
         title={collapsed ? label : ''}
-        className={`w-full flex items-center rounded-lg transition-all duration-200 group relative ${collapsed ? 'justify-center px-0 py-3' : 'space-x-3 px-4 py-3'
-            } ${active ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+        className={`w-full flex items-center rounded-2xl transition-all duration-300 group relative ${collapsed ? 'justify-center px-0 py-4' : 'space-x-4 px-6 py-4'
+            } ${active 
+                ? 'bg-white/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)]' 
+                : 'text-slate-400/60 hover:bg-white/5 hover:text-white hover:translate-x-1'
             }`}
     >
-        <Icon size={20} className="shrink-0" />
-        {!collapsed && <span className="font-medium whitespace-nowrap overflow-hidden">{label}</span>}
-        {collapsed && (
-            <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl pointer-events-none z-50">
+        <div className={`transition-all duration-300 ${active ? 'text-indigo-400 scale-110' : 'group-hover:text-indigo-400'}`}>
+            <Icon size={22} className="shrink-0" />
+        </div>
+        {!collapsed && (
+            <span className={`text-sm tracking-wide transition-all duration-300 ${active ? 'font-black' : 'font-medium group-hover:font-semibold'}`}>
                 {label}
-                <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+            </span>
+        )}
+        {active && !collapsed && (
+            <div className="absolute left-0 w-1 h-6 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+        )}
+        {collapsed && (
+            <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-black uppercase tracking-widest rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-2xl pointer-events-none z-50 border border-white/5">
+                {label}
             </div>
         )}
     </button>

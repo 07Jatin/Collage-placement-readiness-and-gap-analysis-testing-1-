@@ -3,32 +3,9 @@ import {
   Clock, ArrowRight, ArrowLeft, ShieldCheck,
   FileText, Sparkles, CheckCircle2,
   Target, AlertCircle, BookOpen, Code, Timer, Award, ChevronRight,
-  Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye, ExternalLink
+  Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye, ExternalLink, Send
 } from 'lucide-react';
 import { generatePlacementTest } from '../utils/resumeTestGenerator';
-import { SAMPLE_RESUME } from '../data/skillData';
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
-// ━━━━━━━━━ PDF Text Extraction ━━━━━━━━━
-async function extractTextFromPDF(arrayBuffer) {
-  try {
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let fullText = '';
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const strings = content.items.map(item => item.str);
-      fullText += strings.join(' ') + '\n';
-    }
-    return fullText;
-  } catch (err) {
-    console.error('PDF parsing error:', err);
-    return '';
-  }
-}
 
 // ━━━━━━━━━ SECTION META INFO ━━━━━━━━━
 const SECTION_META = {
@@ -40,51 +17,14 @@ const SECTION_META = {
 };
 const SECTION_ORDER = ['quantitative', 'english', 'reasoning', 'computer_science', 'dsa_random_pool'];
 
-// ━━━━━━━━━ STEP 1: Resume Upload for Test ━━━━━━━━━
-const ResumeInputStep = ({ onGenerate }) => {
-  const [resumeText, setResumeText] = useState('');
-  const [fileName, setFileName] = useState('');
-  const [dragOver, setDragOver] = useState(false);
+// ━━━━━━━━━ STEP 1: Test Introduction ━━━━━━━━━
+const StartTestStep = ({ onGenerate }) => {
   const [generating, setGenerating] = useState(false);
-  const [parseStatus, setParseStatus] = useState(''); // '', 'parsing', 'done', 'error'
-
-  const handleFileRead = async (file) => {
-    setFileName(file.name);
-    const ext = file.name.split('.').pop().toLowerCase();
-
-    if (ext === 'pdf') {
-      // Parse PDF to extract actual text
-      setParseStatus('parsing');
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const text = await extractTextFromPDF(arrayBuffer);
-        if (text.trim()) {
-          setResumeText(text);
-          setParseStatus('done');
-        } else {
-          setParseStatus('error');
-          setResumeText('');
-        }
-      } catch (err) {
-        console.error('Error reading PDF:', err);
-        setParseStatus('error');
-      }
-    } else {
-      // Plain text / other files
-      setParseStatus('');
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setResumeText(e.target.result);
-        setParseStatus('done');
-      };
-      reader.readAsText(file);
-    }
-  };
 
   const handleGenerate = () => {
     setGenerating(true);
     setTimeout(() => {
-      onGenerate(resumeText);
+      onGenerate('');
     }, 1500);
   };
 
@@ -102,8 +42,8 @@ const ResumeInputStep = ({ onGenerate }) => {
           Placement Readiness <span className="text-indigo-600">Mock Test</span>
         </h2>
         <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
-          Upload your resume to generate a <span className="text-indigo-600 font-bold">personalized, randomized</span> test
-          calibrated to your skills and target role.
+          Generate a <span className="text-indigo-600 font-bold">randomized</span> mock test
+          calibrated for your placement preparation.
         </p>
       </div>
 
@@ -124,99 +64,30 @@ const ResumeInputStep = ({ onGenerate }) => {
         })}
       </div>
 
-      {/* Upload Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault(); setDragOver(false);
-            const file = e.dataTransfer.files[0];
-            if (file) handleFileRead(file);
-          }}
-          className={`relative rounded-[2.5rem] border-2 border-dashed p-12 text-center transition-all duration-300 cursor-pointer ${
-            dragOver ? 'border-indigo-500 bg-indigo-50 scale-[1.02]' : 'border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50'
-          }`}
-        >
-          <input type="file" accept=".txt,.pdf,.doc,.docx"
-            onChange={(e) => { const f = e.target.files[0]; if (f) handleFileRead(f); }}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          <div className="space-y-4">
-            <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center transition-colors ${
-              dragOver ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
-            }`}>
-              <FileUp size={32} />
-            </div>
-            <p className="font-bold text-slate-700 text-lg">
-              {fileName ? fileName : 'Drop your resume here'}
-            </p>
-            <p className="text-sm text-slate-400">Supports .txt and .pdf resume files</p>
-            {parseStatus === 'parsing' && (
-              <div className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-bold">
-                <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mr-2"></div> Extracting text from PDF...
-              </div>
-            )}
-            {parseStatus === 'error' && (
-              <div className="inline-flex items-center px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-sm font-bold">
-                <AlertCircle size={16} className="mr-2" /> Could not extract text. Try pasting content instead.
-              </div>
-            )}
-            {(parseStatus === 'done' || (fileName && parseStatus === '')) && (
-              <div className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-bold">
-                <CheckCircle2 size={16} className="mr-2" /> File loaded
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center">
-              <ClipboardPaste size={14} className="mr-2" /> Or paste content
-            </label>
-            <button onClick={() => { setResumeText(SAMPLE_RESUME); setFileName('sample_resume.txt'); }}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center">
-              <Sparkles size={12} className="mr-1" /> Load Sample
-            </button>
-          </div>
-          <textarea value={resumeText} onChange={(e) => setResumeText(e.target.value)}
-            placeholder="Paste your resume text here..."
-            className="w-full h-[280px] p-6 rounded-2xl bg-white border border-slate-100 text-slate-700 font-medium text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all custom-scrollbar"
-          />
-        </div>
-      </div>
-
-      {/* Generate Button (Moved above Features banner for visibility) */}
-      <div className="flex flex-col items-center justify-center py-6 gap-3">
+      {/* Generate Button */}
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
         <button onClick={handleGenerate} disabled={generating}
           className={`px-16 py-6 rounded-2xl font-black text-xl shadow-2xl transition-all flex items-center ${
             generating ? 'bg-indigo-600 text-white opacity-80 cursor-wait' :
-            !resumeText.trim() 
-              ? 'bg-white border-2 border-slate-200 text-slate-600 hover:border-indigo-500 hover:text-indigo-600 hover:-translate-y-1 hover:shadow-indigo-100 active:scale-[0.98]' 
-              : 'bg-indigo-600 text-white shadow-indigo-300 hover:bg-indigo-700 hover:-translate-y-1 active:scale-[0.98]'
+            'bg-indigo-600 text-white shadow-indigo-300 hover:bg-indigo-700 hover:-translate-y-1 active:scale-[0.98]'
           }`}>
           {generating ? (
             <><div className="w-6 h-6 border-4 border-slate-300 border-t-indigo-600 rounded-full animate-spin mr-4"></div> Crafting Your Test...</>
           ) : (
-            <><Zap size={24} className="mr-3" /> {resumeText.trim() ? 'Generate Resume-Tuned Test' : 'Skip Resume & Generate Mock Test'}</>
+            <><Zap size={24} className="mr-3" /> Generate Mock Test</>
           )}
         </button>
-        {!resumeText.trim() && !generating && (
-          <p className="text-sm font-bold text-slate-400">Standard questions will be randomly selected from the bank.</p>
-        )}
       </div>
 
       {/* Features Banner */}
       <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden">
         <div className="relative z-10">
           <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-6">Test Features</h4>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { s: "1", t: "101 Questions", d: "25 Quant + 25 English + 30 Reasoning + 15 CS + 6 DSA" },
               { s: "2", t: "Difficulty Mix", d: "30% Easy, 50% Medium, 20% Hard" },
-              { s: "3", t: "Resume-Tuned", d: "DSA questions match your tech stack" },
-              { s: "4", t: "Always Unique", d: "Randomized every single time" }
+              { s: "3", t: "Always Unique", d: "Randomized every single time from our test bank" }
             ].map((item, i) => (
               <div key={i} className="flex items-start space-x-4">
                 <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-sm shrink-0">
@@ -258,30 +129,7 @@ const TestOverview = ({ testData, onStartSection, sectionProgress, onFinishAll, 
         </button>
       </div>
 
-      {/* Resume Analysis Card */}
-      <div className="premium-card p-8">
-        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
-          <FileText size={20} className="mr-2 text-indigo-600" /> Resume Analysis
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Top Skills Detected</p>
-            <div className="flex flex-wrap gap-2">
-              {testData.resume_analysis.top_skills.map((skill, i) => (
-                <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-bold">{skill}</span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Suggested Roles</p>
-            <div className="flex flex-wrap gap-2">
-              {testData.resume_analysis.suggested_roles.map((role, i) => (
-                <span key={i} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-bold">{role}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Progress Bar */}
       <div className="premium-card p-6">
@@ -358,7 +206,7 @@ const TestOverview = ({ testData, onStartSection, sectionProgress, onFinishAll, 
 };
 
 // ━━━━━━━━━ STEP 3: Section Test (MCQ or DSA) ━━━━━━━━━
-const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
+const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack, onSubmitEarly }) => {
   const [currentQ, setCurrentQ] = useState(0);
   const meta = SECTION_META[sectionKey];
   const Icon = meta.icon;
@@ -379,9 +227,17 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
           <button onClick={onBack} className="flex items-center text-slate-400 hover:text-slate-700 font-bold transition-colors">
             <ArrowLeft size={18} className="mr-2" /> Back to Overview
           </button>
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-xl bg-${meta.color}-50 text-${meta.color}-600`}><Icon size={20} /></div>
-            <span className="font-black text-slate-900 text-lg">{meta.label}</span>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={onSubmitEarly}
+              className="px-4 py-2 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 transition-colors flex items-center"
+            >
+              <Send size={16} className="mr-2" /> Submit Test Early
+            </button>
+            <div className="flex items-center space-x-3">
+              <div className={`p-2 rounded-xl bg-${meta.color}-50 text-${meta.color}-600`}><Icon size={20} /></div>
+              <span className="font-black text-slate-900 text-lg">{meta.label}</span>
+            </div>
           </div>
         </div>
 
@@ -461,6 +317,12 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
             </div>
           </div>
           <div className="flex items-center space-x-3">
+            <button
+              onClick={onSubmitEarly}
+              className="px-4 py-2 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 transition-colors flex items-center"
+            >
+              <Send size={16} className="mr-2" /> Submit Test
+            </button>
             <span className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest ${
               q.difficulty === 'hard' ? 'bg-red-50 text-red-600' : q.difficulty === 'medium' ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'
             }`}>{q.difficulty}</span>
@@ -533,7 +395,7 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack }) => {
 };
 
 // ━━━━━━━━━ STEP 4: Results Screen ━━━━━━━━━
-const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, onTestSubmitted, setActiveTab }) => {
+const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, onTestSubmitted, setActiveTab, testHistory = [] }) => {
   const scores = {};
   SECTION_ORDER.forEach(key => {
     if (key === 'dsa_random_pool') {
@@ -605,7 +467,7 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Skills from Resume</p>
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Target Role Profile</p>
             <div className="flex flex-wrap gap-2">
               {testData.resume_analysis.top_skills.map((s, i) => (
                 <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-bold">{s}</span>
@@ -631,6 +493,36 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
         </div>
       </div>
 
+      {/* Previous Attempts */}
+      {testHistory && testHistory.length > 0 && (
+        <div className="premium-card p-8">
+          <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
+            <Clock size={20} className="mr-2 text-violet-600" /> Previous Attempts
+          </h3>
+          <div className="space-y-3">
+            {testHistory.slice(-5).reverse().map((attempt, idx) => (
+              <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm font-bold text-slate-500 min-w-[100px]">{attempt.date}</div>
+                  <div className="text-sm text-slate-600">{attempt.track || 'Placement Test'}</div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className={`text-lg font-bold ${attempt.score >= 70 ? 'text-emerald-600' : attempt.score >= 40 ? 'text-amber-600' : 'text-rose-600'}`}>
+                    {attempt.score}%
+                  </div>
+                  <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full ${attempt.score >= 70 ? 'bg-emerald-500' : attempt.score >= 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                      style={{ width: `${attempt.score}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 pb-8">
         <button 
@@ -652,11 +544,11 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
               });
               
               if (response.ok) {
-                if (onTestSubmitted) onTestSubmitted();
-                btn.innerHTML = '✓ Synced with Roadmap';
+                if (onTestSubmitted) await onTestSubmitted({ testData, scores });
+                btn.innerHTML = '✓ Synced with Gap Visualizer';
                 btn.className = 'bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl shadow-emerald-200 transition-all flex items-center justify-center';
                 setTimeout(() => {
-                  if (setActiveTab) setActiveTab('learning');
+                  if (setActiveTab) setActiveTab('gap');
                 }, 1000);
               } else {
                 btn.innerHTML = 'Failed to Sync';
@@ -683,7 +575,7 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
 };
 
 // ━━━━━━━━━ MAIN COMPONENT ━━━━━━━━━
-const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
+const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab, testHistory = [] }) => {
   const [phase, setPhase] = useState('upload'); // upload | overview | section | results
   const [testData, setTestData] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
@@ -719,6 +611,13 @@ const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
     setActiveSection(null);
   };
 
+  const handleSubmitEarly = () => {
+    // Go back to overview and then submit
+    setPhase('overview');
+    setActiveSection(null);
+    // The overview will show the submit button
+  };
+
   const handleFinishAll = () => {
     setPhase('results');
   };
@@ -730,7 +629,7 @@ const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
     setSectionProgress({ quantitative: {}, english: {}, reasoning: {}, computer_science: {}, dsa_random_pool: {} });
   };
 
-  if (phase === 'upload') return <ResumeInputStep onGenerate={handleGenerate} />;
+  if (phase === 'upload') return <StartTestStep onGenerate={handleGenerate} />;
 
   if (phase === 'overview' && testData) {
     return (
@@ -752,6 +651,7 @@ const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
         answers={sectionProgress[activeSection]}
         onAnswer={handleAnswer}
         onBack={handleBackToOverview}
+        onSubmitEarly={handleSubmitEarly}
       />
     );
   }
@@ -765,6 +665,7 @@ const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab }) => {
         selectedStudent={selectedStudent}
         onTestSubmitted={onTestSubmitted}
         setActiveTab={setActiveTab}
+        testHistory={testHistory}
       />
     );
   }

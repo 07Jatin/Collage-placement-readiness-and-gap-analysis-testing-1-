@@ -357,7 +357,7 @@ const ProblemList = ({ problems, selected, onSelect, isOpen, onToggle }) => {
 // Main Component
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const CodeEditorView = () => {
+const CodeEditorView = ({ gapReport = null, selectedStudent = 'S001' }) => {
     const [selectedProblem, setSelectedProblem] = useState(DSA_PROBLEMS[0]);
     const [language, setLanguage] = useState('python');
     const [code, setCode] = useState(DSA_PROBLEMS[0].defaultCode['python']);
@@ -390,21 +390,40 @@ const CodeEditorView = () => {
     const fetchDynamicLeetcode = async () => {
         setIsFetchingDynamic(true);
         try {
-            // Pick a random skill gap to search for
-            const randomSkills = ["Array", "Linked List", "String", "Tree", "Hash Table"];
-            const skill = randomSkills[Math.floor(Math.random() * randomSkills.length)];
-            
-            const response = await fetch(`http://127.0.0.1:8000/api/dsa/dynamic/${skill}`);
+            // Priority 1: Use the backend recommendation engine (factors in gaps + history)
+            const response = await fetch(`http://127.0.0.1:8000/api/dsa/recommendation/${selectedStudent}`);
             const data = await response.json();
             
             if (data.error) {
-                alert("Failed to fetch: " + data.error);
-                return;
+                // Priority 2: Fallback to client-side gap mapping
+                let skillToSearch = "Array";
+                if (gapReport && gapReport.missing_skills && gapReport.missing_skills.length > 0) {
+                    const skillMap = {
+                        'Linked List': 'Linked List',
+                        'Array': 'Array',
+                        'Binary Tree': 'Tree',
+                        'Strings': 'String',
+                        'Hash Table': 'Hash Table'
+                    };
+                    const mappedSkill = gapReport.missing_skills[0];
+                    skillToSearch = skillMap[mappedSkill] || "Array";
+                }
+                
+                const fallbackRes = await fetch(`http://127.0.0.1:8000/api/dsa/dynamic/${skillToSearch}`);
+                const fallbackData = await fallbackRes.json();
+                
+                if (fallbackData.error) {
+                    alert("Failed to fetch: " + fallbackData.error);
+                    return;
+                }
+                setSelectedProblem(fallbackData);
+                setCode(fallbackData.defaultCode[language] || fallbackData.defaultCode['python'] || "");
+            } else {
+                setSelectedProblem(data);
+                setCode(data.defaultCode[language] || data.defaultCode['python'] || "");
             }
             
-            setSelectedProblem(data);
-            setCode(data.defaultCode[language] || data.defaultCode['python'] || "");
-            setOutput("Dynamic problem loaded from LeetCode. Syntax verification only.");
+            setOutput("Personalized gap problem loaded from LeetCode. Synthetic verification active.");
             setResults(null);
             setBottomTab('testcase');
         } catch (e) {

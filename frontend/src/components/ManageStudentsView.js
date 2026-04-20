@@ -211,6 +211,7 @@ const StudentDetailModal = ({ student, onClose, darkMode }) => {
 
 const ManageStudentsView = ({ darkMode = false, students = [] }) => {
     const STUDENT_DATABASE = useMemo(() => {
+        if (!Array.isArray(students)) return [];
         return students.map(s => ({
             ...s,
             readiness: s.readiness || Math.floor(Math.random() * 40 + 40),
@@ -356,7 +357,7 @@ const ManageStudentsView = ({ darkMode = false, students = [] }) => {
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 opacity-40" />
                         <input
                             type="text"
-                            placeholder="Search by name, ID, email, skill..."
+                            placeholder="Search by name, Roll No/ID, email, skill..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className={`w-full pl-11 pr-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all ${darkMode

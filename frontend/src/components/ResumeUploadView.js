@@ -2,13 +2,14 @@ import React, { useState, useMemo } from 'react';
 import {
     Upload, FileText, CheckCircle2, XCircle, ChevronRight,
     Zap, Shield, Award, ArrowRight, ArrowLeft, RotateCcw,
-    Sparkles, Target, AlertCircle, ClipboardPaste, FileUp
+    Sparkles, Target, AlertCircle, ClipboardPaste, FileUp, Send
 } from 'lucide-react';
 import {
     extractSkillsFromText,
     SKILL_QUIZZES,
     SKILL_KEYWORDS,
     calculateVerifiedLevel,
+    buildExtendedQuiz,
     SAMPLE_RESUME
 } from '../data/skillData';
 
@@ -409,7 +410,7 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
                                 onClick={() => onStartQuiz(skillId)}
                                 className="w-full py-3 rounded-xl font-bold text-sm bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-40 flex items-center justify-center"
                             >
-                                <Shield size={14} className="mr-2" /> {SKILL_QUIZZES[skillId] ? 'Verify with Quiz' : 'Auto-Verify Skill'}
+                                <Shield size={14} className="mr-2" /> Verify with Quiz
                             </button>
                         ) : (
                             <div className="flex items-center justify-center py-3 text-emerald-600">
@@ -450,12 +451,11 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 3: Quiz ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
+const QuizStep = ({ skillId, skills, questions, onFinishQuiz, onBack }) => {
     const [currentQ, setCurrentQ] = useState(0);
     const [answers, setAnswers] = useState({});
     const [showResult, setShowResult] = useState(false);
 
-    const questions = SKILL_QUIZZES[skillId] || [];
     const skill = skills[skillId];
 
     const handleAnswer = (optIdx) => {
@@ -531,18 +531,18 @@ const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
     if (questions.length === 0) {
         return (
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-in py-12">
-                <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl bg-blue-500 shadow-blue-200">
-                    <CheckCircle2 size={48} className="text-white" />
+                <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center shadow-xl bg-rose-500 shadow-rose-200">
+                    <XCircle size={48} className="text-white" />
                 </div>
                 <div className="space-y-4">
-                    <h3 className="text-3xl font-black text-slate-900">Auto-Verified</h3>
+                    <h3 className="text-3xl font-black text-slate-900">Verification Required</h3>
                     <p className="text-slate-500 font-medium">
-                        Great! Your experience with <span className="font-bold text-slate-800 capitalize">{skillId.replace(/-/g, ' ')}</span> is noted. 
-                        No specific quiz is required for this newly added skill.
+                        We do not currently have a quiz available for <span className="font-bold text-slate-800 capitalize">{skillId.replace(/-/g, ' ')}</span>.
+                        This skill cannot be auto-verified and must be reviewed manually or added to the quiz bank.
                     </p>
                 </div>
                 <button
-                    onClick={() => onFinishQuiz(skillId, 1, 0)}
+                    onClick={() => onFinishQuiz(skillId, 0, 0)}
                     className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
                 >
                     Return to Skills Dashboard
@@ -567,8 +567,15 @@ const QuizStep = ({ skillId, skills, onFinishQuiz, onBack }) => {
                     <span className="text-2xl">{skill?.icon}</span>
                     <span className="font-black text-slate-900 capitalize text-lg">{skillId.replace(/-/g, ' ')}</span>
                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-black">
-                        Verification Quiz
+                        Verification Quiz ({questions.length || 25} Questions)
                     </span>
+                    <button
+                        onClick={finishQuiz}
+                        disabled={Object.keys(answers).length === 0}
+                        className="flex items-center bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-40 shadow-lg"
+                    >
+                        <Send size={16} className="mr-2" /> Submit Quiz
+                    </button>
                 </div>
             </div>
 
@@ -794,6 +801,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
     const [resumeText, setResumeText] = useState('');
     const [extractedSkills, setExtractedSkills] = useState({});
     const [activeQuizSkill, setActiveQuizSkill] = useState(null);
+    const [quizQuestions, setQuizQuestions] = useState([]);
     const [useLLM, setUseLLM] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
 
@@ -839,6 +847,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
 
     const handleStartQuiz = (skillId) => {
         setActiveQuizSkill(skillId);
+        setQuizQuestions(buildExtendedQuiz(skillId, 25));
         setStep('quiz');
     };
 
@@ -848,9 +857,9 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
             ...prev,
             [skillId]: {
                 ...prev[skillId],
-                status: 'verified',
-                verifiedLevel: level,
-                quizScore: score
+                status: total > 0 ? 'verified' : 'unverified',
+                verifiedLevel: total > 0 ? level : null,
+                quizScore: total > 0 ? score : null
             }
         }));
         setStep('results');
@@ -865,6 +874,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
         setResumeText('');
         setExtractedSkills({});
         setActiveQuizSkill(null);
+        setQuizQuestions([]);
     };
 
     const handleUpdateProfile = (verifiedSkillIds) => {
@@ -899,6 +909,7 @@ const ResumeUploadView = ({ onProfileUpdate }) => {
                 <QuizStep
                     skillId={activeQuizSkill}
                     skills={extractedSkills}
+                    questions={quizQuestions}
                     onFinishQuiz={handleFinishQuiz}
                     onBack={() => setStep('results')}
                 />
