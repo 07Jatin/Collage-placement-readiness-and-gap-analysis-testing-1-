@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   Clock, ArrowRight, ArrowLeft, ShieldCheck,
-  FileText, Sparkles, CheckCircle2,
-  Target, AlertCircle, BookOpen, Code, Timer, Award, ChevronRight,
-  Zap, Brain, BarChart3, ClipboardPaste, FileUp, RotateCcw, Eye, ExternalLink, Send
+  Sparkles, CheckCircle2,
+  Target, AlertCircle, Timer, Award, ChevronRight,
+  Zap, RotateCcw, Eye, ExternalLink, Send
 } from 'lucide-react';
 import { generatePlacementTest } from '../utils/resumeTestGenerator';
-
-// ━━━━━━━━━ SECTION META INFO ━━━━━━━━━
-const SECTION_META = {
-  quantitative: { label: 'Quantitative Aptitude', icon: BarChart3, color: 'indigo', count: 25, time: 30 },
-  english: { label: 'English Proficiency', icon: BookOpen, color: 'emerald', count: 25, time: 25 },
-  reasoning: { label: 'Logical Reasoning', icon: Brain, color: 'violet', count: 30, time: 35 },
-  computer_science: { label: 'Computer Science', icon: Code, color: 'amber', count: 15, time: 20 },
-  dsa_random_pool: { label: 'DSA Challenge Pool', icon: Zap, color: 'rose', count: 6, time: 30 },
-};
-const SECTION_ORDER = ['quantitative', 'english', 'reasoning', 'computer_science', 'dsa_random_pool'];
+import { SECTION_META, SECTION_ORDER } from '../config/mockTestSections';
 
 // ━━━━━━━━━ STEP 1: Test Introduction ━━━━━━━━━
 const StartTestStep = ({ onGenerate }) => {
@@ -440,7 +431,7 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
           const meta = SECTION_META[key];
           const Icon = meta.icon;
           const score = scores[key];
-          const pct = key === 'dsa_random_pool' ? (score.answered > 0 ? 100 : 0) : Math.round((score.correct / score.total) * 100);
+          const pct = key === 'dsa_random_pool' ? (score.score > 0 ? Math.round((score.score / score.total) * 100) : 0) : Math.round((score.score / score.total) * 100);
 
           return (
             <div key={key} className="premium-card p-6">
@@ -477,13 +468,13 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Suggested Focus Areas</p>
             <div className="space-y-2">
-              {Object.entries(scores).filter(([k, v]) => k !== 'dsa_random_pool' && (v.correct / v.total) < 0.5).map(([key]) => (
+              {Object.entries(scores).filter(([k, v]) => k !== 'dsa_random_pool' && v.total > 0 && (v.score / v.total) < 0.5).map(([key]) => (
                 <div key={key} className="flex items-center space-x-2 text-sm">
                   <AlertCircle size={14} className="text-amber-500" />
                   <span className="text-slate-700 font-medium">{SECTION_META[key].label}</span>
                 </div>
               ))}
-              {Object.entries(scores).filter(([k, v]) => k !== 'dsa_random_pool' && (v.correct / v.total) < 0.5).length === 0 && (
+              {Object.entries(scores).filter(([k, v]) => k !== 'dsa_random_pool' && v.total > 0 && (v.score / v.total) < 0.5).length === 0 && (
                 <p className="text-emerald-600 font-bold text-sm flex items-center">
                   <CheckCircle2 size={14} className="mr-2" /> All sections above 50% — Great job!
                 </p>

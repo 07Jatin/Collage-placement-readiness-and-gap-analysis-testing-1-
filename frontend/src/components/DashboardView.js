@@ -1,23 +1,26 @@
+
+
+
 import React from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, Radar, Area, AreaChart,
-    Legend
+    RadarChart, PolarGrid, PolarAngleAxis, Radar, Area, AreaChart
 } from 'recharts';
 import {
-    LogOut, Users, Target, Briefcase, Activity, Award,
-    TrendingUp, BarChart2, Zap, AlertCircle, CheckCircle2, ArrowRight, Flame, Star
+    Users, Target, Briefcase, Activity, Award,
+    TrendingUp, BarChart2, Zap, AlertCircle, CheckCircle2, ArrowRight
 } from 'lucide-react';
 
 // Colorful Stat Card with gradient backgrounds
-const ColorStatCard = ({ title, value, subtext, icon: Icon, gradient, darkMode }) => (
-    <div className={`relative overflow-hidden p-6 rounded-[2rem] shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl group ${gradient}`}>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-500"></div>
-        <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+const ColorStatCard = ({ title, value, subtext, icon: Icon, gradient }) => (
+    <div className={`relative overflow-hidden rounded-[2rem] border border-sky-400/10 p-6 shadow-[0_24px_60px_rgba(2,9,22,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(2,9,22,0.45)] group ${gradient}`}>
+        <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/2 transition-transform duration-500 group-hover:scale-150"></div>
+        <div className="absolute bottom-0 left-0 h-20 w-20 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent)]"></div>
         <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-                <p className="text-white/80 text-sm font-bold">{title}</p>
-                <div className="p-2 bg-white/15 rounded-xl backdrop-blur-sm">
+                <p className="text-white/80 text-sm font-bold uppercase tracking-[0.18em]">{title}</p>
+                <div className="rounded-xl bg-white/15 p-2 backdrop-blur-sm">
                     <Icon size={20} className="text-white" />
                 </div>
             </div>
@@ -97,18 +100,18 @@ const DashboardView = ({
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
                     <h1 className="text-4xl font-black tracking-tight flex items-center">
-                        <span className={darkMode ? 'text-white' : 'text-slate-900'}>Insights</span>
-                        <span className="ml-3 px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20">
-                            PRO
+                        <span className="text-slate-900 dark:text-white">Insights</span>
+                        <span className="ml-3 rounded-xl bg-sky-500/15 px-3 py-1 text-sm font-bold text-sky-600 dark:text-sky-300 shadow-lg shadow-sky-500/10">
+                            LIVE
                         </span>
                     </h1>
-                    <p className="font-medium text-lg">Predicting your trajectory in the global tech ecosystem.</p>
+                    <p className="font-medium text-lg text-slate-500 dark:text-slate-400">Predicting your trajectory in the global tech ecosystem.</p>
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <div className={`px-6 py-4 rounded-[1.5rem] border shadow-sm flex items-center space-x-3 ${darkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`placify-panel px-6 py-4 rounded-[1.5rem] border shadow-sm flex items-center space-x-3 ${darkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-100'
                         }`}>
-                        <LogOut size={16} className="text-slate-400" />
+                        <Briefcase size={16} className="text-slate-400" />
                         <select
                             value={dashboardTrack}
                             onChange={(e) => setDashboardTrack(e.target.value)}
@@ -120,7 +123,7 @@ const DashboardView = ({
                         </select>
                     </div>
 
-                    <div className={`px-6 py-4 rounded-[1.5rem] border shadow-sm flex items-center space-x-3 ${darkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`placify-panel px-6 py-4 rounded-[1.5rem] border shadow-sm flex items-center space-x-3 ${darkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-100'
                         }`}>
                         <Users size={20} className="text-slate-400" />
                         <select
@@ -145,32 +148,28 @@ const DashboardView = ({
                     value={`${Math.round(readinessScore)}%`}
                     subtext={readiness?.prediction || "Analyzing..."}
                     icon={Target}
-                    gradient="bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700"
-                    darkMode={darkMode}
+                    gradient="bg-[linear-gradient(135deg,#102847_0%,#1d4ed8_55%,#4ea8ff_100%)]"
                 />
                 <ColorStatCard
                     title="Career Fit"
                     value={gapReport?.target_role || "Pending"}
                     subtext={`Match: ${gapReport ? Math.round(gapReport.match_percent) : 0}%`}
                     icon={Briefcase}
-                    gradient="bg-gradient-to-br from-amber-400 via-orange-500 to-red-500"
-                    darkMode={darkMode}
+                    gradient="bg-[linear-gradient(135deg,#112440_0%,#12385f_45%,#2f7cf6_100%)]"
                 />
                 <ColorStatCard
                     title="Tests Taken"
                     value={history.length}
                     subtext="Consistency is key"
                     icon={Activity}
-                    gradient="bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600"
-                    darkMode={darkMode}
+                    gradient="bg-[linear-gradient(135deg,#0b2036_0%,#12557b_50%,#42c7ff_100%)]"
                 />
                 <ColorStatCard
                     title="Global Rank"
                     value="Top 8%"
                     subtext="Across 12k students"
                     icon={Award}
-                    gradient="bg-gradient-to-br from-pink-500 via-rose-500 to-red-600"
-                    darkMode={darkMode}
+                    gradient="bg-[linear-gradient(135deg,#1a2340_0%,#243c7e_55%,#7aa8ff_100%)]"
                 />
             </div>
 
@@ -259,9 +258,9 @@ const DashboardView = ({
                 {/* Sidebar Insights */}
                 <div className="space-y-8">
                     {/* Radar Chart - Dark themed */}
-                    <div className={`rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl ${darkMode
+                    <div className={`rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl transition-all duration-500 ${darkMode
                             ? 'bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900 border border-indigo-500/10'
-                            : 'bg-slate-900'
+                            : 'bg-gradient-to-br from-indigo-600 to-blue-700 border border-indigo-400/20'
                         }`}>
                         <h4 className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-8">Skill Radar Profile</h4>
                         <div className="h-64 mb-8">

@@ -60,7 +60,7 @@ const StudentDetailModal = ({ student, onClose, darkMode }) => {
 
             {/* Modal */}
             <div
-                className={`relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl border animate-in ${darkMode
+                className={`relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl border animate-in transition-colors duration-500 ${darkMode
                     ? 'bg-[#1a1d2e] border-indigo-500/15 shadow-indigo-500/5'
                     : 'bg-white border-slate-200'
                     }`}
@@ -151,7 +151,7 @@ const StudentDetailModal = ({ student, onClose, darkMode }) => {
                                 {student.projects.map((proj, i) => (
                                     <div key={i} className={`rounded-xl p-4 border transition-all hover:-translate-y-0.5 ${darkMode
                                         ? 'bg-white/5 border-white/5 hover:border-indigo-500/20'
-                                        : 'bg-slate-50 border-slate-100 hover:border-indigo-200'
+                                        : 'bg-slate-50 border-slate-200 hover:border-indigo-200'
                                         }`}>
                                         <p className="font-bold text-sm mb-2">{proj.name}</p>
                                         <div className="flex flex-wrap gap-1.5">

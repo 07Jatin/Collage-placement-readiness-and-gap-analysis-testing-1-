@@ -137,5 +137,137 @@
         "label": "Attempted"
       }
     }
+  },
+  {
+    "student_id": "TEST_S001",
+    "test_id": "PMOCK-MOCVPRV7-8PANA2",
+    "test_date": "2026-04-24",
+    "readiness_score": 6,
+    "category_scores": {
+      "quantitative": {
+        "score": 1,
+        "total": 25,
+        "label": "1/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 0,
+        "total": 30,
+        "label": "0/30"
+      },
+      "computer_science": {
+        "score": 5,
+        "total": 15,
+        "label": "5/15"
+      },
+      "dsa_random_pool": {
+        "score": 0,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
+  },
+  {
+    "student_id": "TEST_S001",
+    "test_id": "PMOCK-MOCVVEZ3-J6U62G",
+    "test_date": "2026-04-24",
+    "readiness_score": 3,
+    "category_scores": {
+      "quantitative": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 0,
+        "total": 30,
+        "label": "0/30"
+      },
+      "computer_science": {
+        "score": 3,
+        "total": 15,
+        "label": "3/15"
+      },
+      "dsa_random_pool": {
+        "score": 0,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
+  },
+  {
+    "student_id": "TEST_S001",
+    "test_id": "PMOCK-MOCW5ZJG-VXV9GC",
+    "test_date": "2026-04-24",
+    "readiness_score": 0,
+    "category_scores": {
+      "quantitative": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 0,
+        "total": 30,
+        "label": "0/30"
+      },
+      "computer_science": {
+        "score": 0,
+        "total": 15,
+        "label": "0/15"
+      },
+      "dsa_random_pool": {
+        "score": 4,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
+  },
+  {
+    "student_id": "08181818",
+    "test_id": "PMOCK-MOFIVU02-D624D6",
+    "test_date": "2026-04-26",
+    "readiness_score": 2,
+    "category_scores": {
+      "quantitative": {
+        "score": 2,
+        "total": 25,
+        "label": "2/25"
+      },
+      "english": {
+        "score": 0,
+        "total": 25,
+        "label": "0/25"
+      },
+      "reasoning": {
+        "score": 0,
+        "total": 30,
+        "label": "0/30"
+      },
+      "computer_science": {
+        "score": 0,
+        "total": 15,
+        "label": "0/15"
+      },
+      "dsa_random_pool": {
+        "score": 0,
+        "total": 6,
+        "label": "Attempted"
+      }
+    }
   }
 ]

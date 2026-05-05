@@ -6,92 +6,77 @@ import {
 import {
     Users, Award, TrendingUp, AlertCircle, ArrowUpRight, ArrowDownRight, Minus
 } from 'lucide-react';
+import {
+    buildAdminStatCards,
+    PLACEMENT_STATUS_DATA,
+    READINESS_TREND_DATA,
+    SKILL_GAP_DISTRIBUTION,
+} from '../data/adminDashboardData';
 
-const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTab }) => {
+const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTab, selectedStudent, setSelectedStudent, students = [] }) => {
     const gridColor = darkMode ? '#1e293b' : '#f1f5f9';
     const chartText = '#94a3b8';
-
-    // Placement distribution data
-    const placementPie = [
-        { name: 'Placed', value: 342, color: '#10b981' },
-        { name: 'In Progress', value: 556, color: '#6366f1' },
-        { name: 'At Risk', value: 172, color: '#f43f5e' },
-        { name: 'New', value: 170, color: '#f59e0b' },
-    ];
+    const adminStats = buildAdminStatCards(students, atRiskStudents);
+    const statIcons = {
+        users: Users,
+        alert: AlertCircle,
+        trend: TrendingUp,
+        award: Award,
+    };
 
     return (
         <div className="space-y-10 animate-in pb-12">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-black tracking-tight">
-                        Institutional <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">Admin</span>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white transition-colors duration-300">
+                        Institutional <span className="bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">Admin</span>
                     </h1>
-                    <p className="font-medium">Monitoring placement readiness across the student body.</p>
+                    <p className="font-medium text-slate-400">Monitoring placement readiness across the student body.</p>
                 </div>
                 <div className="flex items-center space-x-4">
-                    <div className="flex -space-x-3">
-                        {[1, 2, 3, 4, 5].map(i => (
-                            <div key={i} className="w-10 h-10 rounded-xl border-4 bg-slate-100 overflow-hidden shadow-sm" style={{ borderColor: darkMode ? '#1a1d2e' : '#fff' }}>
-                                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=admin${i}`} alt="user" />
-                            </div>
-                        ))}
+                    <div className={`placify-panel px-6 py-4 rounded-[1.5rem] border shadow-sm flex items-center space-x-3 ${darkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-100'
+                        }`}>
+                        <Users size={18} className="text-indigo-500" />
+                        <select
+                            value={selectedStudent}
+                            onChange={(e) => setSelectedStudent(e.target.value)}
+                            className="bg-transparent font-bold focus:outline-none cursor-pointer w-44 text-ellipsis overflow-hidden whitespace-nowrap text-sm"
+                        >
+                            {students.map((stu) => (
+                                <option key={stu.id || stu} value={stu.id || stu}>
+                                    {stu.name ? `${stu.name}` : stu}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="h-10 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
-                    <button onClick={() => setActiveTab && setActiveTab('manage_students')} className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                        <Users size={18} className="mr-2" /> Manage Students
+                    <button onClick={() => setActiveTab && setActiveTab('manage_students')} className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center shadow-lg shadow-sky-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                        Manage Students
                     </button>
                 </div>
             </header>
 
             {/* Gradient Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="relative overflow-hidden p-6 rounded-[2rem] shadow-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-700 hover:-translate-y-2 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-white/80 text-sm font-bold">Total Students</p>
-                            <Users size={20} className="text-white/60" />
+                {adminStats.map((card) => {
+                    const Icon = statIcons[card.iconKey];
+                    return (
+                        <div key={card.title} className={`relative overflow-hidden p-6 rounded-[2rem] shadow-lg bg-gradient-to-br ${card.gradient} hover:-translate-y-2 transition-all duration-300`}>
+                            <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-white/80 text-sm font-bold">{card.title}</p>
+                                    <Icon size={20} className="text-white/60" />
+                                </div>
+                                <p className="text-3xl font-black text-white">{card.value}</p>
+                                <p className="text-white/50 text-xs font-medium mt-1 flex items-center">
+                                    {card.trend === 'up' && <ArrowUpRight size={12} className="mr-1" />}
+                                    {card.subtext}
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-3xl font-black text-white">1,240</p>
-                        <p className="text-white/50 text-xs font-medium mt-1 flex items-center"><ArrowUpRight size={12} className="mr-1" /> +12% from last sem</p>
-                    </div>
-                </div>
-
-                <div className="relative overflow-hidden p-6 rounded-[2rem] shadow-lg bg-gradient-to-br from-rose-500 via-pink-500 to-red-600 hover:-translate-y-2 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-white/80 text-sm font-bold">At-Risk</p>
-                            <AlertCircle size={20} className="text-white/60" />
-                        </div>
-                        <p className="text-3xl font-black text-white">{atRiskStudents.length}</p>
-                        <p className="text-white/50 text-xs font-medium mt-1">Needs Intervention</p>
-                    </div>
-                </div>
-
-                <div className="relative overflow-hidden p-6 rounded-[2rem] shadow-lg bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 hover:-translate-y-2 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-white/80 text-sm font-bold">Avg Readiness</p>
-                            <TrendingUp size={20} className="text-white/60" />
-                        </div>
-                        <p className="text-3xl font-black text-white">64%</p>
-                        <p className="text-white/50 text-xs font-medium mt-1 flex items-center"><ArrowUpRight size={12} className="mr-1" /> +5.2% Growth</p>
-                    </div>
-                </div>
-
-                <div className="relative overflow-hidden p-6 rounded-[2rem] shadow-lg bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 hover:-translate-y-2 transition-all duration-300">
-                    <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-white/80 text-sm font-bold">Placement Ready</p>
-                            <Award size={20} className="text-white/60" />
-                        </div>
-                        <p className="text-3xl font-black text-white">342</p>
-                        <p className="text-white/50 text-xs font-medium mt-1">85% Market Match</p>
-                    </div>
-                </div>
+                    );
+                })}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -105,13 +90,7 @@ const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTa
                     </h3>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[
-                                { name: 'React', count: 450 },
-                                { name: 'Python', count: 320 },
-                                { name: 'SQL', count: 280 },
-                                { name: 'DS/Algo', count: 580 },
-                                { name: 'System Des', count: 210 }
-                            ]}>
+                            <BarChart data={SKILL_GAP_DISTRIBUTION}>
                                 <defs>
                                     <linearGradient id="adminBar1" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#818cf8" />
@@ -149,7 +128,7 @@ const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTa
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={placementPie}
+                                    data={PLACEMENT_STATUS_DATA}
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={55}
@@ -157,7 +136,7 @@ const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTa
                                     paddingAngle={4}
                                     dataKey="value"
                                 >
-                                    {placementPie.map((entry, index) => (
+                                    {PLACEMENT_STATUS_DATA.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
@@ -173,7 +152,7 @@ const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTa
                         </ResponsiveContainer>
                     </div>
                     <div className="space-y-3 mt-4">
-                        {placementPie.map((item, i) => (
+                        {PLACEMENT_STATUS_DATA.map((item, i) => (
                             <div key={i} className="flex items-center justify-between">
                                 <div className="flex items-center">
                                     <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: item.color }}></div>
@@ -196,13 +175,7 @@ const AdminDashboardView = ({ atRiskStudents = [], darkMode = false, setActiveTa
                 </h3>
                 <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={[
-                            { month: 'Jan', readiness: 45, target: 70 },
-                            { month: 'Feb', readiness: 52, target: 70 },
-                            { month: 'Mar', readiness: 48, target: 70 },
-                            { month: 'Apr', readiness: 61, target: 70 },
-                            { month: 'May', readiness: 64, target: 70 }
-                        ]}>
+                        <AreaChart data={READINESS_TREND_DATA}>
                             <defs>
                                 <linearGradient id="adminReadiness" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
