@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
     Upload, FileText, CheckCircle2, XCircle, ChevronRight,
     Zap, Shield, Award, ArrowRight, ArrowLeft, RotateCcw,
@@ -12,52 +12,11 @@ import {
     buildExtendedQuiz,
     SAMPLE_RESUME
 } from '../data/skillData';
-
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-import mammoth from 'mammoth';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
-// ━━━━━━━━━ PDF Text Extraction ━━━━━━━━━
-async function extractTextFromPDF(arrayBuffer) {
-    try {
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            const strings = content.items.map(item => item.str);
-            fullText += strings.join(' ') + '\n';
-        }
-        return fullText;
-    } catch (err) {
-        console.error('PDF parsing error:', err);
-        return '';
-    }
-}
-
-// ━━━━━━━━━ Word / HTML Text Extraction ━━━━━━━━━
-async function extractTextFromDOCX(arrayBuffer) {
-    try {
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        return result.value || '';
-    } catch (err) {
-        console.error('DOC/DOCX parsing error:', err);
-        return '';
-    }
-}
-
-function extractTextFromHTML(htmlString) {
-    try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlString, 'text/html');
-        return doc.body.textContent || '';
-    } catch (err) {
-        console.error('HTML parsing error:', err);
-        return '';
-    }
-}
+import {
+    extractTextFromPDF,
+    extractTextFromDOCX,
+    extractTextFromHTML
+} from '../utils/resumeDocumentExtraction';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -666,8 +625,6 @@ const CompleteStep = ({ skills, onReset, onUpdateProfile }) => {
 
     const expertCount = verified.filter(([, s]) => s.verifiedLevel?.level === 'expert').length;
     const proficientCount = verified.filter(([, s]) => s.verifiedLevel?.level === 'proficient').length;
-    const beginnerCount = verified.filter(([, s]) => s.verifiedLevel?.level === 'beginner').length;
-
     const avgConfidence = verified.length > 0
         ? Math.round(verified.reduce((sum, [, s]) => sum + (s.verifiedLevel?.adjustedConfidence || 0), 0) / verified.length)
         : 0;

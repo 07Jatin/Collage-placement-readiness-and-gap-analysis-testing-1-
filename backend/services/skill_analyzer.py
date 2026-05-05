@@ -86,12 +86,36 @@ def analyze_student(student_id, target_role=None):
     
     match_percent = (len(mastered) / len(required) * 100) if required else 0
     
+    # Build latest test scores summary for the gap visualizer
+    latest_test_scores = {}
+    if student_history:
+        latest_test = sorted(student_history, key=lambda x: x.get("test_date", ""), reverse=True)[0]
+        latest_test_scores = {
+            "test_id": latest_test.get("test_id", "N/A"),
+            "test_date": latest_test.get("test_date", "N/A"),
+            "overall_score": latest_test.get("readiness_score", 0),
+            "category_scores": latest_test.get("category_scores", {})
+        }
+
+    certifications = [
+        "AWS Certified Developer" if "Software Engineer" in role_info.get('role', '') else None,
+        "Google Professional Data Engineer" if "Data Scientist" in role_info.get('role', '') else None,
+        "Certified Kubernetes Administrator" if "DevOps" in role_info.get('role', '') else None,
+        "Meta Front-End Developer Professional Certificate",
+        "IBM Data Science Professional Certificate"
+    ]
+    # Filter out None values from certifications
+    certifications = [c for c in certifications if c]
+
     return {
         "student_id": student_id,
         "target_role": role_info.get('role'),
         "missing_skills": missing,
-        "mastered_skills": mastered,
-        "test_gaps": test_gaps, # Return explicitly for roadmap visualization
+        "current_skills": mastered,
+        "test_gaps": test_gaps,
         "match_percent": round(match_percent, 2),
-        "trending_recommendations": role_info.get('trending_skills', [])
+        "trending_recommendations": role_info.get('trending_skills', []),
+        "recommended_certifications": certifications,
+        "latest_test_scores": latest_test_scores,
+        "total_tests_taken": len(student_history)
     }

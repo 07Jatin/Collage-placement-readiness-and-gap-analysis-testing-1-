@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Target, GraduationCap, ShieldCheck, AlertCircle, Loader2, Sun, Moon, Eye, EyeOff } from 'lucide-react';
+import { Target, GraduationCap, ShieldCheck, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedStudent, darkMode, setDarkMode }) => {
     const [selected, setSelected] = useState('student');
@@ -53,7 +53,6 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                 setLoading(false);
             }
         } else {
-            // Roll Number is treated as varchar (string) automatically
             if (!cleanUsername || !cleanPassword) {
                 setError('Roll Number and Password are required.');
                 return;
@@ -61,15 +60,13 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
             
             setLoading(true);
             try {
-                // If student is already in JSON, name is optional. 
-                // If they are new, name will be updated/set on backend.
                 const response = await fetch('http://127.0.0.1:8000/api/students/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         roll_no: cleanUsername.toUpperCase(),
                         password: cleanPassword,
-                        name: name.trim() || undefined, // Allow empty name if existing
+                        name: name.trim() || undefined,
                         email: email.trim(),
                         mobile: mobile.trim()
                     })
@@ -80,6 +77,7 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                     throw new Error(errorData.detail || 'Authentication failed');
                 }
                 const data = await response.json();
+                localStorage.setItem('placify_token', data.token);
                 
                 setSelectedStudent(data.id);
                 setUserRole('student');
@@ -95,69 +93,84 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
     };
 
     return (
-        <div className={`min-h-screen flex items-center justify-center p-6 md:p-12 relative overflow-hidden font-sans transition-colors duration-700 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
-            {/* Animated Background Blobs */}
-            <div className={`absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40`}>
-                <div className={`absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full blur-[120px] animate-pulse duration-[8s] ${darkMode ? 'bg-indigo-900/30' : 'bg-indigo-200/50'}`}></div>
-                <div className={`absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full blur-[120px] animate-pulse duration-[10s] ${darkMode ? 'bg-emerald-900/20' : 'bg-emerald-100/50'}`}></div>
-                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] rounded-full blur-[150px] animate-pulse duration-[12s] ${darkMode ? 'bg-purple-900/20' : 'bg-purple-100/40'}`}></div>
+        <div className="min-h-screen flex items-center justify-center p-6 md:p-12 relative overflow-hidden font-sans transition-all duration-700 dark bg-[#050b16]">
+            {/* Dark background gradient - forced */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-1000" 
+                 style={{ background: 'radial-gradient(circle at 20% 20%,rgba(88,166,255,0.22),transparent 18%),radial-gradient(circle at 80% 20%,rgba(59,130,246,0.12),transparent 18%),linear-gradient(180deg,#08101d_0%,#050b16_100%)' }}>
             </div>
 
-            {/* Subtle Tech Pattern Overlay */}
-            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: `radial-gradient(${darkMode ? '#fff' : '#000'} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+                <div className="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-sky-900/30 blur-[140px]"></div>
+                <div className="absolute -bottom-[10%] -right-[10%] h-[50%] w-[50%] rounded-full bg-indigo-900/20 blur-[140px]"></div>
+                <div className="absolute left-1/2 top-1/2 h-[40%] w-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-900/20 blur-[150px]"></div>
+            </div>
 
-            <div className="w-full max-w-xl relative z-20 space-y-8 my-8">
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '36px 36px' }}></div>
+
+            <div className="relative z-20 grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
                 {/* Header Section */}
-                <div className="text-center space-y-4">
-                    <div className={`inline-flex p-5 rounded-[2.5rem] shadow-2xl transition-all duration-500 hover:rotate-6 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'} border`}>
-                        <div className="bg-gradient-to-tr from-indigo-600 to-purple-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20">
-                            <Target size={42} className="text-white" />
+                <div className="space-y-8 text-center lg:text-left">
+                    <div className="inline-flex items-center rounded-[28px] border border-sky-400/10 bg-[#0e1b30]/85 px-4 py-3 shadow-[0_24px_80px_rgba(2,9,22,0.5)] backdrop-blur-xl">
+                        <div className="rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-500 p-3 shadow-lg shadow-sky-500/20">
+                            <Target size={32} className="text-white" />
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-sky-300">Placify AI</p>
+                            <p className="text-sm font-semibold text-slate-200">Career readiness command center</p>
                         </div>
                     </div>
-                    <div className="space-y-1">
-                        <h1 className={`text-6xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                            Placify <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">AI</span>
+
+                    <div className="space-y-4">
+                        <h1 className="text-5xl font-black tracking-tight text-white md:text-6xl">
+                            Sign in to <span className="bg-gradient-to-r from-sky-300 to-blue-500 bg-clip-text text-transparent">Placify AI</span>
                         </h1>
-                        <p className={`font-bold text-lg ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>The Future of Career Orchestration</p>
+                        <p className="max-w-xl text-lg font-medium text-slate-400">
+                            Resume intelligence, readiness tracking, mock assessments, coding validation, and institutional analytics in one dark control panel.
+                        </p>
                     </div>
-                    
-                    {/* Theme Toggle Button */}
-                    <button 
-                        onClick={() => setDarkMode(!darkMode)}
-                        className={`absolute top-0 right-0 p-3 rounded-2xl transition-all active:scale-90 ${darkMode ? 'bg-slate-900 text-amber-400 border-slate-800' : 'bg-white text-slate-500 border-slate-100'} border shadow-xl`}
-                    >
-                        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-                    </button>
+
+                    <div className="grid gap-4 sm:grid-cols-3">
+                        {[
+                            ['Readiness score', 'Live dashboard'],
+                            ['Resume intelligence', 'Regex + LLM'],
+                            ['Admin monitoring', 'Skill gap heatmaps'],
+                        ].map(([title, subtitle]) => (
+                            <div key={title} className="rounded-[24px] border border-sky-400/10 bg-[#0e1b30]/75 px-5 py-4 text-left shadow-[0_24px_80px_rgba(2,9,22,0.35)] backdrop-blur-xl">
+                                <p className="text-sm font-black text-white">{title}</p>
+                                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">{subtitle}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Main Auth Card */}
-                <div className={`p-10 rounded-[3.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] border transition-all duration-500 backdrop-blur-3xl ${darkMode ? 'bg-slate-900/80 border-slate-800/80' : 'bg-white/80 border-white/20'}`}>
+                <div className="rounded-[36px] border border-sky-400/10 bg-[#0d1728]/88 p-8 shadow-[0_32px_100px_rgba(2,9,22,0.55)] backdrop-blur-3xl md:p-10">
                     <div className="space-y-3 mb-10">
-                        <h2 className={`text-3xl font-black ${darkMode ? 'text-white' : 'text-slate-900'}`}>Welcome Back</h2>
-                        <p className={`font-medium ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Select your portal to synchronize your progress.</p>
+                        <h2 className="text-3xl font-black text-white">Welcome Back</h2>
+                        <p className="font-medium text-slate-400">Select your portal and continue into the Placify workspace.</p>
                     </div>
 
                     {/* Portal Switcher */}
-                    <div className={`p-2 rounded-[2.5rem] flex items-center mb-10 ${darkMode ? 'bg-slate-950/50' : 'bg-slate-100/50'}`}>
+                    <div className="mb-10 flex flex-col sm:flex-row items-center gap-3 rounded-[2.5rem] border border-sky-400/10 bg-[#09111f]/70 p-2">
                         <button
                             onClick={() => { setSelected('student'); setError(''); }}
-                            className={`flex-1 flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'student'
+                            className={`flex-1 w-full flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'student'
                                 ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/30'
-                                : `${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`
+                                : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                                 }`}
                         >
                             <GraduationCap size={20} />
-                            <span>STUDENT</span>
+                            <span>STUDENT PORTAL</span>
                         </button>
                         <button
                             onClick={() => { setSelected('admin'); setError(''); }}
-                            className={`flex-1 flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'admin'
+                            className={`flex-1 w-full flex items-center justify-center space-x-3 py-4 rounded-[2rem] font-black text-sm transition-all duration-300 ${selected === 'admin'
                                 ? 'bg-rose-600 text-white shadow-xl shadow-rose-500/30'
-                                : `${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`
+                                : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                                 }`}
                         >
                             <ShieldCheck size={20} />
-                            <span>INSTITUTIONAL</span>
+                            <span>ADMINISTRATOR</span>
                         </button>
                     </div>
 
@@ -166,24 +179,24 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                         {selected === 'admin' ? (
                             <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="space-y-2">
-                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Institutional ID</label>
+                                    <label className="ml-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Institutional ID</label>
                                     <input
                                         type="text"
                                         placeholder="Admin Username"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-rose-500/10 focus:border-rose-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-rose-500/10 focus:border-rose-500'}`}
+                                        className="placify-input w-full rounded-3xl px-8 py-5 font-bold transition-all focus:outline-none"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Access Key</label>
+                                    <label className="ml-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Access Key</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-rose-500/10 focus:border-rose-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-rose-500/10 focus:border-rose-500'}`}
+                                            className="placify-input w-full rounded-3xl px-8 py-5 font-bold transition-all focus:outline-none"
                                         />
                                         <button 
                                             type="button"
@@ -199,35 +212,35 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                             <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
-                                        <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Full Name</label>
+                                    <label className="ml-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Full Name</label>
                                         <input
                                             type="text"
                                             placeholder="Your Name (Optional if existing)"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                            className="placify-input w-full rounded-3xl px-8 py-5 font-bold transition-all focus:outline-none"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Roll No</label>
+                                        <label className="ml-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Roll No</label>
                                         <input
                                             type="text"
                                             placeholder="e.g. S001"
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                            className="placify-input w-full rounded-3xl px-8 py-5 font-bold transition-all focus:outline-none"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className={`text-[10px] font-black uppercase tracking-[0.2em] ml-4 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Security Crypt / Password</label>
+                                    <label className="ml-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Security Crypt / Password</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
                                             placeholder="Secret Password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className={`w-full px-8 py-5 rounded-3xl border focus:outline-none focus:ring-4 transition-all font-bold ${darkMode ? 'bg-slate-950 border-slate-800 text-white focus:ring-indigo-500/10 focus:border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-900 focus:ring-indigo-500/10 focus:border-indigo-500'}`}
+                                            className="placify-input w-full rounded-3xl px-8 py-5 font-bold transition-all focus:outline-none"
                                         />
                                         <button 
                                             type="button"
@@ -237,7 +250,9 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </div>
-                                    <p className={`text-[10px] font-bold px-4 ${darkMode ? 'text-slate-600' : 'text-slate-400'}`}>New users: Create a password. Existing users: Enter your registered key.</p>
+                                    <p className="px-4 text-[10px] font-bold text-slate-500">
+                                        Identity verification required. New users will be automatically registered upon first successful synchronization.
+                                    </p>
                                 </div>
                             </div>
                         )}
@@ -263,7 +278,7 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                     </div>
                 </div>
 
-                <p className={`text-center font-bold text-sm ${darkMode ? 'text-slate-600' : 'text-slate-400'}`}>
+                <p className="text-center font-bold text-sm text-slate-600">
                     Placify AI Secure Authentication Layer v4.0.1
                 </p>
             </div>
