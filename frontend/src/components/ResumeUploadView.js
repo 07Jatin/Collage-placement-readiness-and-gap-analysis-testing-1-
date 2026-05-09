@@ -18,7 +18,7 @@ import {
     extractTextFromHTML
 } from '../utils/resumeDocumentExtraction';
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 1: Upload ━━━━━━━━━━━━━━━━━━━━━━━━━
+// Step 1 - Upload
 
 const UploadStep = ({ resumeText, setResumeText, onExtract, useLLM, setUseLLM, isExtracting }) => {
     const [dragOver, setDragOver] = useState(false);
@@ -258,7 +258,7 @@ const UploadStep = ({ resumeText, setResumeText, onExtract, useLLM, setUseLLM, i
 };
 
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 2: Results ━━━━━━━━━━━━━━━━━━━━━━━━━
+// Step 2 - Results
 
 const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => {
     const skillEntries = Object.entries(skills);
@@ -408,7 +408,7 @@ const ResultsStep = ({ skills, setSkills, onStartQuiz, onBack, onComplete }) => 
 };
 
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 3: Quiz ━━━━━━━━━━━━━━━━━━━━━━━━━
+// Step 3 - Quiz
 
 const QuizStep = ({ skillId, skills, questions, onFinishQuiz, onBack }) => {
     const [currentQ, setCurrentQ] = useState(0);
@@ -616,7 +616,7 @@ const QuizStep = ({ skillId, skills, questions, onFinishQuiz, onBack }) => {
 };
 
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━ STEP 4: Complete ━━━━━━━━━━━━━━━━━━━━━━━━━
+// Step 4 - Complete
 
 const CompleteStep = ({ skills, onReset, onUpdateProfile }) => {
     const skillEntries = Object.entries(skills);
@@ -751,7 +751,7 @@ const CompleteStep = ({ skills, onReset, onUpdateProfile }) => {
 };
 
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━ MAIN COMPONENT ━━━━━━━━━━━━━━━━━━━━━━━━━
+// Main wrapper
 
 const ResumeUploadView = ({ onProfileUpdate }) => {
     const [step, setStep] = useState('upload');           // upload | results | quiz | complete

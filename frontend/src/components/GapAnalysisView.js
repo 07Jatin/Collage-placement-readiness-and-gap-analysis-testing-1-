@@ -94,7 +94,7 @@ const CompetencyHeatmap = ({ gapReport }) => {
     );
 };
 
-/* ━━━━━ Test Performance Breakdown ━━━━━ */
+/* Test Performance Breakdown */
 const TestPerformanceSection = ({ gapReport }) => {
     const latestTest = gapReport?.latest_test_scores;
     const catScores = latestTest?.category_scores;
@@ -185,7 +185,7 @@ const TestPerformanceSection = ({ gapReport }) => {
     );
 };
 
-/* ━━━━━ Trending Skills Section ━━━━━ */
+/* Trending Skills */
 const TrendingSkillsSection = ({ gapReport }) => {
     const trending = gapReport?.trending_recommendations;
     if (!trending || trending.length === 0) return null;

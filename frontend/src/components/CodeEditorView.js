@@ -6,9 +6,7 @@ import {
 } from 'lucide-react';
 import { DSA_PROBLEMS, LANG_LABELS } from '../data/dsaProblems';
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Code Editor with Line Numbers
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const CodeEditor = ({ code, onChange, language, fontSize = 13 }) => {
     const textareaRef = useRef(null);
@@ -66,9 +64,7 @@ const CodeEditor = ({ code, onChange, language, fontSize = 13 }) => {
     );
 };
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Problem List Sidebar (like LeetCode problem selector)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Problem List Sidebar
 
 const ProblemList = ({ problems, selected, onSelect, isOpen, onToggle }) => {
     if (!isOpen) return null;
@@ -102,9 +98,7 @@ const ProblemList = ({ problems, selected, onSelect, isOpen, onToggle }) => {
 };
 
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Main Component
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Main DSA Lab Component
 
 const CodeEditorView = ({ gapReport = null, selectedStudent = 'S001' }) => {
     const [selectedProblem, setSelectedProblem] = useState(DSA_PROBLEMS[0]);
@@ -311,9 +305,7 @@ const CodeEditorView = ({ gapReport = null, selectedStudent = 'S001' }) => {
     return (
         <div ref={containerRef} className="flex gap-0 animate-in rounded-xl overflow-hidden border border-[#333] shadow-2xl" style={{ background: '#1a1a1a', height: 'calc(100vh - 20px)' }}>
 
-            {/* ════════════════════════════════════════════ */}
-            {/* LEFT PANEL - Problem Description */}
-            {/* ════════════════════════════════════════════ */}
+            {/* Left panel - problem description */}
             <div className="flex flex-col h-full overflow-hidden" style={{ width: `${splitPosition}%` }}>
 
                 {/* Header */}
@@ -443,9 +435,7 @@ const CodeEditorView = ({ gapReport = null, selectedStudent = 'S001' }) => {
                 </div>
             </div>
 
-            {/* ════════════════════════════════════════════ */}
-            {/* DIVIDER (draggable) */}
-            {/* ════════════════════════════════════════════ */}
+            {/* Draggable divider */}
             <div
                 className="w-[5px] bg-[#333] hover:bg-[#555] cursor-col-resize flex items-center justify-center transition-colors shrink-0 group"
                 onMouseDown={handleMouseDown}
@@ -453,9 +443,7 @@ const CodeEditorView = ({ gapReport = null, selectedStudent = 'S001' }) => {
                 <div className="w-[3px] h-8 rounded-full bg-[#555] group-hover:bg-[#888] transition-colors"></div>
             </div>
 
-            {/* ════════════════════════════════════════════ */}
-            {/* RIGHT PANEL - Code Editor */}
-            {/* ════════════════════════════════════════════ */}
+            {/* Right panel - code editor */}
             <div className="flex flex-col h-full overflow-hidden" style={{ width: `${100 - splitPosition}%` }}>
 
                 {/* Editor Top Bar */}

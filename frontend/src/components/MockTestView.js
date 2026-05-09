@@ -8,7 +8,7 @@ import {
 import { generatePlacementTest } from '../utils/resumeTestGenerator';
 import { SECTION_META, SECTION_ORDER } from '../config/mockTestSections';
 
-// ━━━━━━━━━ STEP 1: Test Introduction ━━━━━━━━━
+// --- Step 1: Test Introduction ---
 const StartTestStep = ({ onGenerate }) => {
   const [generating, setGenerating] = useState(false);
 
@@ -98,7 +98,7 @@ const StartTestStep = ({ onGenerate }) => {
   );
 };
 
-// ━━━━━━━━━ STEP 2: Test Overview / Section Selector ━━━━━━━━━
+// --- Step 2: Test Overview ---
 const TestOverview = ({ testData, onStartSection, sectionProgress, onFinishAll, onBack }) => {
   const totalAnswered = Object.values(sectionProgress).reduce((sum, sp) => sum + Object.keys(sp).length, 0);
   const totalQuestions = SECTION_ORDER.reduce((sum, key) => sum + SECTION_META[key].count, 0);
@@ -196,7 +196,7 @@ const TestOverview = ({ testData, onStartSection, sectionProgress, onFinishAll, 
   );
 };
 
-// ━━━━━━━━━ STEP 3: Section Test (MCQ or DSA) ━━━━━━━━━
+// --- Step 3: Section Test (MCQ or DSA) ---
 const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack, onSubmitEarly }) => {
   const [currentQ, setCurrentQ] = useState(0);
   const meta = SECTION_META[sectionKey];
@@ -385,7 +385,7 @@ const SectionTest = ({ sectionKey, questions, answers, onAnswer, onBack, onSubmi
   );
 };
 
-// ━━━━━━━━━ STEP 4: Results Screen ━━━━━━━━━
+// --- Step 4: Results Screen ---
 const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, onTestSubmitted, setActiveTab, testHistory = [] }) => {
   const scores = {};
   SECTION_ORDER.forEach(key => {
@@ -565,7 +565,7 @@ const ResultsScreen = ({ testData, sectionProgress, onReset, selectedStudent, on
   );
 };
 
-// ━━━━━━━━━ MAIN COMPONENT ━━━━━━━━━
+// --- Main Component ---
 const MockTestView = ({ selectedStudent, onTestSubmitted, setActiveTab, testHistory = [] }) => {
   const [phase, setPhase] = useState('upload'); // upload | overview | section | results
   const [testData, setTestData] = useState(null);
