@@ -354,11 +354,14 @@ const DashboardView = ({
                         <p className="font-medium opacity-70">We've computed a personalized 3-month roadmap based on your current readiness matches.</p>
                         <div className="flex items-center space-x-4 pt-4">
                             <div className="flex -space-x-3">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden dark:border-slate-800">
-                                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 123}`} alt="avatar" />
-                                    </div>
-                                ))}
+                                {['A','R','S','P'].map((letter, i) => {
+                                    const colors = ['bg-indigo-500','bg-emerald-500','bg-amber-500','bg-rose-500'];
+                                    return (
+                                        <div key={i} className={`w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 ${colors[i]} flex items-center justify-center text-white text-xs font-bold`}>
+                                            {letter}
+                                        </div>
+                                    );
+                                })}
                             </div>
                             <p className="text-xs font-bold opacity-50">Join 800+ students in this track</p>
                         </div>

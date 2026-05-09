@@ -103,8 +103,8 @@ const SkillMilestone = ({ skill, index, isTestGap, targetRole }) => {
 
                     <p className="text-gray-600 text-sm leading-relaxed mb-6 max-w-2xl">
                         {isTestGap 
-                            ? `Our engine detected a critical gap in ${skill} based on your recent assessment performance. Follow these curated video paths to reach ${targetRole} readiness.`
-                            : `Strengthen your core foundation in ${skill} through these industry-graded learning modules and projects.`
+                            ? `Your recent test showed a weak spot in ${skill}. These resources should help you catch up for ${targetRole} roles.`
+                            : `Build up your ${skill} skills with these study materials and practice projects.`
                         }
                     </p>
 
@@ -130,7 +130,7 @@ const SkillMilestone = ({ skill, index, isTestGap, targetRole }) => {
                     <div className="space-y-4">
                         <div className="flex items-center space-x-2 mb-4">
                             <Youtube size={18} className="text-red-600" />
-                            <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Curated Video Masterclasses</h5>
+                            <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Recommended Videos</h5>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -184,7 +184,7 @@ const LearningPathView = ({ gapReport }) => {
                     </div>
                     <div>
                         <h1 className="text-4xl font-black text-gray-900 tracking-tighter">Milestone <span className="text-indigo-600">Roadmap</span></h1>
-                        <p className="text-gray-500 font-medium">Synchronizing your skill-set with {targetRole} expectations.</p>
+                        <p className="text-gray-500 font-medium">Tracking your progress towards {targetRole}.</p>
                     </div>
                 </div>
             </header>
@@ -219,7 +219,7 @@ const LearningPathView = ({ gapReport }) => {
                                 <Trophy size={48} className="text-white" />
                             </div>
                             <h3 className="text-3xl font-black text-emerald-900 tracking-tight">Roadmap Converged</h3>
-                            <p className="text-emerald-700 font-medium max-w-md mx-auto mt-2">You have eliminated all technical gaps. You are mathematically ready for {targetRole} placement.</p>
+                            <p className="text-emerald-700 font-medium max-w-md mx-auto mt-2">No skill gaps remaining — you're ready for {targetRole} placement!</p>
                             <button className="mt-8 px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200">
                                 Proceed to Interview Simulation
                             </button>

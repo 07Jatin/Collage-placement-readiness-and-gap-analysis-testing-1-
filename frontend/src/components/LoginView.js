@@ -279,7 +279,7 @@ const LoginView = ({ setUserRole, setIsAuthenticated, setActiveTab, setSelectedS
                 </div>
 
                 <p className="text-center font-bold text-sm text-slate-600">
-                    Placify AI Secure Authentication Layer v4.0.1
+                    Placify AI
                 </p>
             </div>
         </div>

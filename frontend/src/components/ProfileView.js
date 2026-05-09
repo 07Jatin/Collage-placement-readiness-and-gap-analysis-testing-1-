@@ -64,7 +64,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                         Profile
                     </span>
                 </h1>
-                <p className="font-medium text-lg text-slate-500">Managing your professional persona in the ecosystem.</p>
+                <p className="font-medium text-lg text-slate-500">Your profile and placement readiness at a glance.</p>
             </header>
 
             <div className="premium-card p-10 relative overflow-hidden">
@@ -83,7 +83,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                             <div className="flex items-center space-x-3 text-slate-500 font-bold text-xs uppercase tracking-widest">
                                 <span>{studentData.id || selectedStudent || 'UID-0000'}</span>
                                 <span className="opacity-30">•</span>
-                                <span className="text-indigo-500">{formData.email || studentData.email || 'NO_ECHO_ADDR'}</span>
+                                <span className="text-indigo-500">{formData.email || studentData.email || 'Not set'}</span>
                             </div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                     <div className="space-y-8 mb-12 p-8 bg-slate-50 dark:bg-white/5 rounded-3xl border border-slate-100 dark:border-white/5">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Legal Full Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
                                 <input
                                     type="text"
                                     value={formData.name || ''}
@@ -107,7 +107,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                                 />
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Encrypted Email Address</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
                                 <input
                                     type="email"
                                     value={formData.email || ''}
@@ -117,7 +117,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Strategic Target Role</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Target Role</label>
                             <input
                                 type="text"
                                 value={formData.targetRole || ''}
@@ -150,7 +150,7 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                         <p className="text-3xl font-black italic">#{history?.length || 0}</p>
                     </div>
                     <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-3xl border border-slate-100 dark:border-white/5 group hover:border-purple-500/30 transition-all">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Skill Nodes Mastered</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Skills Mastered</p>
                         <p className="text-3xl font-black">{gapReport?.current_skills?.length || 0}</p>
                     </div>
                 </div>
@@ -177,10 +177,10 @@ const ProfileView = ({ selectedStudent, students = [], readinessScore, gapReport
                     ) : (
                         <div className="bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[3rem] p-20 text-center">
                             <Award size={64} className="mx-auto mb-6 text-slate-300 dark:text-white/10" />
-                            <p className="font-black text-2xl dark:text-white/40 text-slate-300">Null Credentials Detected</p>
-                            <p className="text-slate-400 font-medium max-w-sm mx-auto mt-2">Upload your external certifications to synchronize them with your professional readiness profile.</p>
+                            <p className="font-black text-2xl dark:text-white/40 text-slate-300">No Credentials Yet</p>
+                            <p className="text-slate-400 font-medium max-w-sm mx-auto mt-2">Upload your certifications to add them to your profile.</p>
                             <button className="mt-8 px-10 py-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/5 text-slate-900 dark:text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
-                                Append New Credential
+                                Add Credential
                             </button>
                         </div>
                     )}
