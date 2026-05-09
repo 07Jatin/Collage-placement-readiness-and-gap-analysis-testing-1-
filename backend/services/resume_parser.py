@@ -1,14 +1,4 @@
-"""
-Resume Skill Extractor
-
-Approach:
-  1. Define a dictionary of skills with associated keywords/synonyms
-  2. Scan resume text with regex word-boundary matching
-  3. Score confidence based on keyword frequency
-  4. Return structured skill profile
-
-This relies purely on deterministic keyword matching.
-"""
+# Keyword-based resume skill extractor using regex matching
 
 import re
 import json
@@ -184,11 +174,7 @@ def extract_skills(text):
                     found_keywords.append(keyword)
 
         if total_matches > 0:
-            # Confidence formula:
-            #   1 match  = 38%  (mentioned once — could be passing reference)
-            #   2 matches = 56%  (used in context)
-            #   3 matches = 74%  (demonstrated usage)
-            #   4+ matches = 85%+ (core skill, capped at 95%)
+            # Scale confidence based on how many times keywords appeared
             confidence = min(95, 20 + total_matches * 18)
 
             results[skill_id] = {

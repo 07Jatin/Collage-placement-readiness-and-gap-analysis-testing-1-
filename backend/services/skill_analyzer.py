@@ -45,11 +45,11 @@ def analyze_student(student_id, target_role=None):
     required = set(role_info.get('required_skills', []))
     current = set(student.get('current_skills', []))
     
-    # Analyze test results to add to missing skills
+    # check test performance for weak areas
     student_history = [h for h in history if h.get("student_id") == student_id]
     test_gaps = []
     
-    # Mapping for test sections to skill descriptions
+    # map test section names to readable labels
     SECTION_SKILL_MAP = {
         "quantitative": "Quantitative Aptitude",
         "english": "English Proficiency",
@@ -77,7 +77,7 @@ def analyze_student(student_id, target_role=None):
                 test_gaps.append(skill_name)
     
     missing = list(required - current)
-    # Add gaps from tests that aren't already represented
+    # merge test-based gaps with skill-based gaps
     for tg in test_gaps:
         if tg not in missing and tg not in current:
             missing.append(tg)
@@ -86,7 +86,7 @@ def analyze_student(student_id, target_role=None):
     
     match_percent = (len(mastered) / len(required) * 100) if required else 0
     
-    # Build latest test scores summary for the gap visualizer
+    # pull latest test data for the gap visualizer chart
     latest_test_scores = {}
     if student_history:
         latest_test = sorted(student_history, key=lambda x: x.get("test_date", ""), reverse=True)[0]
@@ -104,7 +104,7 @@ def analyze_student(student_id, target_role=None):
         "Meta Front-End Developer Professional Certificate",
         "IBM Data Science Professional Certificate"
     ]
-    # Filter out None values from certifications
+    # drop nulls
     certifications = [c for c in certifications if c]
 
     return {

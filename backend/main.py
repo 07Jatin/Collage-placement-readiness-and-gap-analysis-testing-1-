@@ -24,7 +24,7 @@ app = FastAPI(title="Education-Job Alignment API")
 import hashlib
 import secrets
 
-# Mock User Database (Normally this would be in a real DB)
+# hardcoded users for now
 ADMIN_USERS = {
     "jatin": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5", # 12345
     "trilok": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
@@ -32,7 +32,7 @@ ADMIN_USERS = {
     "bhavya": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
 }
 
-# In-memory session store (In production use Redis or a DB)
+# sessions stored in memory
 SESSION_TOKENS = set()
 
 app.add_middleware(
@@ -43,15 +43,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# YouTube Search Service
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# --- YouTube Search Service ---
 
 @app.get("/api/youtube/search")
 async def search_youtube(query: str):
     api_key = os.getenv("YOUTUBE_API_KEY")
     
-    # If no API key, return sophisticated mock data for testing
+    # no API key? use mock data so the UI doesn't break
     if not api_key:
         return {
             "videos": [
@@ -98,8 +96,9 @@ async def search_youtube(query: str):
                     "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}"
                 })
             return {"videos": videos}
-    except Exception as e:
-        return {"error": str(e), "videos": []}
+    except Exception:
+        # YouTube API failed, just return empty
+        return {"videos": []}
 
 
 from fastapi import Security, Depends, status
@@ -141,15 +140,20 @@ def gap_report(student_id: str, role: str = None):
     try:
         report = skill_analyzer.analyze_student(student_id, target_role=role)
         return report
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Student data file missing")
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"No student found with ID {student_id}")
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/predict_readiness/{student_id}")
 def get_readiness_prediction(student_id: str):
     try:
         return readiness_rules.build_readiness_prediction(student_id)
-    except Exception as e:
+    except Exception:
+        # Couldn't calculate readiness, return safe defaults
         return {"readiness_score_percent": 30, "prediction": "Evaluating", "confidence": 0.5}
 
 
@@ -181,7 +185,7 @@ from services import adzuna_client
 
 @app.post("/parse_resume")
 def parse_resume(payload: dict):
-    """Extract skills from resume text. Uses a hybrid approach: Regex for precision + LLM for semantics."""
+    """Extract skills from resume text using regex + optional LLM."""
     text = payload.get("text", "")
     use_llm = payload.get("use_llm", False)  # Client can request LLM parsing
     
@@ -249,23 +253,22 @@ def parse_resume(payload: dict):
 
 @app.get("/api/live_jobs/{role}")
 def get_live_jobs(role: str):
-    """
-    Fetch real-world live job postings for a specific role via Adzuna API.
-    This complements the simulated static market data.
-    """
+    """Pull live job listings from Adzuna for a given role."""
     try:
         data = adzuna_client.fetch_live_jobs(role)
         if "error" in data:
             raise HTTPException(status_code=400, detail=data["error"])
         return data
+    except HTTPException:
+        raise  # re-raise our own errors
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Job search failed: {e}")
 
 
 
 @app.get("/llm_status")
 def get_llm_status():
-    """Check if the Mistral 7B LLM integration is configured and available."""
+    """Check if HuggingFace LLM is set up."""
     return llm_resume_analyzer.is_llm_available()
 
 
@@ -354,19 +357,8 @@ def update_student_profile(payload: dict):
 
 @app.post("/generate_questions")
 def generate_questions_with_llm(payload: dict):
-    """
-    Generate new MCQ questions using Mistral 7B (free HuggingFace API).
-    
-    This is part of the hybrid approach:
-    - Use LLM to batch-generate CS/English questions
-    - Questions are returned to the frontend for review
-    - Validated questions can be added to the question bank
-    
-    Request body:
-      - section: "computer_science" | "english" | "reasoning"
-      - count: number of questions to generate (max 10)
-      - topic: optional specific topic (e.g., "DBMS", "Networking")
-    """
+    """Use Mistral-7B to make new MCQ questions for a given section."""
+    # TODO: let admins review generated questions before adding to bank
     section = payload.get("section", "computer_science")
     count = min(payload.get("count", 5), 10)  # Cap at 10
     topic = payload.get("topic", "")
@@ -515,9 +507,7 @@ def get_all_students(token: str = Depends(get_current_user)):
 
     return load_students()
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# DSA Coding Lab - Code Compiler Endpoint
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# --- DSA Coding Lab - Code Compiler Endpoint ---
 
 PYTHON_TEST_HARNESS = {
     1: {  # Two Sum
@@ -653,13 +643,15 @@ def get_dynamic_problem(skill: str):
         
         return problem
         
+    except requests.exceptions.Timeout:
+        return {"error": "LeetCode took too long to respond"}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"LeetCode fetch error: {e}"}
 
 
 @app.get("/api/dsa/recommendation/{student_id}")
 def get_recommended_problem(student_id: str):
-    """Fetch a problem based on the student's identified skill gaps from recent tests or analysis."""
+    """Pick a DSA problem matching this student's weak areas."""
     try:
         report = skill_analyzer.analyze_student(student_id)
         gaps = report.get("missing_skills", [])
@@ -681,8 +673,9 @@ def get_recommended_problem(student_id: str):
                     break
         
         return get_dynamic_problem(target_skill)
-    except Exception as e:
-        return get_dynamic_problem("array") # Fallback
+    except Exception:
+        # if gap analysis fails just grab a random problem
+        return get_dynamic_problem("array")
 
 
 @app.post("/compile")
@@ -847,8 +840,12 @@ def compile_code(payload: dict):
 
         return {"output": out_str, "error": None, "results": results}
 
+    except requests.exceptions.Timeout:
+        return {"output": "Time limit exceeded — Piston did not respond in 20s", "error": "Timeout", "results": None}
+    except requests.exceptions.ConnectionError:
+        return {"output": "Cannot reach code execution server (Piston API)", "error": "Connection Error", "results": None}
     except Exception as e:
-        return {"output": f"Execution Error: {str(e)}", "error": "Execution Error", "results": None}
+        return {"output": f"Something went wrong: {e}", "error": "Execution Error", "results": None}
 
 
 if __name__ == "__main__":

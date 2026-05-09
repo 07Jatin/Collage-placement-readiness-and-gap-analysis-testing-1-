@@ -1,15 +1,5 @@
-"""
-LLM-Powered Resume Analyzer using Mistral 7B
-
-Uses the Hugging Face Inference API (free) to analyze resumes
-with Mistral 7B Instruct model. Falls back to regex-based
-extraction if the API is unavailable.
-
-Setup:
-  1. Get a free HuggingFace token from https://huggingface.co/settings/tokens
-  2. Set environment variable: HF_API_TOKEN=your_token_here
-     OR create a .env file in the backend directory with: HF_API_TOKEN=your_token
-"""
+# Resume analysis via Mistral 7B (HuggingFace API)
+# Needs HF_API_TOKEN env var or backend/.env file
 
 import os
 import json

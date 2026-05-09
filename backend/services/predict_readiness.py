@@ -13,7 +13,7 @@ def predict_for_student(student_id):
         
     df = pd.read_csv(csv_path)
     
-    # Simple training (In a real app, this would be pre-trained and saved)
+    # Train classifier on historical data
     X = df[['cgpa', 'num_projects', 'skill_match_percent']]
     y = df['label']
     
@@ -41,7 +41,7 @@ def predict_for_student(student_id):
     probs = clf.predict_proba(features)[0]
     classes = clf.classes_
     
-    # Calculate a composite readiness score
+    # work out readiness from the model's prediction
     ready_idx = -1
     for i, c in enumerate(classes):
         if c == 'Ready':
