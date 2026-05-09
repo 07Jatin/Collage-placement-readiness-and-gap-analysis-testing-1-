@@ -178,9 +178,7 @@ body::before {
 .gradient-emerald { background: linear-gradient(135deg, #1fbf9c 0%, #3dd9b4 100%); }
 .gradient-rose { background: linear-gradient(135deg, #ff648c 0%, #ff8d6c 100%); }
 .gradient-amber { background: linear-gradient(135deg, #ff9f43 0%, #fbc531 100%); }
-.gradient-sunset { background: linear-gradient(135deg, #ff648c 0%, #fbc531 100%); }
 .gradient-ocean { background: linear-gradient(135deg, #2d7ff9 0%, #42c7ff 100%); }
-.gradient-fire { background: linear-gradient(135deg, #ff6b57 0%, #ffaf3d 100%); }
 
 .stat-card-indigo,
 .stat-card-emerald,

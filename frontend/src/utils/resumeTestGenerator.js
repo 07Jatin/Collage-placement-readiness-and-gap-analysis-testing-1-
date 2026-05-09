@@ -1,9 +1,4 @@
-/**
- * Resume-Based Test Generator Engine
- * 
- * Parses resume text, extracts skills/projects, and generates
- * a unique randomized placement mock test every time.
- */
+// Generates a unique randomized placement test from a student's resume text
 
 import {
   QUANTITATIVE_BANK,
@@ -14,7 +9,7 @@ import {
 } from '../data/mockTestQuestionBank';
 import { generateQuantQuestions, generateReasoningQuestions } from './questionTemplates';
 
-// ━━━━━━━━━ Utility: Shuffle Array (Fisher-Yates) ━━━━━━━━━
+// shuffle helper (Fisher-Yates)
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -24,7 +19,7 @@ function shuffle(arr) {
   return a;
 }
 
-// ━━━━━━━━━ Utility: Generate unique test ID ━━━━━━━━━
+// make a short unique ID for each test
 function generateTestId() {
   const ts = Date.now().toString(36);
   const rand = Math.random().toString(36).substring(2, 8);
@@ -56,9 +51,8 @@ function saveQuestionHistory(pickedIds) {
   } catch (e) { /* ignore */ }
 }
 
-// ━━━━━━━━━ Utility: Pick N questions with difficulty mix ━━━━━━━━━
-// 30% Easy, 50% Medium, 20% Hard
-// Prioritizes questions the student has NOT seen before.
+// grab N questions weighted by difficulty
+// tries to avoid repeating ones the student already saw
 function pickWithDifficultyMix(bank, count, seenIds = new Set()) {
   // Split into unseen and seen, then shuffle each
   const unseen = bank.filter(q => !seenIds.has(q.id));
@@ -108,7 +102,7 @@ function pickWithDifficultyMix(bank, count, seenIds = new Set()) {
   return shuffle(picked).slice(0, count);
 }
 
-// ━━━━━━━━━ Resume Analysis ━━━━━━━━━
+// pull skills out of resume text using regex
 function analyzeResume(resumeText) {
   // Normalize text: collapse extra whitespace, handle PDF artifacts
   const text = resumeText
@@ -218,10 +212,7 @@ function analyzeResume(resumeText) {
   return { topSkills, suggestedRoles, skillIds };
 }
 
-/**
- * Orchestrates test generation based on Resume Text.
- * Now Async to support future API integrations if needed.
- */
+// main export - builds the full test from resume text
 export async function generatePlacementTest(resumeText) {
   const analysis = analyzeResume(resumeText);
 

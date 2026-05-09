@@ -12,6 +12,7 @@ package-lock.json
 dist/
 build/
 .llm-chat-history/
+_local_docs/
 
 # Logs
 logs/
